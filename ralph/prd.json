@@ -512,7 +512,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The questionnaire should feel like the prototype, not a generic long form."
     },
     {
