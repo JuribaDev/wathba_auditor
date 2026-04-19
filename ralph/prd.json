@@ -688,7 +688,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Claude is the highest-fidelity target in the prototype and should stay that way."
     },
     {

@@ -23,8 +23,8 @@ export type GeneratedSkill = {
   triggers: Array<{ when: Record<string, string | number | boolean | null> }>;
   body: string;
   directory: string;
-  references: Array<{ path: string }>;
-  scripts: Array<{ path: string }>;
+  references: Array<{ path: string; content: string }>;
+  scripts: Array<{ path: string; content: string }>;
 };
 
 export const generatedSkills: GeneratedSkill[] = [
@@ -119,12 +119,14 @@ export const generatedSkills: GeneratedSkill[] = [
     "directory": "saudi/zatca-phase2",
     "references": [
       {
-        "path": "zatca-xml-sample.xml"
+        "path": "zatca-xml-sample.xml",
+        "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Invoice xmlns=\"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2\">\n  <cbc:ID xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">INV-1001</cbc:ID>\n  <cbc:IssueDate xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">2026-04-15</cbc:IssueDate>\n</Invoice>\n\n"
       }
     ],
     "scripts": [
       {
-        "path": "validate-zatca-xml.mjs"
+        "path": "validate-zatca-xml.mjs",
+        "content": "#!/usr/bin/env node\n\nimport { readFile } from \"node:fs/promises\";\n\nconst file = process.argv[2];\n\nif (!file) {\n  console.error(\"Usage: validate-zatca-xml.mjs <file>\");\n  process.exit(1);\n}\n\nconst contents = await readFile(file, \"utf8\");\n\nif (!contents.includes(\"<Invoice\")) {\n  console.error(\"Missing <Invoice root element.\");\n  process.exit(1);\n}\n\nif (!contents.includes(\"<cbc:ID\")) {\n  console.error(\"Missing invoice identifier.\");\n  process.exit(1);\n}\n\nconsole.log(\"Basic XML checks passed.\");\n"
       }
     ]
   }

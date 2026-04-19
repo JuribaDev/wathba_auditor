@@ -75,16 +75,19 @@ describe("buildFilesForTarget", () => {
   const skill = makeSkill({
     id: "s",
     slug: "s",
-    references: [{ path: "ref-a" }, { path: "ref-b" }],
-    scripts: [{ path: "script-a" }],
+    references: [
+      { path: "ref-a.md", content: "a" },
+      { path: "ref-b.xml", content: "b" },
+    ],
+    scripts: [{ path: "helper.sh", content: "#!/bin/sh" }],
   });
 
-  it("claude-code emits SKILL.md plus references and scripts", () => {
+  it("claude-code emits SKILL.md plus references and scripts with real filenames", () => {
     expect(buildFilesForTarget("claude-code", [skill])).toEqual([
       ".claude/skills/s/SKILL.md",
-      ".claude/skills/s/references/ref-1.md",
-      ".claude/skills/s/references/ref-2.md",
-      ".claude/skills/s/scripts/helper-1.sh",
+      ".claude/skills/s/references/ref-a.md",
+      ".claude/skills/s/references/ref-b.xml",
+      ".claude/skills/s/scripts/helper.sh",
     ]);
   });
 
@@ -133,7 +136,7 @@ describe("buildFilePlan", () => {
   const skill = makeSkill({
     id: "s",
     slug: "s",
-    references: [{ path: "ref-a" }],
+    references: [{ path: "ref-a.md", content: "a" }],
     scripts: [],
   });
 

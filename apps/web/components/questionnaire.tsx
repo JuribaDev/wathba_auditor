@@ -13,6 +13,7 @@ import {
 import {
   StepGenerate,
   type GenerateStepLabels,
+  type PreviewContents,
 } from "@/components/questionnaire/step-generate";
 import {
   StepReview,
@@ -28,6 +29,7 @@ import {
   StepVariables,
   type VariablesStepLabels,
 } from "@/components/questionnaire/step-variables";
+import { renderClaudeCodeFiles } from "@/lib/generate/adapters/claude-code";
 import { buildFilePlan, getActiveSkills } from "@/lib/generate/file-plan";
 import { resolveSelectedSkills } from "@/lib/generate/resolve-markdown";
 import type { AppLocale } from "@/lib/i18n";
@@ -164,6 +166,20 @@ export function Questionnaire({
     [activeSkills, variableValues, answers],
   );
 
+  const previewContents = React.useMemo<PreviewContents>(() => {
+    const contents: PreviewContents = {};
+    const claudeFiles = renderClaudeCodeFiles(
+      activeSkills,
+      resolvedCatalog.resolutions,
+    );
+    if (claudeFiles.length > 0) {
+      contents["claude-code"] = new Map(
+        claudeFiles.map((file) => [file.path, file.content]),
+      );
+    }
+    return contents;
+  }, [activeSkills, resolvedCatalog.resolutions]);
+
   const handleBeforeNext = React.useCallback(
     (step: QuestionnaireStepId): boolean => {
       if (step === "about" || step === "tech") {
@@ -241,6 +257,7 @@ export function Questionnaire({
           plan={filePlan}
           missing={resolvedCatalog.skillsWithMissing}
           labels={generateLabels}
+          previewContents={previewContents}
         />
       }
     />

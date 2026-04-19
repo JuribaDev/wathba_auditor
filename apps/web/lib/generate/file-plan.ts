@@ -1,4 +1,5 @@
 import type { ReviewSelections } from "@/components/questionnaire/step-review";
+import { renderClaudeCodePaths } from "@/lib/generate/adapters/claude-code";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 
@@ -48,17 +49,7 @@ export function buildFilesForTarget(
   if (skills.length === 0) return [];
   switch (target) {
     case "claude-code":
-      return skills.flatMap((skill) => {
-        const base = `.claude/skills/${skill.slug}/`;
-        const files = [`${base}SKILL.md`];
-        skill.references.forEach((_ref, index) => {
-          files.push(`${base}references/ref-${index + 1}.md`);
-        });
-        skill.scripts.forEach((_script, index) => {
-          files.push(`${base}scripts/helper-${index + 1}.sh`);
-        });
-        return files;
-      });
+      return renderClaudeCodePaths(skills);
     case "cursor":
       return skills.map((skill) => `.cursor/rules/${skill.slug}.mdc`);
     case "codex":

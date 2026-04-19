@@ -14,6 +14,8 @@ import type { AppLocale } from "@/lib/i18n";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 import { cn } from "@/lib/utils";
 
+export type PreviewContents = Partial<Record<TargetAgent, Map<string, string>>>;
+
 export type GenerateStepLabels = {
   zipLabel: string;
   zipFilename: string;
@@ -43,6 +45,7 @@ type StepGenerateProps = {
   plan: FilePlan;
   missing: readonly MissingVariables[];
   labels: GenerateStepLabels;
+  previewContents?: PreviewContents;
 };
 
 const TARGET_LABEL_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
@@ -64,6 +67,7 @@ export function StepGenerate({
   plan,
   missing,
   labels,
+  previewContents,
 }: StepGenerateProps) {
   const hasContent = plan.totalFiles > 0 && plan.skillCount > 0;
 
@@ -144,6 +148,7 @@ export function StepGenerate({
         activeTarget={activeTarget}
         onSelect={setUserTarget}
         labels={labels}
+        previewContents={previewContents}
       />
     </div>
   );
@@ -259,6 +264,7 @@ type TargetPreviewProps = {
   activeTarget: TargetAgent | null;
   onSelect: (target: TargetAgent) => void;
   labels: GenerateStepLabels;
+  previewContents?: PreviewContents;
 };
 
 function TargetPreview({
@@ -266,6 +272,7 @@ function TargetPreview({
   activeTarget,
   onSelect,
   labels,
+  previewContents,
 }: TargetPreviewProps) {
   const tabRefs = React.useRef<Map<TargetAgent, HTMLButtonElement | null>>(
     new Map(),
@@ -314,11 +321,19 @@ function TargetPreview({
     [targets, activeTarget],
   );
 
-  const activeBody = activeTarget ? SAMPLE_PREVIEW_BODIES[activeTarget] : "";
+  const activeFile = activePlan?.files[0] ?? labels.previewFilePlaceholder;
+  const renderedForTarget = activeTarget
+    ? previewContents?.[activeTarget]
+    : undefined;
+  const renderedBody =
+    renderedForTarget && activePlan?.files[0]
+      ? renderedForTarget.get(activePlan.files[0])
+      : undefined;
+  const activeBody =
+    renderedBody ?? (activeTarget ? SAMPLE_PREVIEW_BODIES[activeTarget] : "");
   const activeNote = activeTarget
     ? labels[TARGET_NOTE_KEY[activeTarget]]
     : labels.previewEmpty;
-  const activeFile = activePlan?.files[0] ?? labels.previewFilePlaceholder;
 
   return (
     <section
