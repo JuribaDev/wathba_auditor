@@ -236,7 +236,7 @@
       ],
       "type": "design-system",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Typography is part of the product identity; it should not fall back to generic defaults."
     },
     {

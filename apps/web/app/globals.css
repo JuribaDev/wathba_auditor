@@ -13,7 +13,10 @@
  *   Primary        --primary, --primary-hover, --primary-soft, --primary-foreground
  *   Secondary      --secondary, --secondary-foreground
  *   Semantic state --destructive, --success, --warning, --info
- *   Typography     --font-latin, --font-arabic, --font-body, --font-display, --font-mono-stack
+ *   Typography     --font-body, --font-display, --font-mono-stack (semantic roles)
+ *                  --font-latin-sans (IBM Plex Sans), --font-latin-serif (Source Serif 4),
+ *                  --font-latin-mono (IBM Plex Mono), --font-arabic-sans (IBM Plex Sans Arabic),
+ *                  --font-arabic-display (Amiri) — face variables loaded via next/font
  *   Elevation      --shadow-sm, --shadow-md, --shadow-lg
  *   Radii          --radius, --radius-sm, --radius-md, --radius-lg, --radius-xl
  *
@@ -91,10 +94,16 @@
 }
 
 :root {
-  /* Typography stacks. Latin/Arabic faces are injected by the locale layout. */
-  --font-body: var(--font-latin);
-  --font-display: var(--font-latin);
-  --font-mono-stack: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /*
+   * Typography stacks. Face variables are injected by the locale layout via
+   * next/font and mapped here to semantic roles:
+   *   --font-body     Latin body (IBM Plex Sans) / Arabic body (IBM Plex Sans Arabic) under dir=rtl
+   *   --font-display  Latin display (Source Serif 4) / Arabic display (Amiri) under dir=rtl
+   *   --font-mono-stack  IBM Plex Mono with system mono fallbacks
+   */
+  --font-body: var(--font-latin-sans), "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-display: var(--font-latin-serif), Georgia, "Times New Roman", serif;
+  --font-mono-stack: var(--font-latin-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 
   /* ---------- Warm editorial light theme ---------- */
   --background: #f7f2ea;
@@ -158,8 +167,8 @@
 }
 
 html[dir="rtl"] {
-  --font-body: var(--font-arabic);
-  --font-display: var(--font-arabic);
+  --font-body: var(--font-arabic-sans), "Segoe UI", Tahoma, sans-serif;
+  --font-display: var(--font-arabic-display), "Amiri", "Times New Roman", serif;
 }
 
 .dark,
@@ -228,7 +237,7 @@ html[dir="rtl"] {
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-body), sans-serif;
+    font-family: var(--font-body);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
@@ -237,8 +246,22 @@ html[dir="rtl"] {
   h2,
   h3,
   h4 {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4 {
+    letter-spacing: 0;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono-stack);
   }
 
   a {
