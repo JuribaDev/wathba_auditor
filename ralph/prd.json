@@ -188,7 +188,7 @@
       ],
       "type": "state",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Prototype persistence should use Wathba Skills keys such as wathbaSkills.route and wathbaSkills.answers unless a different stable naming scheme is chosen."
     },
     {

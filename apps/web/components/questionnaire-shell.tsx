@@ -43,6 +43,7 @@ export type QuestionnaireLabels = {
   downloadCta: string;
   stepPositionLabel: string;
   validationBlocked: string;
+  startOver: string;
 };
 
 const HEADING_KEY: Record<QuestionnaireStepId, keyof QuestionnaireLabels> = {
@@ -76,25 +77,46 @@ export function QuestionnaireShell({
   locale,
   labels,
   initialStep = "about",
+  step,
+  onStepChange,
   aboutSlot,
   techSlot,
   reviewSlot,
   generateSlot,
   onBeforeNext,
+  onReset,
 }: {
   locale: AppLocale;
   labels: QuestionnaireLabels;
   initialStep?: QuestionnaireStepId;
+  step?: QuestionnaireStepId;
+  onStepChange?: (next: QuestionnaireStepId) => void;
   aboutSlot?: React.ReactNode;
   techSlot?: React.ReactNode;
   reviewSlot?: React.ReactNode;
   generateSlot?: React.ReactNode;
   onBeforeNext?: (step: QuestionnaireStepId) => boolean;
+  onReset?: () => void;
 }) {
-  const [index, setIndex] = React.useState<number>(() => indexForStep(initialStep));
+  const isControlled = step !== undefined;
+  const [internalIndex, setInternalIndex] = React.useState<number>(() =>
+    indexForStep(initialStep),
+  );
+  const index = isControlled ? indexForStep(step) : internalIndex;
   const activeStep = stepForIndex(index);
   const liveRegionRef = React.useRef<HTMLParagraphElement | null>(null);
   const [blockedAt, setBlockedAt] = React.useState<number>(0);
+
+  const commitIndex = React.useCallback(
+    (nextIndex: number) => {
+      if (isControlled) {
+        onStepChange?.(stepForIndex(nextIndex));
+      } else {
+        setInternalIndex(nextIndex);
+      }
+    },
+    [isControlled, onStepChange],
+  );
 
   const slotByStep: Record<QuestionnaireStepId, React.ReactNode | undefined> = {
     about: aboutSlot,
@@ -115,19 +137,21 @@ export function QuestionnaireShell({
   );
 
   const goNext = React.useCallback(() => {
-    setIndex((current) => {
-      const currentStep = stepForIndex(current);
-      if (onBeforeNext && onBeforeNext(currentStep) === false) {
-        setBlockedAt(Date.now());
-        return current;
-      }
-      return nextStepIndex(current);
-    });
-  }, [onBeforeNext]);
+    const currentStep = stepForIndex(index);
+    if (onBeforeNext && onBeforeNext(currentStep) === false) {
+      setBlockedAt(Date.now());
+      return;
+    }
+    const next = nextStepIndex(index);
+    if (next === index) return;
+    commitIndex(next);
+  }, [commitIndex, index, onBeforeNext]);
 
   const goPrev = React.useCallback(() => {
-    setIndex((current) => prevStepIndex(current));
-  }, []);
+    const prev = prevStepIndex(index);
+    if (prev === index) return;
+    commitIndex(prev);
+  }, [commitIndex, index]);
 
   const onKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -241,6 +265,10 @@ export function QuestionnaireShell({
               className="size-4 rtl:-scale-x-100"
               aria-hidden="true"
             />
+          </Button>
+        ) : onReset ? (
+          <Button type="button" variant="secondary" onClick={onReset}>
+            {labels.startOver}
           </Button>
         ) : null}
       </nav>

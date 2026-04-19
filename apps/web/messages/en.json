@@ -134,6 +134,7 @@
     "downloadCta": "Generate skill pack",
     "stepPositionLabel": "Step {step} of {total}",
     "validationBlocked": "Please fix the highlighted fields before continuing.",
+    "startOver": "Start over",
     "about": {
       "yes": "Yes",
       "no": "No",

@@ -49,6 +49,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     downloadCta: t("downloadCta"),
     stepPositionLabel: t("stepPositionLabel"),
     validationBlocked: t("validationBlocked"),
+    startOver: t("startOver"),
   };
 
   const aboutLabels: AboutStepLabels = {

@@ -35,6 +35,13 @@ import { renderCursorFiles } from "@/lib/generate/adapters/cursor";
 import { buildFilePlan, getActiveSkills } from "@/lib/generate/file-plan";
 import { resolveSelectedSkills } from "@/lib/generate/resolve-markdown";
 import type { AppLocale } from "@/lib/i18n";
+import {
+  clearQuestionnaireState,
+  loadQuestionnaireRoute,
+  loadQuestionnaireState,
+  saveQuestionnaireRoute,
+  saveQuestionnaireState,
+} from "@/lib/persistence";
 import type { QuestionnaireStepId } from "@/lib/questionnaire/steps";
 import {
   hasAnyError,
@@ -83,7 +90,57 @@ export function Questionnaire({
   const [selections, setSelections] = React.useState<ReviewSelections>({});
   const [variableValues, setVariableValues] =
     React.useState<VariableValues>({});
+  const [step, setStep] = React.useState<QuestionnaireStepId>("about");
   const seededRecommendationsRef = React.useRef<boolean>(false);
+  const [hydrated, setHydrated] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const persistedState = loadQuestionnaireState();
+    const persistedRoute = loadQuestionnaireRoute();
+    if (persistedState) {
+      // Hydration from localStorage after mount is the React-recommended
+      // pattern for static export + SSR: defaults render on the server and
+      // client-only state is applied in an effect to avoid hydration
+      // mismatches. React will batch these setState calls.
+      /* eslint-disable react-hooks/set-state-in-effect */
+      setAnswers(persistedState.answers);
+      setSelections(persistedState.selections);
+      setVariableValues(persistedState.variableValues);
+      setAttemptedSteps(new Set(persistedState.attemptedSteps));
+      seededRecommendationsRef.current = persistedState.seededRecommendations;
+    }
+    if (persistedRoute) {
+      setStep(persistedRoute);
+    }
+    setHydrated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+
+  React.useEffect(() => {
+    if (!hydrated) return;
+    saveQuestionnaireRoute(step);
+  }, [hydrated, step]);
+
+  React.useEffect(() => {
+    if (!hydrated) return;
+    saveQuestionnaireState({
+      answers,
+      selections,
+      variableValues,
+      attemptedSteps: [...attemptedSteps],
+      seededRecommendations: seededRecommendationsRef.current,
+    });
+  }, [hydrated, answers, selections, variableValues, attemptedSteps]);
+
+  const handleReset = React.useCallback(() => {
+    clearQuestionnaireState();
+    seededRecommendationsRef.current = false;
+    setAnswers({});
+    setSelections({});
+    setVariableValues({});
+    setAttemptedSteps(new Set());
+    setStep("about");
+  }, []);
 
   const handleAboutChange = React.useCallback(
     (patch: Partial<QuestionnaireAnswers>) => {
@@ -235,7 +292,10 @@ export function Questionnaire({
     <QuestionnaireShell
       locale={locale}
       labels={shellLabels}
+      step={step}
+      onStepChange={setStep}
       onBeforeNext={handleBeforeNext}
+      onReset={handleReset}
       aboutSlot={
         <StepAbout
           answers={answers}
