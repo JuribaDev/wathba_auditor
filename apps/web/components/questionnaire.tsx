@@ -198,6 +198,40 @@ export function Questionnaire({
     [],
   );
 
+  const handleAddManualSkill = React.useCallback((skillId: string) => {
+    setSelections((prev) => {
+      const existing = prev[skillId];
+      if (existing) {
+        return {
+          ...prev,
+          [skillId]: { ...existing, on: true },
+        };
+      }
+      return { ...prev, [skillId]: { on: true, source: "manual" } };
+    });
+  }, []);
+
+  const recommendationIds = React.useMemo(
+    () => new Set(recommendations.map((skill) => skill.id)),
+    [recommendations],
+  );
+
+  const manualSkills = React.useMemo(
+    () =>
+      generatedSkills.filter((skill) => {
+        if (recommendationIds.has(skill.id)) return false;
+        return selections[skill.id]?.source === "manual";
+      }),
+    [recommendationIds, selections],
+  );
+
+  const availableSkills = React.useMemo(() => {
+    const manualIds = new Set(manualSkills.map((skill) => skill.id));
+    return generatedSkills.filter(
+      (skill) => !recommendationIds.has(skill.id) && !manualIds.has(skill.id),
+    );
+  }, [recommendationIds, manualSkills]);
+
   const handleVariableChange = React.useCallback(
     (key: string, value: VariableValue) => {
       setVariableValues((prev) => ({ ...prev, [key]: value }));
@@ -317,8 +351,11 @@ export function Questionnaire({
           <StepReview
             locale={locale}
             recommendations={recommendations}
+            manualSkills={manualSkills}
+            availableSkills={availableSkills}
             selections={selections}
             onToggle={handleToggleSelection}
+            onAddManual={handleAddManualSkill}
             labels={reviewLabels}
           />
           <StepVariables

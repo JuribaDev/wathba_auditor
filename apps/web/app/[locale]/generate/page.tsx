@@ -140,6 +140,10 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     enable: t("review.enable"),
     disable: t("review.disable"),
     empty: t("review.empty"),
+    addAnotherSummary: t("review.addAnotherSummary"),
+    addAnotherLede: t("review.addAnotherLede"),
+    addAnotherEmpty: t("review.addAnotherEmpty"),
+    addAction: t("review.addAction"),
   };
 
   const generateLabels: GenerateStepLabels = {

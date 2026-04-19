@@ -109,7 +109,11 @@
       "disclaimer": "disclaimer",
       "enable": "Include in skill pack",
       "disable": "Remove from skill pack",
-      "empty": "Answer the earlier steps so we can recommend the right skills for your project."
+      "empty": "Answer the earlier steps so we can recommend the right skills for your project.",
+      "addAnotherSummary": "Add another skill",
+      "addAnotherLede": "Pull in any other skill from the catalog. Manual picks are tagged so you can tell them apart from automatic recommendations.",
+      "addAnotherEmpty": "Every skill in the catalog is already on your list.",
+      "addAction": "Add"
     },
     "variables": {
       "heading": "Set values for your skills",

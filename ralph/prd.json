@@ -592,7 +592,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This is present in the prototype and important for expert users."
     },
     {

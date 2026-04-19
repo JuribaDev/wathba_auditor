@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -31,13 +31,20 @@ export type ReviewStepLabels = {
   enable: string;
   disable: string;
   empty: string;
+  addAnotherSummary: string;
+  addAnotherLede: string;
+  addAnotherEmpty: string;
+  addAction: string;
 };
 
 type StepReviewProps = {
   locale: AppLocale;
   recommendations: GeneratedSkill[];
+  manualSkills: GeneratedSkill[];
+  availableSkills: GeneratedSkill[];
   selections: ReviewSelections;
   onToggle: (skillId: string, source: ReviewSelectionSource) => void;
+  onAddManual: (skillId: string) => void;
   labels: ReviewStepLabels;
 };
 
@@ -50,55 +57,78 @@ const STATUS_LABEL_KEY = {
 export function StepReview({
   locale,
   recommendations,
+  manualSkills,
+  availableSkills,
   selections,
   onToggle,
+  onAddManual,
   labels,
 }: StepReviewProps) {
-  if (recommendations.length === 0) {
-    return (
-      <div
-        role="region"
-        aria-live="polite"
-        className={cn(
-          "rounded-2xl border border-dashed border-border bg-surface-variant/60",
-          "px-6 py-12 text-center text-sm leading-7 text-muted-foreground",
-        )}
-      >
-        {labels.empty}
-      </div>
-    );
-  }
+  const hasAnyRow = recommendations.length > 0 || manualSkills.length > 0;
+  const rows: { skill: GeneratedSkill; defaultSource: ReviewSelectionSource }[] =
+    [
+      ...recommendations.map((skill) => ({
+        skill,
+        defaultSource: "auto" as const,
+      })),
+      ...manualSkills.map((skill) => ({
+        skill,
+        defaultSource: "manual" as const,
+      })),
+    ];
 
   return (
-    <div className="flex flex-col gap-3" data-slot="step-review">
-      {recommendations.map((skill) => {
-        const selection = selections[skill.id];
-        const on = selection?.on ?? true;
-        const source: ReviewSelectionSource = selection?.source ?? "auto";
-        const status = mapStatus(skill.status);
-        const statusLabel = labels[STATUS_LABEL_KEY[status]];
-        const summary = skill.summary?.[locale] ?? "";
-        const sourceLabel =
-          source === "manual" ? labels.manualLabel : labels.autoLabel;
-        return (
-          <ReviewSkillRow
-            key={skill.id}
-            locale={locale}
-            skill={skill}
-            on={on}
-            source={source}
-            sourceLabel={sourceLabel}
-            summary={summary}
-            statusLabel={statusLabel}
-            status={status}
-            versionPrefix={labels.versionPrefix}
-            verifiedPrefix={labels.verifiedPrefix}
-            disclaimerLabel={labels.disclaimer}
-            toggleLabel={on ? labels.disable : labels.enable}
-            onToggle={() => onToggle(skill.id, source)}
-          />
-        );
-      })}
+    <div className="flex flex-col gap-4" data-slot="step-review">
+      {hasAnyRow ? (
+        <div className="flex flex-col gap-3">
+          {rows.map(({ skill, defaultSource }) => {
+            const selection = selections[skill.id];
+            const on = selection?.on ?? defaultSource === "auto";
+            const source: ReviewSelectionSource =
+              selection?.source ?? defaultSource;
+            const status = mapStatus(skill.status);
+            const statusLabel = labels[STATUS_LABEL_KEY[status]];
+            const summary = skill.summary?.[locale] ?? "";
+            const sourceLabel =
+              source === "manual" ? labels.manualLabel : labels.autoLabel;
+            return (
+              <ReviewSkillRow
+                key={skill.id}
+                locale={locale}
+                skill={skill}
+                on={on}
+                source={source}
+                sourceLabel={sourceLabel}
+                summary={summary}
+                statusLabel={statusLabel}
+                status={status}
+                versionPrefix={labels.versionPrefix}
+                verifiedPrefix={labels.verifiedPrefix}
+                disclaimerLabel={labels.disclaimer}
+                toggleLabel={on ? labels.disable : labels.enable}
+                onToggle={() => onToggle(skill.id, source)}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div
+          role="region"
+          aria-live="polite"
+          className={cn(
+            "rounded-2xl border border-dashed border-border bg-surface-variant/60",
+            "px-6 py-12 text-center text-sm leading-7 text-muted-foreground",
+          )}
+        >
+          {labels.empty}
+        </div>
+      )}
+      <AddAnotherSkillDrawer
+        locale={locale}
+        availableSkills={availableSkills}
+        onAdd={onAddManual}
+        labels={labels}
+      />
     </div>
   );
 }
@@ -204,5 +234,109 @@ function ReviewSkillRow({
         #{skill.slug}
       </div>
     </div>
+  );
+}
+
+type AddAnotherSkillDrawerProps = {
+  locale: AppLocale;
+  availableSkills: GeneratedSkill[];
+  onAdd: (skillId: string) => void;
+  labels: ReviewStepLabels;
+};
+
+function AddAnotherSkillDrawer({
+  locale,
+  availableSkills,
+  onAdd,
+  labels,
+}: AddAnotherSkillDrawerProps) {
+  return (
+    <details
+      data-slot="add-another-skill"
+      className={cn(
+        "group/add-skill rounded-2xl border border-dashed border-border bg-surface-variant/40",
+        "px-4 py-3 text-sm",
+      )}
+    >
+      <summary
+        className={cn(
+          "flex cursor-pointer list-none items-center justify-between gap-2 rounded-md py-1",
+          "text-foreground outline-none",
+          "focus-visible:ring-3 focus-visible:ring-ring/50",
+          "[&::-webkit-details-marker]:hidden",
+        )}
+      >
+        <span className="inline-flex items-center gap-2">
+          <Plus
+            aria-hidden="true"
+            className={cn(
+              "size-4 shrink-0 transition-transform",
+              "group-open/add-skill:rotate-45",
+            )}
+          />
+          <span className="font-medium">{labels.addAnotherSummary}</span>
+        </span>
+        <span className="font-mono text-[11px] text-soft-foreground">
+          {availableSkills.length}
+        </span>
+      </summary>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {labels.addAnotherLede}
+      </p>
+      {availableSkills.length === 0 ? (
+        <p className="mt-3 rounded-md bg-surface px-3 py-2 text-sm text-muted-foreground">
+          {labels.addAnotherEmpty}
+        </p>
+      ) : (
+        <ul className="mt-3 flex flex-col gap-2" role="list">
+          {availableSkills.map((skill) => {
+            const status = mapStatus(skill.status);
+            const statusLabel = labels[STATUS_LABEL_KEY[status]];
+            const summary = skill.summary?.[locale] ?? "";
+            return (
+              <li
+                key={skill.id}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border border-border bg-surface px-3 py-2.5",
+                )}
+              >
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-heading text-[0.95rem] leading-snug tracking-tight">
+                      {skill.name[locale]}
+                    </span>
+                    <StatusBadge status={status}>{statusLabel}</StatusBadge>
+                    {skill.disclaimer ? (
+                      <span className="font-mono text-[10.5px] text-warning">
+                        {labels.disclaimer}
+                      </span>
+                    ) : null}
+                  </div>
+                  {summary ? (
+                    <p className="text-xs leading-5 text-muted-foreground">
+                      {summary}
+                    </p>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onAdd(skill.id)}
+                  aria-label={`${labels.addAction}: ${skill.name[locale]}`}
+                  className={cn(
+                    "mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-surface px-2.5 py-1",
+                    "font-mono text-[11px] text-foreground transition-colors",
+                    "hover:bg-primary hover:text-primary-foreground hover:border-primary",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  )}
+                >
+                  <Plus aria-hidden="true" className="size-3" />
+                  <span>{labels.addAction}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </details>
   );
 }
