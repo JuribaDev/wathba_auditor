@@ -17,10 +17,16 @@ import {
 } from "@/components/questionnaire/step-generate";
 import {
   StepReview,
-  type ReviewSelections,
-  type ReviewSelectionSource,
   type ReviewStepLabels,
 } from "@/components/questionnaire/step-review";
+import {
+  addManualSelection,
+  partitionLibraryForReview,
+  seedAutoRecommendations,
+  toggleSelection,
+  type SelectionSource,
+  type Selections,
+} from "@/lib/questionnaire/selections";
 import {
   StepTech,
   type TechStepLabels,
@@ -87,7 +93,7 @@ export function Questionnaire({
   const [attemptedSteps, setAttemptedSteps] = React.useState<
     ReadonlySet<QuestionnaireStepId>
   >(() => new Set());
-  const [selections, setSelections] = React.useState<ReviewSelections>({});
+  const [selections, setSelections] = React.useState<Selections>({});
   const [variableValues, setVariableValues] =
     React.useState<VariableValues>({});
   const [step, setStep] = React.useState<QuestionnaireStepId>("about");
@@ -186,51 +192,21 @@ export function Questionnaire({
   );
 
   const handleToggleSelection = React.useCallback(
-    (skillId: string, source: ReviewSelectionSource) => {
-      setSelections((prev) => {
-        const existing = prev[skillId];
-        if (existing) {
-          return { ...prev, [skillId]: { ...existing, on: !existing.on } };
-        }
-        return { ...prev, [skillId]: { on: true, source } };
-      });
+    (skillId: string, source: SelectionSource) => {
+      setSelections((prev) => toggleSelection(prev, skillId, source));
     },
     [],
   );
 
   const handleAddManualSkill = React.useCallback((skillId: string) => {
-    setSelections((prev) => {
-      const existing = prev[skillId];
-      if (existing) {
-        return {
-          ...prev,
-          [skillId]: { ...existing, on: true },
-        };
-      }
-      return { ...prev, [skillId]: { on: true, source: "manual" } };
-    });
+    setSelections((prev) => addManualSelection(prev, skillId));
   }, []);
 
-  const recommendationIds = React.useMemo(
-    () => new Set(recommendations.map((skill) => skill.id)),
-    [recommendations],
-  );
-
-  const manualSkills = React.useMemo(
+  const { manualSkills, availableSkills } = React.useMemo(
     () =>
-      generatedSkills.filter((skill) => {
-        if (recommendationIds.has(skill.id)) return false;
-        return selections[skill.id]?.source === "manual";
-      }),
-    [recommendationIds, selections],
+      partitionLibraryForReview(generatedSkills, recommendations, selections),
+    [recommendations, selections],
   );
-
-  const availableSkills = React.useMemo(() => {
-    const manualIds = new Set(manualSkills.map((skill) => skill.id));
-    return generatedSkills.filter(
-      (skill) => !recommendationIds.has(skill.id) && !manualIds.has(skill.id),
-    );
-  }, [recommendationIds, manualSkills]);
 
   const handleVariableChange = React.useCallback(
     (key: string, value: VariableValue) => {
@@ -306,15 +282,7 @@ export function Questionnaire({
         }
         if (step === "tech" && !seededRecommendationsRef.current) {
           seededRecommendationsRef.current = true;
-          setSelections((prev) => {
-            const next: ReviewSelections = { ...prev };
-            for (const skill of recommendations) {
-              if (!next[skill.id]) {
-                next[skill.id] = { on: true, source: "auto" };
-              }
-            }
-            return next;
-          });
+          setSelections((prev) => seedAutoRecommendations(prev, recommendations));
         }
       }
       return true;

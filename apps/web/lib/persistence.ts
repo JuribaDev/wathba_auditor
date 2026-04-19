@@ -1,4 +1,7 @@
-import type { ReviewSelections } from "@/components/questionnaire/step-review";
+import {
+  isSelectionSource,
+  type Selections,
+} from "@/lib/questionnaire/selections";
 import {
   isQuestionnaireStepId,
   type QuestionnaireStepId,
@@ -35,7 +38,7 @@ export function getBrowserStorage(): StorageLike | null {
 
 export type PersistedQuestionnaireState = {
   answers: QuestionnaireAnswers;
-  selections: ReviewSelections;
+  selections: Selections;
   variableValues: VariableValues;
   attemptedSteps: QuestionnaireStepId[];
   seededRecommendations: boolean;
@@ -65,8 +68,6 @@ const STACKS = new Set([
 ]);
 const AGENTS = new Set(["claude-code", "cursor", "codex", "agents-md"]);
 const SECRETS = new Set(["manager", "env", "dotenv", "none"]);
-const SELECTION_SOURCES = new Set(["auto", "manual"]);
-
 function sanitizeAnswers(input: unknown): QuestionnaireAnswers {
   if (!isPlainObject(input)) return {};
   const out: QuestionnaireAnswers = {};
@@ -98,19 +99,14 @@ function sanitizeAnswers(input: unknown): QuestionnaireAnswers {
   return out;
 }
 
-function sanitizeSelections(input: unknown): ReviewSelections {
+function sanitizeSelections(input: unknown): Selections {
   if (!isPlainObject(input)) return {};
-  const out: ReviewSelections = {};
+  const out: Selections = {};
   for (const [key, raw] of Object.entries(input)) {
     if (!isPlainObject(raw)) continue;
     if (typeof raw.on !== "boolean") continue;
-    if (typeof raw.source !== "string" || !SELECTION_SOURCES.has(raw.source)) {
-      continue;
-    }
-    out[key] = {
-      on: raw.on,
-      source: raw.source as "auto" | "manual",
-    };
+    if (!isSelectionSource(raw.source)) continue;
+    out[key] = { on: raw.on, source: raw.source };
   }
   return out;
 }

@@ -6,18 +6,20 @@ import { Check, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import type { AppLocale } from "@/lib/i18n";
+import {
+  buildReviewRows,
+  type Selection,
+  type SelectionSource,
+  type Selections,
+} from "@/lib/questionnaire/selections";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import { mapStatus } from "@/lib/skills/labels";
 import { cn } from "@/lib/utils";
 
-export type ReviewSelectionSource = "auto" | "manual";
-
-export type ReviewSelection = {
-  on: boolean;
-  source: ReviewSelectionSource;
-};
-
-export type ReviewSelections = Record<string, ReviewSelection>;
+// Legacy aliases kept for call-sites that imported the row-scoped names.
+export type ReviewSelectionSource = SelectionSource;
+export type ReviewSelection = Selection;
+export type ReviewSelections = Selections;
 
 export type ReviewStepLabels = {
   autoLabel: string;
@@ -64,28 +66,14 @@ export function StepReview({
   onAddManual,
   labels,
 }: StepReviewProps) {
-  const hasAnyRow = recommendations.length > 0 || manualSkills.length > 0;
-  const rows: { skill: GeneratedSkill; defaultSource: ReviewSelectionSource }[] =
-    [
-      ...recommendations.map((skill) => ({
-        skill,
-        defaultSource: "auto" as const,
-      })),
-      ...manualSkills.map((skill) => ({
-        skill,
-        defaultSource: "manual" as const,
-      })),
-    ];
+  const rows = buildReviewRows(recommendations, manualSkills, selections);
+  const hasAnyRow = rows.length > 0;
 
   return (
     <div className="flex flex-col gap-4" data-slot="step-review">
       {hasAnyRow ? (
         <div className="flex flex-col gap-3">
-          {rows.map(({ skill, defaultSource }) => {
-            const selection = selections[skill.id];
-            const on = selection?.on ?? defaultSource === "auto";
-            const source: ReviewSelectionSource =
-              selection?.source ?? defaultSource;
+          {rows.map(({ skill, on, source }) => {
             const status = mapStatus(skill.status);
             const statusLabel = labels[STATUS_LABEL_KEY[status]];
             const summary = skill.summary?.[locale] ?? "";

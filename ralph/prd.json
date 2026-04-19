@@ -608,7 +608,7 @@
       ],
       "type": "state",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype uses selected[id] = { on, source }; the production app should keep an equivalent model."
     },
     {
