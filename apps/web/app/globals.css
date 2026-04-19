@@ -171,6 +171,50 @@ html[dir="rtl"] {
   --font-display: var(--font-arabic-display), "Amiri", "Times New Roman", serif;
 }
 
+/* ---------- Primary swatch variants (light) ---------- */
+[data-primary="ink"] {
+  --primary: #2e4a6b;
+  --primary-hover: #243b57;
+  --primary-soft: #d4dde7;
+  --ring: #3d5f89;
+}
+
+[data-primary="olive"] {
+  --primary: #5c6a36;
+  --primary-hover: #4a562b;
+  --primary-soft: #dfe3ce;
+  --ring: #6e7e42;
+}
+
+[data-primary="slate"] {
+  --primary: #3a3a3a;
+  --primary-hover: #2a2a2a;
+  --primary-soft: #d9d5ce;
+  --ring: #525252;
+}
+
+/* ---------- Primary swatch variants (dark) ---------- */
+[data-theme="dark"][data-primary="ink"] {
+  --primary: #6b8aa8;
+  --primary-hover: #7c9ab8;
+  --primary-soft: #1f2f42;
+  --ring: #89a4bf;
+}
+
+[data-theme="dark"][data-primary="olive"] {
+  --primary: #a0b06a;
+  --primary-hover: #b0c07a;
+  --primary-soft: #2a3120;
+  --ring: #b8c488;
+}
+
+[data-theme="dark"][data-primary="slate"] {
+  --primary: #b8b4ac;
+  --primary-hover: #c8c4bc;
+  --primary-soft: #2a2a2a;
+  --ring: #cfccc5;
+}
+
 .dark,
 [data-theme="dark"] {
   /* ---------- Deliberate warm dark counterpart ---------- */

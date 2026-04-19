@@ -10,6 +10,12 @@ import { notFound } from "next/navigation";
 
 import "../globals.css";
 
+import { DocumentStateProvider } from "@/components/document-state-provider";
+import {
+  buildDocumentStateInitScript,
+  DEFAULT_PRIMARY,
+  DEFAULT_THEME,
+} from "@/lib/document-state";
 import { getDirection, isLocale, locales } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
 
@@ -86,13 +92,23 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  const initScript = buildDocumentStateInitScript();
+
   return (
     <html
       lang={locale}
       dir={getDirection(locale)}
+      data-theme={DEFAULT_THEME}
+      data-primary={DEFAULT_PRIMARY}
       className={`${fontVariables} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full bg-background text-foreground">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: initScript }} />
+      </head>
+      <body className="min-h-full bg-background text-foreground">
+        <DocumentStateProvider>{children}</DocumentStateProvider>
+      </body>
     </html>
   );
 }
