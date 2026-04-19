@@ -6,6 +6,10 @@
   "scripts": {
     "prepare": "husky",
     "generate:skills": "tsx scripts/generate-skills.ts",
+    "verify:skills:versions": "tsx scripts/verify-skill-versions.ts",
+    "verify:skills:drift": "pnpm generate:skills && tsx scripts/check-generated-drift.ts",
+    "verify:skills:freshness": "tsx scripts/check-compliance-freshness.ts",
+    "verify:skills": "pnpm verify:skills:versions && pnpm verify:skills:freshness && pnpm verify:skills:drift",
     "dev": "pnpm generate:skills && pnpm --filter @agent-skills/web dev",
     "build": "pnpm generate:skills && pnpm --filter @agent-skills/web build",
     "lint": "pnpm --filter @agent-skills/web lint",
@@ -13,7 +17,7 @@
     "typecheck": "pnpm generate:skills && pnpm --filter @agent-skills/skill-schema typecheck && pnpm --filter @agent-skills/web typecheck",
     "test": "pnpm generate:skills && pnpm --filter @agent-skills/web test",
     "test:e2e": "pnpm generate:skills && pnpm --filter @agent-skills/web test:e2e",
-    "verify": "pnpm generate:skills && pnpm doctor:react && pnpm --filter @agent-skills/skill-schema typecheck && pnpm --filter @agent-skills/web typecheck && pnpm --filter @agent-skills/web test && pnpm --filter @agent-skills/web build",
+    "verify": "pnpm verify:skills && pnpm doctor:react && pnpm --filter @agent-skills/skill-schema typecheck && pnpm --filter @agent-skills/web typecheck && pnpm --filter @agent-skills/web test && pnpm --filter @agent-skills/web build",
     "verify:full": "pnpm verify && pnpm --filter @agent-skills/web test:e2e"
   },
   "devDependencies": {

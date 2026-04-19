@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -25,8 +27,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Fetch base ref (for diff)
+        run: git fetch --no-tags --depth=1 origin "+${GITHUB_BASE_REF:-main}:refs/remotes/origin/${GITHUB_BASE_REF:-main}" || true
+
+      - name: Verify skill version-bump policy
+        run: pnpm verify:skills:versions
+
+      - name: Verify compliance freshness (changed skills)
+        run: pnpm verify:skills:freshness
+
       - name: Generate skills
         run: pnpm generate:skills
+
+      - name: Verify generated output is committed
+        run: pnpm verify:skills:drift
 
       - name: Lint
         run: pnpm --filter @agent-skills/web lint

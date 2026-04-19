@@ -43,8 +43,27 @@ Useful commands:
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm build`
-- `pnpm verify` — one-shot pipeline of everything above (runs on pre-commit)
+- `pnpm verify:skills` — fast governance gate: version-bump policy + compliance freshness + generated-output drift (runs on pre-commit)
+- `pnpm verify` — full pipeline: verify:skills + typecheck + lint + tests + build
 - `pnpm verify:full` — adds the Playwright E2E pass
+
+## Skill governance workflow
+
+Every skill change is classified and gated automatically:
+
+```
+edit skills/ ──► detect changed skills ──► classify severity ──► enforce SemVer bump
+                                                                       │
+                                  regenerate catalog ◄─────────────────┘
+                                           │
+                                           ▼
+                                   commit or CI fails
+```
+
+- **Version bump policy** — Patch for `SKILL.md` + metadata edits. Minor for additive changes (new variable, new target, new reference). Major for identity or breaking changes (id/slug, removed or renamed variable, removed target). The full matrix lives in [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **Detecting changed skills** — `pnpm verify:skills:versions` diffs against `origin/main` (or `$GITHUB_BASE_REF` in CI) and only inspects skills that changed on this branch.
+- **Generated-output drift** — `apps/web/lib/skills/generated.ts` is regenerated in CI; if it differs from the committed file, the build fails with a diff excerpt and a precise fix command. Never hand-edit that file.
+- **Compliance freshness** — Only *changed* compliance skills are checked. Thresholds: `last_verified` ≤ 180 days, every `sources[*].accessed` ≤ 180 days. Overridable via `WATHBA_LAST_VERIFIED_MAX_DAYS` / `WATHBA_SOURCE_ACCESSED_MAX_DAYS`. Run `pnpm verify:skills:freshness -- --all` to audit every compliance skill before a release.
 
 Git hooks:
 

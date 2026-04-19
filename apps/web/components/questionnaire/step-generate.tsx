@@ -5,6 +5,7 @@ import { CheckCircle2, Download, Folder, FileText, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
+import { InstallViaAi, type InstallViaAiLabels } from "@/components/install-via-ai";
 import type { FilePlan, TargetFilePlan } from "@/lib/generate/file-plan";
 import type {
   MissingVariables,
@@ -50,6 +51,7 @@ export type GenerateStepLabels = {
   downloadHint: string;
   downloadDisabledMissing: string;
   downloadError: string;
+  install: InstallViaAiLabels;
 };
 
 type StepGenerateProps = {
@@ -62,14 +64,18 @@ type StepGenerateProps = {
   previewContents?: PreviewContents;
 };
 
-const TARGET_LABEL_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
+type StringLabelKey = {
+  [K in keyof GenerateStepLabels]: GenerateStepLabels[K] extends string ? K : never;
+}[keyof GenerateStepLabels];
+
+const TARGET_LABEL_KEY: Record<TargetAgent, StringLabelKey> = {
   "claude-code": "targetClaude",
   cursor: "targetCursor",
   codex: "targetCodex",
   "agents-md": "targetGeneric",
 };
 
-const TARGET_NOTE_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
+const TARGET_NOTE_KEY: Record<TargetAgent, StringLabelKey> = {
   "claude-code": "targetNoteClaude",
   cursor: "targetNoteCursor",
   codex: "targetNoteCodex",
@@ -174,6 +180,16 @@ export function StepGenerate({
         hasMissing={missing.length > 0}
         labels={labels}
       />
+
+      {missing.length === 0 ? (
+        <InstallViaAi
+          locale={locale}
+          plan={plan}
+          activeSkills={activeSkills}
+          resolutions={resolutions}
+          labels={labels.install}
+        />
+      ) : null}
     </div>
   );
 }

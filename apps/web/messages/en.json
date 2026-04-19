@@ -171,7 +171,39 @@
       "downloadReady": "Downloaded",
       "downloadHint": "Everything is packaged locally in your browser — no content leaves this tab.",
       "downloadDisabledMissing": "Fill in the missing variables above to enable the download.",
-      "downloadError": "Something went wrong while packaging. Try again."
+      "downloadError": "Something went wrong while packaging. Try again.",
+      "install": {
+        "eyebrow": "Install via AI",
+        "heading": "Hand it to your agent",
+        "lede": "Copy a single prompt and paste it into your AI coding assistant. It will create every file in the right place — no manual extraction needed.",
+        "filesLabel": "files",
+        "sizeLabel": "size",
+        "copyCta": "Copy prompt",
+        "copyCopied": "Copied to clipboard",
+        "copyFallback": "Copy failed — select text manually",
+        "previewHeading": "Prompt preview",
+        "expand": "Show prompt",
+        "collapse": "Hide prompt",
+        "fallbackNote": "Prompt too long for your agent's context? Use the zip above instead — same contents, packaged for manual drop-in.",
+        "agents": {
+          "claude": {
+            "name": "Claude Code",
+            "tagline": "Writes skills into .claude/skills/ and auto-discovers them."
+          },
+          "cursor": {
+            "name": "Cursor",
+            "tagline": "Drops .mdc rules into .cursor/rules/ — reload window to activate."
+          },
+          "codex": {
+            "name": "OpenAI Codex",
+            "tagline": "Appends skills to AGENTS.md and writes reference files."
+          },
+          "generic": {
+            "name": "Generic AGENTS.md",
+            "tagline": "Works with any agent that reads AGENTS.md at session start."
+          }
+        }
+      }
     },
     "eyebrowOf": "Step {step} / {total}",
     "prev": "Back",

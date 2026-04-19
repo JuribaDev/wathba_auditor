@@ -174,6 +174,28 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     downloadHint: t("generate.downloadHint"),
     downloadDisabledMissing: t("generate.downloadDisabledMissing"),
     downloadError: t("generate.downloadError"),
+    install: {
+      eyebrow: t("generate.install.eyebrow"),
+      heading: t("generate.install.heading"),
+      lede: t("generate.install.lede"),
+      filesLabel: t("generate.install.filesLabel"),
+      sizeLabel: t("generate.install.sizeLabel"),
+      copyCta: t("generate.install.copyCta"),
+      copyCopied: t("generate.install.copyCopied"),
+      copyFallback: t("generate.install.copyFallback"),
+      previewHeading: t("generate.install.previewHeading"),
+      expand: t("generate.install.expand"),
+      collapse: t("generate.install.collapse"),
+      fallbackNote: t("generate.install.fallbackNote"),
+      agentClaudeName: t("generate.install.agents.claude.name"),
+      agentClaudeTagline: t("generate.install.agents.claude.tagline"),
+      agentCursorName: t("generate.install.agents.cursor.name"),
+      agentCursorTagline: t("generate.install.agents.cursor.tagline"),
+      agentCodexName: t("generate.install.agents.codex.name"),
+      agentCodexTagline: t("generate.install.agents.codex.tagline"),
+      agentGenericName: t("generate.install.agents.generic.name"),
+      agentGenericTagline: t("generate.install.agents.generic.tagline"),
+    },
   };
 
   const validationMessages: ValidationMessages = {

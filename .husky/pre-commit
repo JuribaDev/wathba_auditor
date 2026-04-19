@@ -1,2 +1,5 @@
 #!/usr/bin/env sh
-pnpm verify
+# Fast governance gate — catches stale generated output and missing version
+# bumps before a commit is created. For the full typecheck/test/build pipeline,
+# run `pnpm verify` manually or rely on CI.
+pnpm verify:skills

@@ -7,6 +7,7 @@ import {
   Source_Serif_4,
 } from "next/font/google";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 
 import "../globals.css";
 
@@ -103,10 +104,10 @@ export default async function LocaleLayout({
       className={`${fontVariables} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: initScript }} />
-      </head>
       <body className="min-h-full bg-background text-foreground">
+        <Script id="document-state-init" strategy="beforeInteractive">
+          {initScript}
+        </Script>
         <DocumentStateProvider>{children}</DocumentStateProvider>
       </body>
     </html>

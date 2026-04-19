@@ -311,7 +311,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "ضوابط هندسية لفوترة زاتكا المرحلة الثانية — بنية XML ومسار التوقيع وخطوات التسجيل التي يجب على وكيل البرمجة مراعاتها قبل كتابة الكود."
     },
     "slug": "zatca-phase2",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "category": "compliance",
     "region": "saudi-arabia",
     "targets": [
