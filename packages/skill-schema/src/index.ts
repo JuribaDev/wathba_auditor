@@ -49,10 +49,30 @@ export const skillVariableSchema = z
     }
   });
 
+const SEMVER_REGEX =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidIsoDate(value: string): boolean {
+  if (!ISO_DATE_REGEX.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00Z`);
+  if (Number.isNaN(timestamp)) return false;
+  const parsed = new Date(timestamp).toISOString().slice(0, 10);
+  return parsed === value;
+}
+
+export const semverSchema = z
+  .string()
+  .regex(SEMVER_REGEX, "version must be semver (e.g. 1.2.3 or 0.1.0-alpha.1)");
+
+export const isoDateSchema = z
+  .string()
+  .refine(isValidIsoDate, "must be an ISO 8601 calendar date (YYYY-MM-DD)");
+
 export const skillSourceSchema = z.object({
   title: z.string().min(1),
   url: z.string().url(),
-  accessed: z.string().min(1),
+  accessed: isoDateSchema,
 });
 
 export const skillMaintainerSchema = z.object({
@@ -73,7 +93,7 @@ export const skillScriptSchema = z.object({
   content: z.string(),
 });
 
-export const canonicalSkillSchema = z.object({
+const canonicalSkillObjectSchema = z.object({
   id: z.string().min(1),
   name: localizedLabelSchema,
   summary: localizedLabelSchema.optional(),
@@ -83,12 +103,12 @@ export const canonicalSkillSchema = z.object({
       /^[a-z0-9]+(-[a-z0-9]+)*$/,
       "slug must be kebab-case (lowercase letters and digits separated by single hyphens)",
     ),
-  version: z.string().min(1),
+  version: semverSchema,
   category: skillCategorySchema,
   region: z.string().nullable(),
   targets: z.array(skillTargetSchema).min(1),
   status: skillStatusSchema,
-  last_verified: z.string().min(1),
+  last_verified: isoDateSchema,
   maintainers: z.array(skillMaintainerSchema).min(1),
   sources: z.array(skillSourceSchema).min(1),
   disclaimer: z.boolean(),
@@ -96,14 +116,38 @@ export const canonicalSkillSchema = z.object({
   triggers: z.array(skillTriggerSchema).default([]),
 });
 
-export const generatedSkillSchema = canonicalSkillSchema
+const COMPLIANCE_DISCLAIMER_MESSAGE =
+  "Compliance skills must set disclaimer: true so the UI surfaces the engineering-guidance-only notice.";
+
+export const canonicalSkillSchema = canonicalSkillObjectSchema.superRefine(
+  (value, ctx) => {
+    if (value.category === "compliance" && value.disclaimer !== true) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: COMPLIANCE_DISCLAIMER_MESSAGE,
+        path: ["disclaimer"],
+      });
+    }
+  },
+);
+
+export const generatedSkillSchema = canonicalSkillObjectSchema
   .omit({ last_verified: true })
   .extend({
-    lastVerified: z.string().min(1),
+    lastVerified: isoDateSchema,
     body: z.string(),
     directory: z.string().min(1),
     references: z.array(skillReferenceSchema),
     scripts: z.array(skillScriptSchema),
+  })
+  .superRefine((value, ctx) => {
+    if (value.category === "compliance" && value.disclaimer !== true) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: COMPLIANCE_DISCLAIMER_MESSAGE,
+        path: ["disclaimer"],
+      });
+    }
   });
 
 export type LocalizedLabel = z.infer<typeof localizedLabelSchema>;

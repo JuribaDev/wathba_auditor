@@ -348,7 +348,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This turns prototype metadata into a formal quality bar."
     },
     {

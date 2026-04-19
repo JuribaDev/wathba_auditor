@@ -72,6 +72,80 @@ describe("canonicalSkillSchema", () => {
     expect(parsed.variables).toEqual([]);
     expect(parsed.triggers).toEqual([]);
   });
+
+  it("rejects a non-semver version", () => {
+    const result = canonicalSkillSchema.safeParse({ ...validSkill, version: "v1" });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((i) => i.path.includes("version"))).toBe(true);
+    }
+  });
+
+  it("accepts semver prerelease and build metadata", () => {
+    expect(
+      canonicalSkillSchema.safeParse({ ...validSkill, version: "1.0.0-alpha.1" }).success,
+    ).toBe(true);
+    expect(
+      canonicalSkillSchema.safeParse({ ...validSkill, version: "1.0.0+20260101" }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a malformed last_verified date", () => {
+    const result = canonicalSkillSchema.safeParse({
+      ...validSkill,
+      last_verified: "2026-13-45",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((i) => i.path.includes("last_verified"))).toBe(true);
+    }
+  });
+
+  it("rejects a non-ISO last_verified date", () => {
+    const result = canonicalSkillSchema.safeParse({
+      ...validSkill,
+      last_verified: "April 15, 2026",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a malformed source accessed date", () => {
+    const result = canonicalSkillSchema.safeParse({
+      ...validSkill,
+      sources: [
+        {
+          title: "ZATCA",
+          url: "https://zatca.gov.sa/",
+          accessed: "last week",
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("requires compliance skills to set disclaimer: true", () => {
+    const result = canonicalSkillSchema.safeParse({
+      ...validSkill,
+      category: "compliance",
+      disclaimer: false,
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const disclaimerIssue = result.error.issues.find((i) =>
+        i.path.includes("disclaimer"),
+      );
+      expect(disclaimerIssue?.message).toMatch(/disclaimer/i);
+    }
+  });
+
+  it("allows non-compliance categories to omit the disclaimer", () => {
+    const result = canonicalSkillSchema.safeParse({
+      ...validSkill,
+      category: "security",
+      disclaimer: false,
+    });
+    expect(result.success).toBe(true);
+  });
 });
 
 describe("skillVariableSchema", () => {

@@ -290,7 +290,12 @@
     "filterStatusReviewed": "Reviewed",
     "filterStatusCommunity": "Community",
     "filterStatusDraft": "Draft",
-    "empty": "No skills match these filters yet. Try widening the category or status."
+    "empty": "No skills match these filters yet. Try widening the category or status.",
+    "cardCategoryCompliance": "Compliance",
+    "cardVersionPrefix": "v",
+    "cardVerifiedPrefix": "Verified",
+    "cardDisclaimerLabel": "Disclaimer",
+    "cardDisclaimerTitle": "Engineering guidance, not legal advice"
   },
   "SkillDetail": {
     "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",

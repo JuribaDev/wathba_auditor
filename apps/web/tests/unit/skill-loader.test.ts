@@ -268,7 +268,7 @@ triggers: []
 name: { en: Other, ar: آخر }
 slug: a-different-slug
 version: 0.1.0
-category: compliance
+category: security
 region: null
 targets: [claude-code]
 status: draft

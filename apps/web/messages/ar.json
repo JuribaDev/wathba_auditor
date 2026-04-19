@@ -290,7 +290,12 @@
     "filterStatusReviewed": "مُراجَع",
     "filterStatusCommunity": "مجتمعي",
     "filterStatusDraft": "مسودّة",
-    "empty": "لا توجد مهارات تطابق هذه المرشّحات حالياً. جرّب توسيع التصنيف أو الحالة."
+    "empty": "لا توجد مهارات تطابق هذه المرشّحات حالياً. جرّب توسيع التصنيف أو الحالة.",
+    "cardCategoryCompliance": "امتثال",
+    "cardVersionPrefix": "إصدار",
+    "cardVerifiedPrefix": "تم التحقق",
+    "cardDisclaimerLabel": "إخلاء مسؤولية",
+    "cardDisclaimerTitle": "إرشاد هندسي وليس استشارة قانونية"
   },
   "SkillDetail": {
     "description": "بيانات المهارة الأساسية وملفاتها ومعاينة الماركداون الخام.",

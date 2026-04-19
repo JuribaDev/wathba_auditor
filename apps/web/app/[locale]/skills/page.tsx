@@ -41,6 +41,23 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
             community: t("filterStatusCommunity"),
             draft: t("filterStatusDraft"),
           },
+          cardMeta: {
+            category: {
+              categorySaudi: t("filterCategorySaudi"),
+              categoryCompliance: t("cardCategoryCompliance"),
+              categorySecurity: t("filterCategorySecurity"),
+              categoryArchitecture: t("filterCategoryArchitecture"),
+            },
+            status: {
+              statusReviewed: t("filterStatusReviewed"),
+              statusCommunity: t("filterStatusCommunity"),
+              statusDraft: t("filterStatusDraft"),
+            },
+            disclaimer: t("cardDisclaimerLabel"),
+            disclaimerTitle: t("cardDisclaimerTitle"),
+            versionPrefix: t("cardVersionPrefix"),
+            verifiedPrefix: t("cardVerifiedPrefix"),
+          },
         }}
       />
     </AppShell>
