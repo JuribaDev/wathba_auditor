@@ -156,7 +156,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype proved bilingual parity in one runtime shell; the implementation must preserve it across real routes."
     },
     {

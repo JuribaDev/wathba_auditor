@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { cn } from "@/lib/utils";
 import type { AppLocale } from "@/lib/i18n";
 
@@ -102,21 +103,3 @@ export function AppShell({
   );
 }
 
-function LocaleSwitch({ locale }: { locale: AppLocale }) {
-  return (
-    <div className="flex items-center gap-2 rounded-lg border border-border/80 bg-card px-2 py-1">
-      {(["en", "ar"] as const).map((nextLocale) => (
-        <Link
-          key={nextLocale}
-          className={cn(
-            "rounded-md px-2 py-1 text-xs font-medium hover:text-foreground",
-            locale === nextLocale ? "bg-secondary text-foreground" : "text-muted-foreground",
-          )}
-          href={`/${nextLocale}`}
-        >
-          {nextLocale.toUpperCase()}
-        </Link>
-      ))}
-    </div>
-  );
-}
