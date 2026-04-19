@@ -55,6 +55,8 @@
     "description": "بيانات المهارة الأساسية وملفاتها ومعاينة الماركداون الخام.",
     "version": "الإصدار",
     "verified": "آخر تحقق",
+    "versionPrefix": "إصدار",
+    "verifiedLabel": "تحقق",
     "targets": "الأهداف",
     "variables": "المتغيرات",
     "sources": "المصادر",
@@ -62,7 +64,17 @@
     "references": "مراجع",
     "scripts": "سكربتات",
     "back": "العودة إلى مكتبة المهارات",
-    "preview": "معاينة الماركداون"
+    "preview": "معاينة الماركداون",
+    "categoryCompliance": "امتثال",
+    "categorySecurity": "الأمن",
+    "categoryArchitecture": "الهيكلة",
+    "categorySaudi": "الامتثال السعودي",
+    "statusReviewed": "مُراجَع",
+    "statusCommunity": "مجتمعي",
+    "statusDraft": "مسودّة",
+    "disclaimerTitle": "إخلاء مسؤولية",
+    "disclaimerBody": "هذه المهارة توجيه هندسي — وليست استشارة قانونية أو مالية أو تنظيمية. راجع دومًا المصادر الرسمية المذكورة أدناه واستشر مختصًا مؤهّلاً قبل إطلاق ميزات حسّاسة امتثاليًا.",
+    "summaryFallback": "إرشادات هندسية لوكلاء البرمجة الذكية."
   }
 }
 

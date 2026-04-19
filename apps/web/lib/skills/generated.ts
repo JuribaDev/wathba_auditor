@@ -3,6 +3,7 @@
 export type GeneratedSkill = {
   id: string;
   name: { en: string; ar: string };
+  summary?: { en: string; ar: string };
   slug: string;
   version: string;
   category: "compliance" | "security" | "architecture";
@@ -32,6 +33,10 @@ export const generatedSkills: GeneratedSkill[] = [
     "name": {
       "en": "Saudi ZATCA Phase 2 E-Invoicing",
       "ar": "الفوترة الإلكترونية زاتكا المرحلة الثانية"
+    },
+    "summary": {
+      "en": "Engineering guardrails for ZATCA Phase 2 invoicing — XML structure, signing flow, and onboarding steps an AI agent should respect before it writes code.",
+      "ar": "ضوابط هندسية لفوترة زاتكا المرحلة الثانية — بنية XML ومسار التوقيع وخطوات التسجيل التي يجب على وكيل البرمجة مراعاتها قبل كتابة الكود."
     },
     "slug": "zatca-phase2",
     "version": "0.1.0",

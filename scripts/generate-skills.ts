@@ -10,6 +10,7 @@ import {
 type GeneratedSkill = {
   id: string;
   name: CanonicalSkill["name"];
+  summary: CanonicalSkill["summary"];
   slug: string;
   version: string;
   category: CanonicalSkill["category"];
@@ -75,6 +76,7 @@ async function loadSkill(skillYamlPath: string): Promise<GeneratedSkill> {
   return {
     id: parsed.id,
     name: parsed.name,
+    summary: parsed.summary,
     slug: parsed.slug,
     version: parsed.version,
     category: parsed.category,
@@ -102,6 +104,7 @@ async function main() {
   const typeDefinition = `export type GeneratedSkill = {
   id: string;
   name: { en: string; ar: string };
+  summary?: { en: string; ar: string };
   slug: string;
   version: string;
   category: "compliance" | "security" | "architecture";

@@ -55,6 +55,8 @@
     "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",
     "version": "Version",
     "verified": "Last verified",
+    "versionPrefix": "v",
+    "verifiedLabel": "Verified",
     "targets": "Targets",
     "variables": "Variables",
     "sources": "Sources",
@@ -62,7 +64,17 @@
     "references": "references",
     "scripts": "scripts",
     "back": "Back to skill library",
-    "preview": "Markdown preview"
+    "preview": "Markdown preview",
+    "categoryCompliance": "Compliance",
+    "categorySecurity": "Security",
+    "categoryArchitecture": "Architecture",
+    "categorySaudi": "Saudi compliance",
+    "statusReviewed": "Reviewed",
+    "statusCommunity": "Community",
+    "statusDraft": "Draft",
+    "disclaimerTitle": "Disclaimer",
+    "disclaimerBody": "This skill is engineering guidance — not legal, financial, or regulatory advice. Always check the official sources linked below and consult a qualified specialist before shipping compliance-sensitive features.",
+    "summaryFallback": "Engineering guidance for AI coding agents."
   }
 }
 

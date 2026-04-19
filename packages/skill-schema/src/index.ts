@@ -66,6 +66,7 @@ export const skillTriggerSchema = z.object({
 export const canonicalSkillSchema = z.object({
   id: z.string().min(1),
   name: localizedLabelSchema,
+  summary: localizedLabelSchema.optional(),
   slug: z.string().min(1),
   version: z.string().min(1),
   category: skillCategorySchema,
