@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { Questionnaire } from "@/components/questionnaire";
 import type { QuestionnaireLabels } from "@/components/questionnaire-shell";
 import type { AboutStepLabels } from "@/components/questionnaire/step-about";
+import type { ReviewStepLabels } from "@/components/questionnaire/step-review";
 import type { TechStepLabels } from "@/components/questionnaire/step-tech";
 import { isLocale } from "@/lib/i18n";
 import type { ValidationMessages } from "@/lib/questionnaire/validation";
@@ -115,6 +116,20 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     whyAsk: t("about.whyAsk"),
   };
 
+  const reviewLabels: ReviewStepLabels = {
+    autoLabel: t("review.autoLabel"),
+    manualLabel: t("review.manualLabel"),
+    statusReviewed: t("review.statusReviewed"),
+    statusCommunity: t("review.statusCommunity"),
+    statusDraft: t("review.statusDraft"),
+    versionPrefix: t("review.versionPrefix"),
+    verifiedPrefix: t("review.verifiedPrefix"),
+    disclaimer: t("review.disclaimer"),
+    enable: t("review.enable"),
+    disable: t("review.disable"),
+    empty: t("review.empty"),
+  };
+
   const validationMessages: ValidationMessages = {
     market: t("errors.market"),
     pii: t("errors.pii"),
@@ -135,6 +150,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
           shellLabels={shellLabels}
           aboutLabels={aboutLabels}
           techLabels={techLabels}
+          reviewLabels={reviewLabels}
           validationMessages={validationMessages}
         />
       </div>

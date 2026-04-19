@@ -11,6 +11,12 @@ import {
   type AboutStepLabels,
 } from "@/components/questionnaire/step-about";
 import {
+  StepReview,
+  type ReviewSelections,
+  type ReviewSelectionSource,
+  type ReviewStepLabels,
+} from "@/components/questionnaire/step-review";
+import {
   StepTech,
   type TechStepLabels,
 } from "@/components/questionnaire/step-tech";
@@ -24,13 +30,17 @@ import {
   type TechStepErrors,
   type ValidationMessages,
 } from "@/lib/questionnaire/validation";
-import type { QuestionnaireAnswers } from "@/lib/skills/recommendations";
+import {
+  recommendSkills,
+  type QuestionnaireAnswers,
+} from "@/lib/skills/recommendations";
 
 export type QuestionnaireProps = {
   locale: AppLocale;
   shellLabels: QuestionnaireLabels;
   aboutLabels: AboutStepLabels;
   techLabels: TechStepLabels;
+  reviewLabels: ReviewStepLabels;
   validationMessages: ValidationMessages;
 };
 
@@ -39,12 +49,15 @@ export function Questionnaire({
   shellLabels,
   aboutLabels,
   techLabels,
+  reviewLabels,
   validationMessages,
 }: QuestionnaireProps) {
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
   const [attemptedSteps, setAttemptedSteps] = React.useState<
     ReadonlySet<QuestionnaireStepId>
   >(() => new Set());
+  const [selections, setSelections] = React.useState<ReviewSelections>({});
+  const seededRecommendationsRef = React.useRef<boolean>(false);
 
   const handleAboutChange = React.useCallback(
     (patch: Partial<QuestionnaireAnswers>) => {
@@ -84,26 +97,53 @@ export function Questionnaire({
   const showAboutErrors = attemptedSteps.has("about");
   const showTechErrors = attemptedSteps.has("tech");
 
+  const recommendations = React.useMemo(
+    () => recommendSkills(answers),
+    [answers],
+  );
+
+  const handleToggleSelection = React.useCallback(
+    (skillId: string, source: ReviewSelectionSource) => {
+      setSelections((prev) => {
+        const existing = prev[skillId];
+        if (existing) {
+          return { ...prev, [skillId]: { ...existing, on: !existing.on } };
+        }
+        return { ...prev, [skillId]: { on: true, source } };
+      });
+    },
+    [],
+  );
+
   const handleBeforeNext = React.useCallback(
     (step: QuestionnaireStepId): boolean => {
-      const stepErrors =
-        step === "about"
-          ? aboutErrors
-          : step === "tech"
-          ? techErrors
-          : undefined;
-      if (stepErrors && hasAnyError(stepErrors)) {
-        setAttemptedSteps((prev) => {
-          if (prev.has(step)) return prev;
-          const next = new Set(prev);
-          next.add(step);
-          return next;
-        });
-        return false;
+      if (step === "about" || step === "tech") {
+        const stepErrors = step === "about" ? aboutErrors : techErrors;
+        if (hasAnyError(stepErrors)) {
+          setAttemptedSteps((prev) => {
+            if (prev.has(step)) return prev;
+            const next = new Set(prev);
+            next.add(step);
+            return next;
+          });
+          return false;
+        }
+        if (step === "tech" && !seededRecommendationsRef.current) {
+          seededRecommendationsRef.current = true;
+          setSelections((prev) => {
+            const next: ReviewSelections = { ...prev };
+            for (const skill of recommendations) {
+              if (!next[skill.id]) {
+                next[skill.id] = { on: true, source: "auto" };
+              }
+            }
+            return next;
+          });
+        }
       }
       return true;
     },
-    [aboutErrors, techErrors],
+    [aboutErrors, techErrors, recommendations],
   );
 
   return (
@@ -125,6 +165,15 @@ export function Questionnaire({
           onChange={handleTechChange}
           labels={techLabels}
           errors={showTechErrors ? techErrors : undefined}
+        />
+      }
+      reviewSlot={
+        <StepReview
+          locale={locale}
+          recommendations={recommendations}
+          selections={selections}
+          onToggle={handleToggleSelection}
+          labels={reviewLabels}
         />
       }
     />

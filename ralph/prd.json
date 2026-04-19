@@ -576,7 +576,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story captures the prototype's conversion moment where recommendations become editable choices."
     },
     {
