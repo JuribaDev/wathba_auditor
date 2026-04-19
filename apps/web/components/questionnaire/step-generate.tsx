@@ -1,16 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { Folder, FileText } from "lucide-react";
+import { CheckCircle2, Download, Folder, FileText, Loader2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import type { FilePlan, TargetFilePlan } from "@/lib/generate/file-plan";
-import type { MissingVariables } from "@/lib/generate/resolve-markdown";
+import type {
+  MissingVariables,
+  SkillResolution,
+} from "@/lib/generate/resolve-markdown";
 import {
   SAMPLE_PREVIEW_BODIES,
   resolveActiveTarget,
 } from "@/lib/generate/sample-previews";
+import { buildZipBlob, buildZipFilename } from "@/lib/generate/zip";
 import type { AppLocale } from "@/lib/i18n";
+import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 import { cn } from "@/lib/utils";
 
@@ -38,11 +44,19 @@ export type GenerateStepLabels = {
   missingVariableLabel: string;
   emptyTitle: string;
   emptyBody: string;
+  downloadCta: string;
+  downloadWorking: string;
+  downloadReady: string;
+  downloadHint: string;
+  downloadDisabledMissing: string;
+  downloadError: string;
 };
 
 type StepGenerateProps = {
   locale: AppLocale;
   plan: FilePlan;
+  activeSkills: readonly GeneratedSkill[];
+  resolutions: readonly SkillResolution[];
   missing: readonly MissingVariables[];
   labels: GenerateStepLabels;
   previewContents?: PreviewContents;
@@ -65,6 +79,8 @@ const TARGET_NOTE_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
 export function StepGenerate({
   locale,
   plan,
+  activeSkills,
+  resolutions,
   missing,
   labels,
   previewContents,
@@ -150,7 +166,107 @@ export function StepGenerate({
         labels={labels}
         previewContents={previewContents}
       />
+
+      <DownloadPanel
+        plan={plan}
+        activeSkills={activeSkills}
+        resolutions={resolutions}
+        hasMissing={missing.length > 0}
+        labels={labels}
+      />
     </div>
+  );
+}
+
+type DownloadPanelProps = {
+  plan: FilePlan;
+  activeSkills: readonly GeneratedSkill[];
+  resolutions: readonly SkillResolution[];
+  hasMissing: boolean;
+  labels: GenerateStepLabels;
+};
+
+type DownloadStatus = "idle" | "working" | "ready" | "error";
+
+function DownloadPanel({
+  plan,
+  activeSkills,
+  resolutions,
+  hasMissing,
+  labels,
+}: DownloadPanelProps) {
+  const [status, setStatus] = React.useState<DownloadStatus>("idle");
+
+  const handleDownload = React.useCallback(async () => {
+    setStatus("working");
+    try {
+      const blob = await buildZipBlob(plan, activeSkills, resolutions);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = buildZipFilename();
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+      setStatus("ready");
+    } catch {
+      setStatus("error");
+    }
+  }, [plan, activeSkills, resolutions]);
+
+  const disabled = hasMissing || status === "working";
+
+  const hint = hasMissing
+    ? labels.downloadDisabledMissing
+    : status === "ready"
+      ? labels.downloadReady
+      : status === "error"
+        ? labels.downloadError
+        : labels.downloadHint;
+
+  const buttonLabel =
+    status === "working"
+      ? labels.downloadWorking
+      : status === "ready"
+        ? labels.downloadReady
+        : labels.downloadCta;
+
+  return (
+    <section
+      aria-label={labels.downloadCta}
+      data-slot="download-panel"
+      className={cn(
+        "rounded-2xl border border-border bg-surface px-5 py-5 shadow-sm",
+        "sm:px-6 sm:py-6 flex flex-col gap-3 sm:flex-row sm:items-center",
+        "sm:justify-between",
+      )}
+    >
+      <p
+        className="text-sm leading-6 text-muted-foreground"
+        aria-live="polite"
+        data-status={status}
+      >
+        {hint}
+      </p>
+      <Button
+        type="button"
+        variant="default"
+        size="lg"
+        onClick={handleDownload}
+        disabled={disabled}
+        data-state={status}
+      >
+        {status === "working" ? (
+          <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+        ) : status === "ready" ? (
+          <CheckCircle2 aria-hidden="true" className="size-4" />
+        ) : (
+          <Download aria-hidden="true" className="size-4" />
+        )}
+        {buttonLabel}
+      </Button>
+    </section>
   );
 }
 

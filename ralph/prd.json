@@ -752,7 +752,7 @@
       ],
       "type": "generator",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype fakes download state; this story makes it real."
     },
     {

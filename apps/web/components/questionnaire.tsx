@@ -275,6 +275,8 @@ export function Questionnaire({
         <StepGenerate
           locale={locale}
           plan={filePlan}
+          activeSkills={activeSkills}
+          resolutions={resolvedCatalog.resolutions}
           missing={resolvedCatalog.skillsWithMissing}
           labels={generateLabels}
           previewContents={previewContents}

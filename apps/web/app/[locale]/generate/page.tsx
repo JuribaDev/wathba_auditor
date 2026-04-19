@@ -162,6 +162,12 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     missingVariableLabel: t("generate.missingVariableLabel"),
     emptyTitle: t("generate.emptyTitle"),
     emptyBody: t("generate.emptyBody"),
+    downloadCta: t("generate.downloadCta"),
+    downloadWorking: t("generate.downloadWorking"),
+    downloadReady: t("generate.downloadReady"),
+    downloadHint: t("generate.downloadHint"),
+    downloadDisabledMissing: t("generate.downloadDisabledMissing"),
+    downloadError: t("generate.downloadError"),
   };
 
   const validationMessages: ValidationMessages = {

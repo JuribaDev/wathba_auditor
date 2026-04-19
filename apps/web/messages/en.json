@@ -75,7 +75,7 @@
     "generatePlaceholder": "Target previews, zip summary, and download button will land here in the next iteration.",
     "generate": {
       "zipLabel": "Zip summary",
-      "zipFilename": "skills-pack.zip",
+      "zipFilename": "wathba-skills.zip",
       "totalLabel": "Total",
       "filesLabel": "files",
       "skillsLabel": "Skills",
@@ -98,7 +98,13 @@
       "missingLede": "Fill in the variables below on the review step — placeholders will stay unresolved in the generated files until every value is set.",
       "missingVariableLabel": "Missing",
       "emptyTitle": "Nothing to generate yet",
-      "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview."
+      "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview.",
+      "downloadCta": "Download zip",
+      "downloadWorking": "Packaging…",
+      "downloadReady": "Downloaded",
+      "downloadHint": "Everything is packaged locally in your browser — no content leaves this tab.",
+      "downloadDisabledMissing": "Fill in the missing variables above to enable the download.",
+      "downloadError": "Something went wrong while packaging. Try again."
     },
     "eyebrowOf": "Step {step} / {total}",
     "prev": "Back",
