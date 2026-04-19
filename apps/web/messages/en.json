@@ -61,10 +61,13 @@
     "variables": "Variables",
     "sources": "Sources",
     "assets": "Assets",
-    "references": "references",
-    "scripts": "scripts",
+    "references": "References",
+    "scripts": "Scripts",
     "back": "Back to skill library",
-    "preview": "Markdown preview",
+    "preview": "Skill preview",
+    "previewFilename": "SKILL.md",
+    "previewCaption": "Canonical skill body. Adapters will render this into Claude, Cursor, Codex, or generic AGENTS.md output.",
+    "whatThisCovers": "What this skill covers",
     "categoryCompliance": "Compliance",
     "categorySecurity": "Security",
     "categoryArchitecture": "Architecture",
@@ -74,7 +77,15 @@
     "statusDraft": "Draft",
     "disclaimerTitle": "Disclaimer",
     "disclaimerBody": "This skill is engineering guidance — not legal, financial, or regulatory advice. Always check the official sources linked below and consult a qualified specialist before shipping compliance-sensitive features.",
-    "summaryFallback": "Engineering guidance for AI coding agents."
+    "summaryFallback": "Engineering guidance for AI coding agents.",
+    "filesLabel": "files",
+    "scriptsLabel": "scripts",
+    "noReferences": "No reference files",
+    "noScripts": "No helper scripts",
+    "noVariables": "No variables declared",
+    "sourceAccessed": "Accessed",
+    "maintainedBy": "Maintained by",
+    "versionLabel": "Version"
   }
 }
 

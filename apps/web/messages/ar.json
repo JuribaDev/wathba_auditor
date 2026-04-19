@@ -61,10 +61,13 @@
     "variables": "المتغيرات",
     "sources": "المصادر",
     "assets": "الملفات",
-    "references": "مراجع",
-    "scripts": "سكربتات",
+    "references": "المراجع",
+    "scripts": "السكربتات",
     "back": "العودة إلى مكتبة المهارات",
-    "preview": "معاينة الماركداون",
+    "preview": "معاينة المهارة",
+    "previewFilename": "SKILL.md",
+    "previewCaption": "النص الأساسي للمهارة. ستُحوّله المحولات إلى مخرج Claude أو Cursor أو Codex أو AGENTS.md العامّ.",
+    "whatThisCovers": "ماذا تغطي هذه المهارة",
     "categoryCompliance": "امتثال",
     "categorySecurity": "الأمن",
     "categoryArchitecture": "الهيكلة",
@@ -74,7 +77,15 @@
     "statusDraft": "مسودّة",
     "disclaimerTitle": "إخلاء مسؤولية",
     "disclaimerBody": "هذه المهارة توجيه هندسي — وليست استشارة قانونية أو مالية أو تنظيمية. راجع دومًا المصادر الرسمية المذكورة أدناه واستشر مختصًا مؤهّلاً قبل إطلاق ميزات حسّاسة امتثاليًا.",
-    "summaryFallback": "إرشادات هندسية لوكلاء البرمجة الذكية."
+    "summaryFallback": "إرشادات هندسية لوكلاء البرمجة الذكية.",
+    "filesLabel": "ملفات",
+    "scriptsLabel": "سكربتات",
+    "noReferences": "لا توجد ملفات مرجعية",
+    "noScripts": "لا توجد سكربتات مساعدة",
+    "noVariables": "لا توجد متغيرات معلنة",
+    "sourceAccessed": "تم الوصول في",
+    "maintainedBy": "يتولى صيانتها",
+    "versionLabel": "الإصدار"
   }
 }
 
