@@ -1,3 +1,10 @@
+## 2026-04-19 - US-002
+- Implemented: Verified apps/web Next.js App Router scaffold meets acceptance criteria — app/ at package root (not src/), Tailwind v4 via @tailwindcss/postcss, ESLint via eslint-config-next flat config, package filterable as @agent-skills/web, locale-aware routing at app/[locale]/, and next.config.ts configured for static export (output: "export", trailingSlash, images.unoptimized). No code changes required.
+- Files changed: ralph/prd.json (marked US-002 passes=true), ralph/progress.txt
+- Checks run: pnpm verify — all green; build emits static pages for /en, /ar, /en/skills, /ar/skills, /en/generate, /ar/generate, and dynamic skill detail routes.
+- Notes for future work: US-003 (confirm static out/ served locally), US-004 (locale routing already present — formalize lang/dir html attrs), US-005+ still open. Package names still use @agent-skills/* scope; rebranding to wathba is cosmetic and not blocking any acceptance criteria.
+---
+
 ## 2026-04-19 - US-001
 - Implemented: Verified pnpm workspace foundation is in place with root scripts (dev, build, lint, typecheck, test, generate:skills, verify, verify:full), shared tsconfig.base.json, and .gitignore covering Next.js/node_modules/dist/.turbo/coverage/playwright/test-results. No code changes required.
 - Files changed: ralph/prd.json (marked passes=true), ralph/progress.txt

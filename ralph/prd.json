@@ -124,7 +124,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Maps the prototype's single-page shell into the planned monorepo web application."
     },
     {
