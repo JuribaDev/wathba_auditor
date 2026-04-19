@@ -57,7 +57,51 @@
     "prev": "Back",
     "next": "Continue",
     "downloadCta": "Generate skill pack",
-    "stepPositionLabel": "Step {step} of {total}"
+    "stepPositionLabel": "Step {step} of {total}",
+    "about": {
+      "yes": "Yes",
+      "no": "No",
+      "whyAsk": "Why we ask",
+      "market": {
+        "title": "Which market does the product primarily serve?",
+        "desc": "We use this to decide whether to recommend Saudi-specific compliance skills.",
+        "why": "Saudi compliance skills (ZATCA, PDPL, Nafath) only make sense when you are operating under KSA law. Pick Global if you want to skip those and keep only the universally useful security and architecture guidance.",
+        "options": {
+          "ksa": {
+            "label": "Saudi Arabia",
+            "desc": "Operating under KSA law; customers or invoicing inside the Kingdom."
+          },
+          "gcc": {
+            "label": "Broader GCC",
+            "desc": "Gulf markets — some Saudi rules still apply if you invoice in KSA."
+          },
+          "global": {
+            "label": "Global / Other",
+            "desc": "Skip Saudi-specific rules; keep security and architecture skills."
+          }
+        }
+      },
+      "invoicing": {
+        "title": "Do you issue invoices to customers in Saudi Arabia?",
+        "desc": "Selling anything — physical, digital, or a subscription — counts.",
+        "why": "If you invoice in KSA, ZATCA Phase 2 requires specific XML formatting, cryptographic stamps, and integration with a government portal. The skill walks your agent through what that means for your stack."
+      },
+      "pii": {
+        "title": "Do you store personal data about users?",
+        "desc": "Names, emails, phone numbers, national IDs, location — any of it.",
+        "why": "If yes, PDPL (Saudi) and similar privacy rules shape how you handle storage, retention, consent, and access control. We will add the PDPL basics skill."
+      },
+      "payments": {
+        "title": "Do you accept payments in the product?",
+        "desc": "Credit cards, mada, STC Pay, Apple Pay, bank transfers — any of them.",
+        "why": "Payment flows have specific security and operational rules. mada and STC Pay in particular have local quirks that most generic payment tutorials miss."
+      },
+      "identity": {
+        "title": "Do you verify user identity (KYC)?",
+        "desc": "Onboarding flows, account verification, age-gating, trust signals.",
+        "why": "Nafath and Yakeen are the Saudi government-run identity services. They are gated — you cannot just call an API. The skill tells your agent the hard parts upfront so it does not invent fake endpoints."
+      }
+    }
   },
   "Skills": {
     "title": "Skill library",

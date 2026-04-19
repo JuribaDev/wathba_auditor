@@ -75,14 +75,30 @@ export function QuestionnaireShell({
   locale,
   labels,
   initialStep = "about",
+  aboutSlot,
+  techSlot,
+  reviewSlot,
+  generateSlot,
 }: {
   locale: AppLocale;
   labels: QuestionnaireLabels;
   initialStep?: QuestionnaireStepId;
+  aboutSlot?: React.ReactNode;
+  techSlot?: React.ReactNode;
+  reviewSlot?: React.ReactNode;
+  generateSlot?: React.ReactNode;
 }) {
   const [index, setIndex] = React.useState<number>(() => indexForStep(initialStep));
   const activeStep = stepForIndex(index);
   const liveRegionRef = React.useRef<HTMLParagraphElement | null>(null);
+
+  const slotByStep: Record<QuestionnaireStepId, React.ReactNode | undefined> = {
+    about: aboutSlot,
+    tech: techSlot,
+    review: reviewSlot,
+    generate: generateSlot,
+  };
+  const activeSlot = slotByStep[activeStep];
 
   const steps: StepperStep[] = React.useMemo(
     () => [
@@ -167,16 +183,20 @@ export function QuestionnaireShell({
           </p>
         </header>
 
-        <div
-          role="region"
-          aria-live="polite"
-          className={cn(
-            "rounded-2xl border border-dashed border-border bg-surface-variant/60",
-            "px-6 py-12 text-center text-sm leading-7 text-muted-foreground",
-          )}
-        >
-          {labels[PLACEHOLDER_KEY[activeStep]]}
-        </div>
+        {activeSlot ? (
+          <div data-slot="questionnaire-step-body">{activeSlot}</div>
+        ) : (
+          <div
+            role="region"
+            aria-live="polite"
+            className={cn(
+              "rounded-2xl border border-dashed border-border bg-surface-variant/60",
+              "px-6 py-12 text-center text-sm leading-7 text-muted-foreground",
+            )}
+          >
+            {labels[PLACEHOLDER_KEY[activeStep]]}
+          </div>
+        )}
       </section>
 
       <nav

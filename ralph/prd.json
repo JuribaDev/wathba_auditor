@@ -528,7 +528,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This step captures the most important domain branching in the product."
     },
     {
