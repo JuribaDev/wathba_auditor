@@ -59,7 +59,10 @@
     "microcopy": "Takes about 3 minutes. No account. Nothing leaves your browser.",
     "samplePreviewLabel": "Sample skill preview",
     "sampleFilename": ".claude/skills/zatca-phase2/SKILL.md",
-    "sampleHeaderBadge": "Peer-reviewed"
+    "sampleHeaderBadge": "Peer-reviewed",
+    "whatIsEyebrow": "§ 01",
+    "whatIsTitle": "What’s a skill, and why do I want one?",
+    "whatIsBody": "When an AI coding agent opens your repo, it looks for instructions. A skill is a short, focused document — sometimes with helper scripts — that tells the agent the rules for one specific domain: how to handle invoices in Saudi Arabia, how to keep secrets out of commits, where to draw the line between admin and user code. Good skills turn an agent from “smart intern” into “teammate who read the handbook.”"
   },
   "Generate": {
     "title": "Questionnaire foundation",

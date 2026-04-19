@@ -115,6 +115,26 @@ export default async function LandingPage({ params }: LandingProps) {
           </div>
         </figure>
       </section>
+
+      <section
+        aria-labelledby="landing-what-is-heading"
+        className="py-8 lg:py-12"
+      >
+        <div className="mx-auto max-w-[820px] rounded-[20px] border border-border bg-surface px-8 py-10 shadow-[var(--shadow-sm)] sm:px-10 sm:py-12">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary rtl:tracking-normal rtl:normal-case">
+            {t("whatIsEyebrow")}
+          </p>
+          <h2
+            id="landing-what-is-heading"
+            className="mb-4 font-heading text-[clamp(1.75rem,3.2vw,2.5rem)] font-semibold leading-[1.12] tracking-tight text-foreground"
+          >
+            {t("whatIsTitle")}
+          </h2>
+          <p className="max-w-[65ch] text-base leading-[1.65] text-muted-foreground sm:text-[17px]">
+            {t("whatIsBody")}
+          </p>
+        </div>
+      </section>
     </AppShell>
   );
 }

@@ -380,7 +380,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This section is important for first-time users unfamiliar with agent skills."
     },
     {

@@ -373,3 +373,10 @@
 - Checks run: pnpm verify (generate:skills, doctor:react, both typechecks, 213 unit tests, web build) — all green.
 - Notes for future work: Stricter schema failures run before folder-structure checks, so tests that assert SkillLoaderError must use a schema-valid fixture (see skill-loader leaf-name test — switched category to security to keep the focus on folder mismatch).
 ---
+
+## 2026-04-19 17:08 - US-018
+- Implemented: Added the centered editorial "What's a skill?" explainer section below the hero on the landing page. Uses a max-width card with border, light shadow, primary-colored eyebrow (§ 01), heading, and muted body copy. Localized in EN and AR; reads correctly in both LTR and RTL.
+- Files changed: apps/web/app/[locale]/page.tsx, apps/web/messages/en.json, apps/web/messages/ar.json
+- Checks run: pnpm verify — all green (26 test files, 213 tests, web build + static export OK).
+- Notes for future work: The prototype also has a "§ 02" feature grid and a landing-page library preview (US-019/US-020). Reuse the same `text-primary` eyebrow pattern and `max-w-[820px]` card treatment when those land to keep the editorial rhythm. The library preview (US-020) will need a reusable `SkillMiniCard` component — US-022 will formalize that.
+---
