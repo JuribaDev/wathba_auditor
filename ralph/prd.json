@@ -848,7 +848,7 @@
       ],
       "type": "quality",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype logic is simple enough to test exhaustively; the production system should do so."
     },
     {
