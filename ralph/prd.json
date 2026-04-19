@@ -396,7 +396,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Prototype features are specific; the implementation should preserve their meaning."
     },
     {

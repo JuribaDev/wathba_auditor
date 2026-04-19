@@ -62,7 +62,17 @@
     "sampleHeaderBadge": "Peer-reviewed",
     "whatIsEyebrow": "§ 01",
     "whatIsTitle": "What’s a skill, and why do I want one?",
-    "whatIsBody": "When an AI coding agent opens your repo, it looks for instructions. A skill is a short, focused document — sometimes with helper scripts — that tells the agent the rules for one specific domain: how to handle invoices in Saudi Arabia, how to keep secrets out of commits, where to draw the line between admin and user code. Good skills turn an agent from “smart intern” into “teammate who read the handbook.”"
+    "whatIsBody": "When an AI coding agent opens your repo, it looks for instructions. A skill is a short, focused document — sometimes with helper scripts — that tells the agent the rules for one specific domain: how to handle invoices in Saudi Arabia, how to keep secrets out of commits, where to draw the line between admin and user code. Good skills turn an agent from “smart intern” into “teammate who read the handbook.”",
+    "featuresAriaLabel": "What Wathba Skills does for you",
+    "feature1Marker": "i.",
+    "feature1Title": "Written for your stack",
+    "feature1Body": "Answers to stack, payments, and PII questions rewrite the skill so Node/Django/Laravel projects get guidance that actually matches their code.",
+    "feature2Marker": "ii.",
+    "feature2Title": "Compliance-aware by default",
+    "feature2Body": "Saudi skills (ZATCA Phase 2, PDPL, Nafath) ship with disclaimers, source links, and a verification date — never stale and never silent.",
+    "feature3Marker": "iii.",
+    "feature3Title": "One zip, every agent",
+    "feature3Body": "Pick Claude Code, Cursor, Codex, or plain AGENTS.md. Same canonical content, rendered for the target you actually use."
   },
   "Generate": {
     "title": "Questionnaire foundation",

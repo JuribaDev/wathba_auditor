@@ -135,6 +135,28 @@ export default async function LandingPage({ params }: LandingProps) {
           </p>
         </div>
       </section>
+
+      <section
+        aria-label={t("featuresAriaLabel")}
+        className="grid gap-8 py-10 sm:gap-6 md:grid-cols-3 lg:py-14"
+      >
+        {(["1", "2", "3"] as const).map((n) => (
+          <article key={n} className="flex flex-col gap-2">
+            <div
+              aria-hidden="true"
+              className="font-heading text-5xl italic leading-none text-primary"
+            >
+              {t(`feature${n}Marker`)}
+            </div>
+            <h3 className="font-heading text-xl font-semibold leading-snug text-foreground">
+              {t(`feature${n}Title`)}
+            </h3>
+            <p className="text-[15px] leading-[1.6] text-muted-foreground">
+              {t(`feature${n}Body`)}
+            </p>
+          </article>
+        ))}
+      </section>
     </AppShell>
   );
 }
