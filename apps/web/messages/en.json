@@ -1,0 +1,39 @@
+{
+  "Landing": {
+    "title": "Open-source skill packs for developers shipping into Saudi and MENA markets.",
+    "description": "Frontend-only generator for agent-ready compliance, security, and architecture guidance.",
+    "primaryAction": "Generate your skill pack",
+    "secondaryAction": "Browse skills",
+    "statusBadge": "frontend-only",
+    "rtlBadge": "EN / AR with RTL",
+    "headline": "The app stays static. The value lives in the skill library.",
+    "seedSkillBadge": "seed skill",
+    "seedSkillStatus": "The first ZATCA skill is in draft and ready for review hardening.",
+    "seedSkillDescription": "This repository now includes the canonical schema, generated skill data, and a browsable seed compliance skill as the quality bar for future additions.",
+    "seedSkillLocale": "English-first with Arabic metadata support.",
+    "seedSkillAction": "Inspect the ZATCA skill"
+  },
+  "Generate": {
+    "title": "Questionnaire foundation",
+    "description": "The route structure and content model now reflect the planned generator flow. The multi-step form and browser zip output are the next implementation layer."
+  },
+  "Skills": {
+    "title": "Skill library",
+    "description": "Browse the canonical skills emitted from `skills/**/skill.yaml` and preview each skill body before adapter-specific rendering is added.",
+    "viewSkill": "View skill"
+  },
+  "SkillDetail": {
+    "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",
+    "version": "Version",
+    "verified": "Last verified",
+    "targets": "Targets",
+    "variables": "Variables",
+    "sources": "Sources",
+    "assets": "Assets",
+    "references": "references",
+    "scripts": "scripts",
+    "back": "Back to skill library",
+    "preview": "Markdown preview"
+  }
+}
+

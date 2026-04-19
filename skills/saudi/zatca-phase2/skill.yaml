@@ -1,0 +1,56 @@
+id: saudi-zatca-phase2
+name:
+  en: Saudi ZATCA Phase 2 E-Invoicing
+  ar: الفوترة الإلكترونية زاتكا المرحلة الثانية
+slug: zatca-phase2
+version: 0.1.0
+category: compliance
+region: saudi-arabia
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: draft
+last_verified: "2026-04-15"
+maintainers:
+  - github: "@juriba"
+sources:
+  - title: ZATCA Fatoora Developer Portal
+    url: https://fatoora.zatca.gov.sa/
+    accessed: "2026-04-15"
+  - title: ZATCA XML Implementation Standard
+    url: https://zatca.gov.sa/
+    accessed: "2026-04-15"
+disclaimer: true
+variables:
+  - name: stack
+    label:
+      en: Backend stack
+      ar: التقنية الخلفية
+    type: select
+    options:
+      - nodejs
+      - dotnet
+      - python
+      - php
+      - java
+      - go
+  - name: invoice_volume
+    label:
+      en: Expected invoices per month
+      ar: عدد الفواتير المتوقعة شهرياً
+    type: select
+    options:
+      - under_1k
+      - 1k_10k
+      - over_10k
+  - name: has_pos
+    label:
+      en: Has point-of-sale (B2C)?
+      ar: هل توجد نقطة بيع لفواتير B2C؟
+    type: boolean
+triggers:
+  - when:
+      handles_invoicing: true
+      target_market: saudi_arabia

@@ -1,158 +1,115 @@
 # Ralph Agent Instructions
 
-You are an autonomous coding agent working on a Flutter monorepo (Munawala — a delivery marketplace with customer and traveller apps).
+You are an autonomous coding agent working on **Wathba Skills**.
 
 ## Project Context
 
-- **Monorepo**: Melos + Dart pub workspaces. Apps in `apps/`, shared packages in `packages/`.
-- **Flutter**: 3.41.0 (pinned via `.fvmrc`). Always use `fvm flutter` or melos scripts.
-- **Architecture**: Clean Architecture with BLoC. Each feature: `domain/` → `data/` → `presentation/` → `di/`.
-- **DI**: GetIt (`sl = GetIt.instance`). Each feature has `<Feature>Locator.init()`.
-- **Networking**: gRPC. Proto files in `apps/<app>/protos/`, generated stubs in `lib/src/core/grpc/generated/`.
-- **L10n**: ARB files in `apps/<app>/lib/l10n/arb/`. Default locale: Arabic.
-- **State**: BLoC with `copyWith` pattern. Use `clearX` booleans for nullable field resets.
-- **Use cases**: Extend `BaseUseCase<T, Parameters>`, return `FutureEither<T>` (`Future<Either<Failure, T>>`).
+- **Type**: frontend-only, static-export web app
+- **Workspace**: `pnpm` monorepo
+- **Web app**: `apps/web` using Next.js App Router, React 19, TypeScript, and static export
+- **Skill library**: `skills/` contains the canonical skill content
+- **Shared schema**: `packages/skill-schema`
+- **Skill generation**: `scripts/generate-skills.ts` validates `skills/**/skill.yaml` and emits generated frontend data
+- **Locales**: English and Arabic, with RTL support for Arabic
+- **System design source**: `wathba auditor/` is the source of truth for UI, interaction patterns, bilingual parity, and visual direction
 
-Read `CLAUDE.md` at the repo root for full architecture details.
+Keep these constraints intact:
+
+- No backend, no database, no runtime API routes
+- Static export must continue to work
+- English and Arabic must stay in parity
+- The durable product value is the skill library, not app-specific glue code
+- For frontend or UI work, use the `frontend-design` skill and follow the system design in `wathba auditor/`
 
 ## Your Task
 
-1. Read the PRD at `ralph/prd.json` (in the same directory as this file)
-2. Read the progress log at `ralph/progress.txt` (check Codebase Patterns section first)
-3. Read `CLAUDE.md` at the repo root for architecture and conventions
-4. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
-5. Pick the **highest priority** user story where `passes: false`
-6. Implement that single user story
-7. Run quality checks (see below)
-8. If checks pass, commit ALL changes with message: `feat(<scope>): [Story ID] - [Story Title]`
-9. Update the PRD to set `passes: true` for the completed story
-10. Append your progress to `ralph/progress.txt`
+1. Read `ralph/prd.json`
+2. Read `ralph/progress.txt`
+3. Check you are on the branch from `prd.json.branchName`; create or switch if needed
+4. Pick the **highest-priority** user story where `passes: false`
+5. Implement **only that one story**
+6. Run the required checks
+7. If checks pass, update `ralph/prd.json` and set that story's `passes` to `true`
+8. Append a short progress entry to `ralph/progress.txt`
+9. Commit all changes with message: `feat(<scope>): [Story ID] - [Story Title]`
 
-## Quality Checks (Required Before Every Commit)
+## Required Checks
 
-Run these from the affected app directory (e.g., `apps/customer`):
+Run these from the repo root unless the story explicitly needs something narrower:
 
 ```bash
-# 1. Static analysis
-cd apps/<app> && fvm flutter analyze
-
-# 2. Formatting (line length 120)
-cd apps/<app> && fvm dart format --line-length 120 --set-exit-if-changed lib
-
-# 3. Tests (run targeted tests for changed features)
-cd apps/<app> && fvm flutter test test/src/features/<feature>/
-
-# 4. If proto files changed, regenerate
-melos run generate:customer:grpc   # or generate:traveller:grpc
-
-# 5. If ARB files changed, regenerate l10n
-cd apps/<app> && fvm flutter gen-l10n
+pnpm verify
 ```
 
-- ALL commits must pass analyze and format checks
-- Do NOT commit broken code
-- Keep changes focused and minimal
-- Follow existing code patterns in the codebase
+Run this as well when the story touches the end-to-end generation flow or explicitly requires browser-level verification:
 
-## Design & UI
+```bash
+pnpm verify:full
+```
 
-When implementing any UI (pages, widgets, screens), use `/frontend-design` to generate high-quality, production-grade frontend code. This ensures distinctive, polished interfaces that avoid generic AI aesthetics.
+`pnpm verify` currently covers:
 
-## Feature Implementation Checklist
+- skill generation
+- React/ESLint verification
+- schema typecheck
+- app typecheck
+- unit tests
+- production build
 
-When implementing a new feature or modifying existing ones:
+Do not commit broken code.
 
-1. **Domain layer first**: entities, params, repository interface, use case
-2. **Data layer**: model (extending/mapping entity), data source (gRPC calls), repository implementation
-3. **Presentation layer**: BLoC (events, state, bloc), pages, widgets
-4. **DI**: Register all new classes in the feature's `<Feature>Locator.init()`. Use `registerFactory` for BLoCs, `registerLazySingleton` for repos/data sources/use cases.
-5. **Exports**: Add new files to `features_exports.dart` or `core_exports.dart`
-6. **L10n**: Add user-facing strings to both `app_en.arb` and `app_ar.arb`, then run `fvm flutter gen-l10n`
-7. **Tests**: Add tests under `test/src/features/<feature>/` mirroring the production tree. Use `bloc_test` + `mocktail`.
+## Implementation Rules
+
+- Work on **one story per iteration**
+- Keep changes focused on the selected story
+- Follow the existing workspace structure and naming
+- Do not hand-edit generated outputs if they are produced by a script
+- If you change skill metadata or content shape, regenerate skills before finishing
+- Preserve static export compatibility
+- Preserve EN/AR behavior and RTL correctness
+- For any frontend-facing change, match the visual and interaction direction already defined in `wathba auditor/`
 
 ## Commit Convention
 
-Use conventional commits scoped to the affected module:
+Use conventional commits with a scope that matches the work:
 
-```
-feat(auth): [STORY-1] - Add OTP verification bloc
-fix(order): [STORY-2] - Handle null status in tracking
-refactor(grpc): [STORY-3] - Extract error parsing to shared package
+```text
+feat(web): [US-021] - Add skill library filters
+feat(skills): [US-015] - Seed initial skill catalog
+feat(schema): [US-012] - Define canonical skill schema
+fix(generator): [US-036] - Resolve skill variables before rendering
+docs(repo): [US-050] - Add contributor governance docs
 ```
 
-## Progress Report Format
+## Progress Format
 
-APPEND to ralph/progress.txt (never replace, always append):
-```
+Append to `ralph/progress.txt`:
+
+```text
 ## [Date/Time] - [Story ID]
-- What was implemented
-- Files changed
-- App affected: customer | traveller | both | packages
-- **Learnings for future iterations:**
-  - Patterns discovered
-  - Gotchas encountered
-  - Useful context
+- Implemented:
+- Files changed:
+- Checks run:
+- Notes for future work:
 ---
 ```
 
-Include enough context so future iterations can understand what was done. Memory persists via git history and ralph/progress.txt.
-
-The learnings section is critical - it helps future iterations avoid repeating mistakes and understand the codebase better.
-
-## Consolidate Patterns
-
-If you discover a **reusable pattern** that future iterations should know, add it to the `## Codebase Patterns` section at the TOP of ralph/progress.txt (create it if it doesn't exist). This section should consolidate the most important learnings:
-
-```
-## Codebase Patterns
-- BLoC states use `copyWith` with `clearX` booleans for nullable fields
-- All use cases return `FutureEither<T>` via dartz Either
-- Feature locators are called in order in ServicesLocator.init() — respect dependency order
-- gRPC clients are registered in GrpcLocator, not feature locators
-- ARB keys must exist in both app_en.arb and app_ar.arb or gen-l10n fails
-```
-
-Only add patterns that are **general and reusable**, not story-specific details.
-
-## Update AGENTS.md Files
-
-Before committing, check if any edited files have learnings worth preserving in nearby AGENTS.md files:
-
-1. **Identify directories with edited files** - Look at which directories you modified
-2. **Check for existing AGENTS.md** - Look for AGENTS.md in those directories or parent directories (e.g., `apps/customer/AGENTS.md`)
-3. **Add valuable learnings** - If you discovered something future developers/agents should know:
-    - API patterns or conventions specific to that module
-    - Gotchas or non-obvious requirements
-    - Dependencies between files or locator init order
-    - Testing approaches for that area
-
-**Examples of good AGENTS.md additions:**
-- "When modifying X, also update Y to keep them in sync"
-- "This module uses pattern Z for all API calls"
-- "Tests require the dev server running on PORT 3000"
-- "Field names must match the template exactly"
-
-**Do NOT add:**
-- Story-specific implementation details
-- Temporary debugging notes
-- Information already in ralph/progress.txt
-
-Only update AGENTS.md if you have **genuinely reusable knowledge** that would help future work in that directory.
+Keep it short but useful. Only include reusable context or real gotchas.
 
 ## Stop Condition
 
-After completing a user story, check if ALL stories have `passes: true`.
+After finishing one story, check whether all stories in `ralph/prd.json` now have `passes: true`.
 
-If ALL stories are complete and passing, reply with:
+If all stories are complete, reply with:
+
+```text
 <promise>COMPLETE</promise>
+```
 
-If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
+Otherwise, end normally.
 
 ## Important
 
-- Work on ONE story per iteration
-- Commit frequently
-- Keep CI green — `fvm flutter analyze` and `fvm dart format --line-length 120` must pass
-- Read the Codebase Patterns section in ralph/progress.txt before starting
-- Use relative imports within an app, path dependencies for shared packages
-- Never edit generated files (`*.g.dart`, `*.pb.dart`, `*.pbenum.dart`, `*.pbgrpc.dart`, `*.pbjson.dart`, `app_localizations*.dart`) by hand — use the generation scripts
+- Do not start a second story in the same iteration
+- Keep the repo shippable after every commit
+- If a story conflicts with the current architecture, choose the simplest solution that fits the PRD and existing codebase

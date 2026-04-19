@@ -1,2836 +1,903 @@
 {
-  "project": "Munawala-Full-Redesign",
-  "branchName": "ralph/full-redesign",
-  "description": "Complete 'Warm Minimal' redesign of both Customer and Traveller apps. Single-screen dashboard architecture, light theme only, RTL-ready, ScreenUtil throughout. Premium concierge aesthetic with soft shadows, warm off-white backgrounds, and alive micro-interactions. Every screen, widget, and component across both apps is covered.",
+  "project": "Wathba Skills",
+  "branchName": "ralph/wathba-skills-system-design",
+  "description": "Build Wathba Skills as a frontend-only, static-export web application that lets developers answer a bilingual questionnaire, review recommended skills, preview rendered outputs for multiple AI coding agents, and download a ready-to-drop-in skill pack. The system design source of truth is the `wathba auditor/` folder in this repository: a warm editorial UI, first-class Arabic and RTL support, a compare canvas for parity checks, persistent client-side state, and a skill catalog centered on Saudi compliance, security hygiene, and architecture discipline.",
   "designSystem": {
-    "colors": {
-      "background": "Color(0xFFFEFCF9)",
-      "surfaceElevated": "Color(0xFFFFFFFF)",
-      "surfaceVariant": "Color(0xFFFAF7F3)",
-      "primary": "Color(0xFFE26B27)",
-      "foreground": "Color(0xFF1E1B18)",
-      "mutedForeground": "Color(0xFF7A7470)",
-      "secondary": "Color(0xFFF5F2EE)",
-      "destructive": "Color(0xFFE5484D)",
-      "success": "Color(0xFF5BAA5E)",
-      "warning": "Color(0xFFC9963A)"
+    "brand": "Wathba Skills",
+    "sourceOfTruth": "`wathba auditor/` is the source system design for UI, interaction patterns, bilingual parity, and visual direction.",
+    "themes": {
+      "light": {
+        "background": "#F7F2EA",
+        "surface": "#FFFDF8",
+        "surfaceVariant": "#EFE7DC",
+        "surfaceSunken": "#EFE7DC",
+        "secondary": "#EADFD1",
+        "border": "#DCCFB8",
+        "borderStrong": "#C9B99A",
+        "foreground": "#1F1A16",
+        "mutedForeground": "#6F6257",
+        "softForeground": "#8E8070",
+        "primary": "#8F4B24",
+        "primaryHover": "#7A3F1D",
+        "primarySoft": "#E8D6C4",
+        "primaryForeground": "#FFFDF8",
+        "destructive": "#C24D36",
+        "success": "#4F7A52",
+        "warning": "#A56A2A",
+        "info": "#4A6B85"
+      },
+      "dark": {
+        "background": "#1A1410",
+        "surface": "#221B15",
+        "surfaceVariant": "#2B221B",
+        "surfaceSunken": "#15100C",
+        "secondary": "#2F261E",
+        "border": "#3A2F24",
+        "borderStrong": "#554432",
+        "foreground": "#F3EADB",
+        "mutedForeground": "#B5A691",
+        "softForeground": "#8E8070",
+        "primary": "#D68A5D",
+        "primaryHover": "#E09968",
+        "primarySoft": "#3A281C",
+        "primaryForeground": "#1A1410"
+      },
+      "primaries": {
+        "default": "#8F4B24",
+        "ink": "#2E4A6B",
+        "olive": "#5C6A36",
+        "slate": "#3A3A3A"
+      }
+    },
+    "typography": {
+      "latinSerif": "Source Serif 4",
+      "latinSans": "IBM Plex Sans",
+      "mono": "IBM Plex Mono",
+      "arabicSans": "IBM Plex Sans Arabic",
+      "arabicDisplay": "Amiri"
     },
     "radii": {
-      "md": "10.0.r",
-      "xl": "16.4.r",
-      "xxxl": "22.8.r"
+      "sm": "8px",
+      "md": "10px",
+      "lg": "16px",
+      "xl": "24px"
     },
-    "shadows": "BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 24, offset: Offset(0, 8))",
+    "shadows": {
+      "sm": "0 1px 2px rgba(25, 18, 12, 0.04)",
+      "md": "0 6px 24px rgba(25, 18, 12, 0.06)",
+      "lg": "0 12px 40px rgba(25, 18, 12, 0.10)"
+    },
+    "layout": {
+      "contentMaxWidth": "1200px",
+      "narrowMaxWidth": "820px",
+      "navigation": "Sticky top navigation with brand mark, library/generate links, compare shortcut, GitHub link, and primary CTA.",
+      "hero": "Two-column editorial hero with value proposition on the left and a code-preview sample card on the right.",
+      "questionnaire": "Four-step flow: About your project, Tech & agents, Review & variables, Generate.",
+      "compareCanvas": "Two side-by-side frames rendering English/LTR and Arabic/RTL from the same data source."
+    },
+    "interaction": [
+      "Persist the active route in localStorage under wathbaSkills.route.",
+      "Persist questionnaire answers in localStorage under wathbaSkills.answers.",
+      "Apply lang, dir, data-theme, and data-primary to the html element.",
+      "Support light and dark themes plus four primary swatches.",
+      "Use keyboard-accessible button, toggle, radio-card, checkbox-card, disclosure, and stepper patterns.",
+      "Surface version, last verified date, status, and disclaimer metadata wherever compliance skills appear."
+    ],
     "constraints": [
-      "NO bottom navigation bar — single-screen dashboard",
-      "Light theme ONLY — dark mode disabled",
-      "RTL-ready — EdgeInsetsDirectional everywhere",
-      "ScreenUtil for all dimensions (.w, .h, .sp, .r)",
-      "CustomScrollView with slivers for all scrollable content",
-      "Shimmer loaders, never raw CircularProgressIndicator",
-      "Soft premium shadows, no hard borders on cards"
+      "Frontend-only static export. No backend, database, runtime middleware, or API routes.",
+      "Arabic and English must have feature parity, not translation as an afterthought.",
+      "RTL support must be built into layout, spacing, controls, and compare QA flows.",
+      "When implementing frontend or UI stories, use the frontend-design skill and follow the system design in `wathba auditor/`.",
+      "Skill content is the durable product value and must stay decoupled from the web app.",
+      "Target outputs must support Claude Code, Cursor, Codex, and generic AGENTS.md consumers.",
+      "The product must remain browsable, usable, and testable on mobile and desktop.",
+      "Compliance content must always be framed as engineering guidance rather than legal advice."
     ]
   },
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create MunawalaColors warm minimal palette in munawala_theme",
-      "description": "Replace existing MunawalaColors.light with the new Warm Minimal palette. Remove dark palette. All color tokens must match the design system spec.",
+      "title": "Establish the Wathba Skills workspace and root scripts",
+      "description": "Set up the repository as a pnpm workspace with consistent root-level commands so the project can be developed, validated, and built from a single entry point.",
       "acceptanceCriteria": [
-        "Update MunawalaColors.light in packages/munawala_theme/lib/src/colors/munawala_colors.dart",
-        "background: Color(0xFFFEFCF9), card: Color(0xFFFFFFFF), surfaceVariant: Color(0xFFFAF7F3)",
-        "primary: Color(0xFFE26B27), foreground: Color(0xFF1E1B18), mutedForeground: Color(0xFF7A7470)",
-        "secondary: Color(0xFFF5F2EE), destructive: Color(0xFFE5484D)",
-        "Remove or deprecate MunawalaColors.dark — no dark mode",
-        "Update toColorScheme() to only produce light scheme",
-        "Typecheck passes"
+        "The root repository uses pnpm workspaces covering apps/* and packages/*.",
+        "Root scripts exist for dev, build, lint, typecheck, test, and skill generation.",
+        "A shared TypeScript base configuration exists for workspace packages.",
+        "Repository ignores cover Next.js outputs, node_modules, generated files, and test artifacts.",
+        "Developers can install and run the workspace from the repository root without extra manual setup."
       ],
-      "type": "frontend",
+      "type": "foundation",
       "priority": 1,
-      "passes": true,
-      "notes": "File: packages/munawala_theme/lib/src/colors/munawala_colors.dart. This is the foundation for all other stories."
+      "passes": false,
+      "notes": "This story aligns the repo foundation with the prototype-derived product direction and gives Ralph a stable root workflow."
     },
     {
       "id": "US-002",
-      "title": "Update MunawalaTypography with premium font pairing",
-      "description": "Replace Inter/IBMPlexSansArabic with a distinctive premium font pairing. Use a characterful display font paired with a refined body font.",
+      "title": "Scaffold the static Next.js application in apps/web",
+      "description": "Create the web application in apps/web using Next.js App Router, TypeScript, Tailwind, and ESLint so the implementation can move from prototype to production-ready static site.",
       "acceptanceCriteria": [
-        "Update packages/munawala_theme/lib/src/typography/munawala_typography.dart",
-        "Choose distinctive latin display font (not Inter/Roboto/Arial) — e.g. DM Sans, Outfit, or similar premium choice",
-        "Choose Arabic font that pairs well — e.g. Noto Sans Arabic, Cairo, or similar",
-        "Update buildTextTheme() with new font families",
-        "All text styles use foreground/mutedForeground from new palette",
-        "Typecheck passes"
+        "The web app lives in apps/web with app/ at the package root instead of under src/.",
+        "The app runs through workspace commands without requiring a nested package workflow.",
+        "Tailwind and ESLint are wired into the app scaffold.",
+        "The app package can be filtered and run independently when needed.",
+        "The scaffold is ready for static export and locale-aware routing."
       ],
-      "type": "frontend",
+      "type": "foundation",
       "priority": 1,
-      "passes": true,
-      "notes": "File: packages/munawala_theme/lib/src/typography/munawala_typography.dart"
+      "passes": false,
+      "notes": "Maps the prototype's single-page shell into the planned monorepo web application."
     },
     {
       "id": "US-003",
-      "title": "Update MunawalaThemeData for light-only warm minimal theme",
-      "description": "Rebuild MunawalaThemeData.light() with the warm minimal design system. Remove dark theme. Update all component themes.",
+      "title": "Guarantee static export compatibility",
+      "description": "Ensure Wathba Skills stays frontend-only by configuring the web app for static export and validating that the output can be served without a Node runtime.",
       "acceptanceCriteria": [
-        "Update packages/munawala_theme/lib/src/themes/munawala_theme_data.dart",
-        "scaffoldBackgroundColor: Color(0xFFFEFCF9)",
-        "Card theme: color white, elevation 0, shape with radius 10.r, NO border — shadow only",
-        "ElevatedButton: primary background, white foreground, radius from radii, 52.h height",
-        "InputDecoration: filled with surfaceVariant, radius 10.r, no hard borders",
-        "AppBar: transparent background, no elevation, foreground text color",
-        "Remove MunawalaThemeData.dark() or make it alias to light",
-        "Update all ThemeExtensions (status colors, surface colors, etc.)",
-        "Typecheck passes"
+        "The Next.js app uses output: export.",
+        "All routes used by the product are statically enumerable or otherwise export-safe.",
+        "Image and asset settings do not depend on server-side optimization.",
+        "A build produces a static out/ directory suitable for Cloudflare Pages, Vercel static hosting, Netlify, or GitHub Pages.",
+        "The static output can be served locally and all major flows remain navigable."
       ],
-      "type": "frontend",
+      "type": "foundation",
       "priority": 1,
-      "passes": true,
-      "notes": "File: packages/munawala_theme/lib/src/themes/munawala_theme_data.dart. Also update light_theme.dart and dark_theme.dart."
+      "passes": false,
+      "notes": "Static export is a hard product constraint, not an optimization."
     },
     {
       "id": "US-004",
-      "title": "Update MunawalaBorderRadii to match design system scale",
-      "description": "Ensure border radii extension matches the Warm Minimal scale: md=10.0, xl=16.4, xxxl=22.8.",
+      "title": "Implement locale routes for English and Arabic",
+      "description": "Translate the prototype's runtime language switch into production locale routes so the app renders under /en and /ar with static generation support.",
       "acceptanceCriteria": [
-        "Verify packages/munawala_theme/lib/src/extensions/border_radii.dart values match spec",
-        "md (cards/inputs): 10.0, xl (hero cards): 16.4, xxxl (bottom sheets): 22.8",
-        "All convenience getters (mdBorder, xlBorder, xxxlBorder) return correct BorderRadius.circular values",
-        "Typecheck passes"
+        "The app has explicit locale routing for English and Arabic.",
+        "Only supported locales are exported and navigable.",
+        "The html element receives the correct lang attribute for each locale.",
+        "The html element receives dir=ltr for English and dir=rtl for Arabic.",
+        "Navigation between English and Arabic preserves the current screen where feasible."
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": true,
-      "notes": "File: packages/munawala_theme/lib/src/extensions/border_radii.dart"
+      "passes": false,
+      "notes": "The prototype proved bilingual parity in one runtime shell; the implementation must preserve it across real routes."
     },
     {
       "id": "US-005",
-      "title": "Update MunawalaStatusColors and MunawalaSurfaceColors",
-      "description": "Align status colors and surface colors extensions with the warm minimal palette.",
+      "title": "Build the global app shell and navigation model",
+      "description": "Implement the persistent site shell that wraps all pages with the Wathba Skills brand, sticky navigation, footer links, and the main call to action.",
       "acceptanceCriteria": [
-        "MunawalaStatusColors.light: success Color(0xFF5BAA5E), warning Color(0xFFC9963A), info appropriate warm tone",
-        "MunawalaSurfaceColors.light: surfaceVariant Color(0xFFFAF7F3), surfaceElevated Color(0xFFFFFFFF)",
-        "Remove dark variants or make them identical to light",
-        "Typecheck passes"
+        "Every major screen renders inside a shared app shell.",
+        "The top navigation includes brand, skill library, generate flow, compare view, GitHub link, and primary CTA.",
+        "The footer includes MIT license, disclaimer, and contributing references.",
+        "The shell behaves correctly in both LTR and RTL.",
+        "The shell remains usable on narrow mobile screens without collapsing core navigation affordances."
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": true,
-      "notes": "Files: packages/munawala_theme/lib/src/extensions/status_colors.dart, surface_colors.dart"
+      "passes": false,
+      "notes": "Reflect the prototype's editorial shell rather than a generic dashboard wrapper."
     },
     {
       "id": "US-006",
-      "title": "Remove deprecated AppColors usage across both apps",
-      "description": "Replace all AppColors.* references with Theme.of(context).colorScheme or context extension equivalents.",
+      "title": "Persist route and questionnaire state locally",
+      "description": "Preserve user progress by storing navigation state and questionnaire answers in the browser, matching the behavior proven in the prototype shell.",
       "acceptanceCriteria": [
-        "Search both apps for AppColors references and replace with theme-aware alternatives",
-        "AppColors.primaryOrange → colorScheme.primary",
-        "AppColors.darkBackground → scaffoldBackgroundColor (now warm off-white)",
-        "AppColors.darkCard → colorScheme.surface",
-        "AppColors.errorRed → colorScheme.error",
-        "AppColors.successGreen → context.statusColors.success",
-        "No direct Color() literals for semantic colors — all via theme",
-        "Typecheck passes"
+        "The active route or step context is persisted in localStorage using a stable key.",
+        "Questionnaire answers are persisted in localStorage using a stable key.",
+        "Stored values are restored on reload without crashing if the values are missing or malformed.",
+        "Resetting or starting over clears persisted state intentionally.",
+        "Persistence logic does not rely on any backend or authenticated session."
       ],
-      "type": "frontend",
+      "type": "state",
       "priority": 2,
-      "passes": true,
-      "notes": "AppColors is deprecated in packages/munawala_theme/lib/src/colors/app_colors.dart. Zero active usages found — all members already @Deprecated, no imports reference the class."
+      "passes": false,
+      "notes": "Prototype persistence should use Wathba Skills keys such as wathbaSkills.route and wathbaSkills.answers unless a different stable naming scheme is chosen."
     },
     {
       "id": "US-007",
-      "title": "Remove HexColorManager legacy colors from both apps",
-      "description": "Replace all HexColorManager references with theme tokens.",
+      "title": "Apply global html attributes for locale and theme state",
+      "description": "Centralize document-level attributes so language, text direction, theme, and primary swatch control the full interface consistently.",
       "acceptanceCriteria": [
-        "Search both apps and packages for HexColorManager / colorManager references",
-        "Replace with appropriate colorScheme or extension tokens",
-        "Remove HexColorManager class if no longer needed",
-        "Typecheck passes"
+        "The html element receives lang and dir derived from the active locale.",
+        "The html element receives a data-theme attribute for light or dark mode.",
+        "The html element receives a data-primary attribute for the selected primary swatch.",
+        "CSS tokens react to those attributes without page reload.",
+        "Document-level state updates correctly when locale or theme changes."
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": true,
-      "notes": "HexColorManager class removed from all 3 locations. All usages replaced with theme tokens."
+      "passes": false,
+      "notes": "This story brings the prototype's document-level toggles into the production app."
     },
     {
       "id": "US-008",
-      "title": "Create MunawalaCard shared component",
-      "description": "Build a reusable card component with the Warm Minimal design: white background, soft shadow (0.04 opacity, blur 24, offset 0,8), no border, radius 10.r.",
+      "title": "Implement the warm editorial design token system",
+      "description": "Recreate the prototype's visual language with reusable semantic tokens for background, surfaces, borders, text, and state colors in both light and dark themes.",
       "acceptanceCriteria": [
-        "Create widget in packages/munawala_ui or a shared location",
-        "Props: child, padding, margin, radius (default 10.r), elevation variant (subtle/elevated/hero)",
-        "Default shadow: BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 24, offset: Offset(0, 8))",
-        "Hero variant uses radius 16.4.r",
-        "No hard borders — shadow only",
-        "Background: Color(0xFFFFFFFF)",
-        "Typecheck passes"
+        "Global CSS tokens define background, surface, surface-variant, border, foreground, muted text, and semantic state colors.",
+        "The default light theme matches the prototype's warm editorial palette.",
+        "The dark theme has a deliberate dark counterpart rather than a generic inversion.",
+        "Components consume semantic tokens instead of hard-coded colors.",
+        "The token system is documented well enough for contributors to extend it without visual drift."
       ],
-      "type": "frontend",
-      "priority": 2,
-      "passes": true,
-      "notes": "Created in packages/munawala_ui/lib/src/components/cards/munawala_card.dart. Exported via barrel file. Three elevation variants: subtle, elevated (default), hero."
+      "type": "design-system",
+      "priority": 1,
+      "passes": false,
+      "notes": "Keep the Wathba Skills look distinct from default shadcn styling."
     },
     {
       "id": "US-009",
-      "title": "Create MunawalaEmptyState shared component",
-      "description": "Build a reusable empty state component with muted icon, friendly message, and CTA button.",
+      "title": "Wire the bilingual typography system",
+      "description": "Use the prototype's type pairing so English and Arabic both feel intentional, premium, and readable across landing, forms, and code-adjacent views.",
       "acceptanceCriteria": [
-        "Create widget in packages/munawala_ui",
-        "Props: icon (IconData), title, subtitle, ctaText, onCtaTap, optional illustration",
-        "Container uses surfaceVariant background Color(0xFFFAF7F3), rounded 10.r",
-        "Icon at 48.sp, opacity 0.4, mutedForeground color",
-        "Title in foreground color, 16.sp semibold; subtitle in mutedForeground, 14.sp",
-        "CTA button uses primary color, rounded pill style",
-        "All text uses ScreenUtil .sp sizing",
-        "Typecheck passes"
+        "Latin display text uses Source Serif 4 or an equivalent configured serif face.",
+        "Latin body text uses IBM Plex Sans or an equivalent configured sans face.",
+        "Monospace/code text uses IBM Plex Mono or an equivalent configured mono face.",
+        "Arabic body text uses IBM Plex Sans Arabic or a chosen equivalent Arabic sans face.",
+        "Arabic headings use Amiri or a chosen equivalent Arabic display face where the design calls for it."
       ],
-      "type": "frontend",
-      "priority": 2,
-      "passes": true,
-      "notes": "Created in packages/munawala_ui/lib/src/components/empty_state/munawala_empty_state.dart. Exported via barrel file. Props: icon, title, subtitle, ctaText, onCtaTap, illustration, padding."
+      "type": "design-system",
+      "priority": 1,
+      "passes": false,
+      "notes": "Typography is part of the product identity; it should not fall back to generic defaults."
     },
     {
       "id": "US-010",
-      "title": "Create MunawalaShimmer shared loading component",
-      "description": "Build a shimmer loading effect component that replaces all raw CircularProgressIndicator usage.",
+      "title": "Support theme toggling and primary swatch variants",
+      "description": "Carry forward the prototype's light/dark mode and primary color variations so design review and theming are flexible without rewriting components.",
       "acceptanceCriteria": [
-        "Create widget in packages/munawala_ui",
-        "Props: width, height, radius, variant (line/card/circle/custom)",
-        "Shimmer uses warm tones: base Color(0xFFF5F2EE), highlight Color(0xFFFEFCF9)",
-        "Preset builders: MunawalaShimmer.card(), MunawalaShimmer.list(itemCount), MunawalaShimmer.avatar()",
-        "Animation is smooth left-to-right gradient sweep",
-        "All dimensions use ScreenUtil",
-        "Typecheck passes"
+        "The app supports light and dark themes.",
+        "The app supports default, ink, olive, and slate primary swatches.",
+        "Primary swatches update the interface through CSS variables rather than ad hoc classes.",
+        "Theme and swatch changes preserve readability and contrast in both locales.",
+        "Theme controls can be reused by the edit-mode tweaks panel."
       ],
-      "type": "frontend",
+      "type": "design-system",
       "priority": 2,
-      "passes": true,
-      "notes": "Created in packages/munawala_ui/lib/src/components/shimmer/munawala_shimmer.dart. Exported via barrel file. Variants: line, card, circle, custom. Static list() builder with staggered fade-in. Uses flutter_animate .shimmer() with warm tones."
+      "passes": false,
+      "notes": "The prototype exposes these in edit mode; the production app should preserve the capability."
     },
     {
       "id": "US-011",
-      "title": "Create MunawalaErrorCard inline error component",
-      "description": "Build an inline error card with destructive color and retry button for gRPC failure states.",
+      "title": "Create the shared UI primitives used across all screens",
+      "description": "Implement the reusable controls and display primitives from the prototype so the rest of the product is built from a consistent component language.",
       "acceptanceCriteria": [
-        "Create widget in packages/munawala_ui",
-        "Props: message, onRetry, icon (default error_outline)",
-        "Uses destructive color Color(0xFFE5484D) for accent/icon",
-        "White card with subtle destructive-tinted left border (3px)",
-        "Retry button: outlined style with destructive color",
-        "Padding 12.w horizontal, 10.h vertical",
-        "Typecheck passes"
+        "The app includes button variants for primary, secondary, ghost, small, and large uses.",
+        "The app includes badge and status badge primitives for category and review state.",
+        "The app includes toggle, radio-card, checkbox-card, notice, disclosure, and stepper components.",
+        "Each primitive is keyboard accessible and usable in LTR and RTL.",
+        "Shared primitives live in reusable component locations rather than page-local implementations."
       ],
-      "type": "frontend",
-      "priority": 2,
-      "passes": true,
-      "notes": "Created in packages/munawala_ui/lib/src/components/error_card/munawala_error_card.dart. Exported via barrel file. White card with destructive left border (3px), error icon, message, and outlined retry button."
+      "type": "design-system",
+      "priority": 1,
+      "passes": false,
+      "notes": "This story should mirror the prototype's interaction vocabulary instead of introducing unrelated controls."
     },
     {
       "id": "US-012",
-      "title": "Create premium shadow and motion utilities",
-      "description": "Build shared utilities for the Warm Minimal motion system: press scale, hover effects, staggered animations.",
+      "title": "Define the canonical skill schema package",
+      "description": "Create a shared schema package for canonical skill metadata so the app, generator, and CI all validate skill content against the same contract.",
       "acceptanceCriteria": [
-        "Create MunawalaShadows utility with preset shadow values (subtle, elevated, hero)",
-        "Create MunawalaMotion utility with AnimatedContainer wrapper for press-scale (0.97 scale on press)",
-        "Create staggered entrance animation helper (slide-up + fade, 50ms per item delay)",
-        "AnimatedSwitcher wrapper for state transitions",
-        "All animations use CupertinoPageRoute-style curves",
-        "Prefers-reduced-motion support via MediaQuery.disableAnimations",
-        "Typecheck passes"
+        "A workspace package defines zod schemas for skill metadata, localized labels, variables, sources, maintainers, and trigger rules.",
+        "The package exports inferred TypeScript types for downstream use.",
+        "The schema supports the metadata seen in the prototype catalog: category, region, version, status, last verified, disclaimer, targets, variables, references, scripts, and sources.",
+        "The schema fails clearly when a skill folder is malformed.",
+        "The package has its own typecheckable build surface."
       ],
-      "type": "frontend",
+      "type": "data",
       "priority": 2,
-      "passes": true,
-      "notes": "Created MunawalaShadows (subtle/elevated/hero/primaryGlow) and MunawalaMotion (MunawalaPressScale, MunawalaStaggeredList, MunawalaStateSwitcher, MunawalaCurves) in packages/munawala_ui/lib/src/utils/. All respect MediaQuery.disableAnimations."
+      "passes": false,
+      "notes": "Even though the prototype stores catalog data inline, the production system needs a reusable canonical schema."
     },
     {
       "id": "US-013",
-      "title": "Update AppInsets and AppSizes for warm minimal spacing",
-      "description": "Update shared dimension constants to use ScreenUtil and match the warm minimal spacing scale.",
+      "title": "Build the skill loader and generated frontend module",
+      "description": "Walk the skill library at build time, validate every skill folder, and emit a generated module that the web app can consume without runtime filesystem access.",
       "acceptanceCriteria": [
-        "Update packages/munawala_theme/lib/src/dimensions/insets.dart",
-        "Content padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w)",
-        "Horizontal: EdgeInsets.symmetric(horizontal: 20.w)",
-        "All values use .w and .h ScreenUtil extensions",
-        "Update AppSizes with consistent spacing scale (4, 8, 12, 16, 20, 24, 32).h/.w",
-        "Typecheck passes"
+        "A build-time script walks the skill library recursively.",
+        "Every skill metadata file is validated against the canonical schema.",
+        "Skill markdown plus reference and script inventories are collected for frontend use.",
+        "A generated TypeScript module is emitted for the web app.",
+        "Invalid skill content causes the generation command to fail."
       ],
-      "type": "frontend",
+      "type": "generator",
       "priority": 2,
-      "passes": true,
-      "notes": "Updated insets (content 20.h/20.w, bigArea 80.h/12.h, horizontal 20.w, vertical 20.h) and added spacing scale (xxs 4, xs 8, sm 12, md 16, lg 20, xl 24, xxl 32) across package + both apps. All values ScreenUtil-based."
+      "passes": false,
+      "notes": "This story bridges the static site architecture with the content-first skill library."
     },
     {
       "id": "US-014",
-      "title": "Redesign DarkOrangeButton as WarmPrimaryButton",
-      "description": "Redesign the primary CTA button with warm minimal styling: press-scale effect, animated shadow, rounded corners.",
+      "title": "Establish the canonical skill folder structure",
+      "description": "Implement the filesystem convention for skills so contributors can add new content without touching application code, while still matching the prototype's catalog richness.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/dark_orange_button.dart",
-        "Rename to match warm aesthetic (or create new PremiumPrimaryButton)",
-        "Background: primary Color(0xFFE26B27), foreground: white",
-        "Corner radius: 10.r for standard, pill (full radius) for FAB-style",
-        "Press effect: scale to 0.97 with elasticOut curve",
-        "Shadow: primary color at 25% opacity, 12 blur — reduces to 15% on press",
-        "Loading state: smooth crossfade to spinner using AnimatedSwitcher",
-        "Disabled state: 35% opacity, no shadow",
-        "Height: 52.h, width configurable (default full width)",
-        "Typecheck passes"
+        "Each skill lives in its own folder under skills/<category-or-region>/<slug>/.",
+        "Each skill folder includes required metadata and markdown files.",
+        "Optional references/ and scripts/ folders are supported.",
+        "Folder naming and slug rules are enforced consistently.",
+        "The structure can represent the fields already visible in the prototype catalog."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned in-place with press-scale animation (0.97), primary-glow shadow (25% → 15% on press), AnimatedSwitcher crossfade for loading state, disabled state at 35% opacity with no shadow. Added pill prop for stadium shape. Height 52.h, radius 10.r. Test updated to tap DarkOrangeButton instead of ElevatedButton."
+      "type": "content",
+      "priority": 2,
+      "passes": false,
+      "notes": "This story captures the durable content architecture that the prototype hinted at through inline data."
     },
     {
       "id": "US-015",
-      "title": "Redesign AdaptiveButton with warm minimal style",
-      "description": "Update the legacy AdaptiveButton to match warm minimal design.",
+      "title": "Seed the initial skill catalog represented by the prototype",
+      "description": "Create the first production-ready set of skills that matches the prototype catalog so the application ships with realistic content coverage from day one.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/adaptive_button.dart",
-        "Match PremiumPrimaryButton styling or replace usages with it",
-        "Warm off-white background for secondary variant",
-        "ScreenUtil for all dimensions",
-        "Typecheck passes"
+        "The skill library contains at least the eight prototype skills: zatca-phase2, pdpl-basics, nafath-yakeen-basics, mada-stcpay-basics, secrets-baseline, auth-isolation, testability-check, and ci-hygiene.",
+        "Each seeded skill has localized names and summaries for English and Arabic where required by the UI.",
+        "Each seeded skill includes category, status, version, and last verified metadata.",
+        "Any skill marked as compliance-oriented includes the disclaimer flag and at least one source.",
+        "The generated app catalog renders all seeded skills without special-case code."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned as StatefulWidget with press-scale animation (0.97), AnimatedSwitcher crossfade for loading, primary-glow shadow. Added secondary variant (warm off-white F5F2EE background with subtle shadow). ScreenUtil for all dimensions. Removed munawala_core dependency (was unused). API-compatible with existing callers."
+      "type": "content",
+      "priority": 2,
+      "passes": false,
+      "notes": "The catalog should reflect the prototype's actual product scope, not just one demo skill."
     },
     {
       "id": "US-016",
-      "title": "Redesign DarkBackButton with warm minimal style",
-      "description": "Update the back button from dark theme to warm minimal: warm background, soft shadow.",
+      "title": "Enforce freshness and governance metadata for skills",
+      "description": "Make review state, versioning, maintainers, and last-verified dates explicit so users can trust what they are downloading.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/dark_back_button.dart",
-        "Background: Color(0xFFFFFFFF) with soft shadow",
-        "Icon color: foreground Color(0xFF1E1B18)",
-        "Radius: 10.r",
-        "Size: 40.w x 40.h",
-        "Press-scale animation on tap",
-        "Typecheck passes"
+        "Every skill declares status, version, last verified date, and maintainer information.",
+        "The UI surfaces reviewed, community, and draft states consistently.",
+        "Compliance skills surface disclaimer state consistently.",
+        "Generated outputs include version and last verified metadata.",
+        "CI or generation steps can flag missing governance metadata."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned as StatelessWidget wrapping MunawalaPressScale for press-scale animation. White background with MunawalaShadows.subtle, 10.r radius, 40.w x 40.h size, foreground icon color. API-compatible — kept all existing props (onPressed, backgroundColor, iconColor, isMapScreen)."
+      "type": "content",
+      "priority": 2,
+      "passes": false,
+      "notes": "This turns prototype metadata into a formal quality bar."
     },
     {
       "id": "US-017",
-      "title": "Redesign LanguageToggleButton with warm style",
-      "description": "Update language toggle to a subtle warm pill button.",
+      "title": "Build the landing hero and sample preview card",
+      "description": "Implement the main conversion surface using the prototype's editorial hero layout, headline, CTA pair, and rendered sample skill preview.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/language_toggle_button.dart",
-        "Background: secondary Color(0xFFF5F2EE)",
-        "Text: mutedForeground, 12.sp",
-        "Radius: pill (full circular)",
-        "AnimatedSwitcher for language text transition",
-        "Typecheck passes"
+        "The landing page has a two-column hero layout on large screens.",
+        "The hero contains eyebrow, headline, lede, primary CTA, secondary CTA, and microcopy.",
+        "A sample preview card shows a realistic rendered skill file snippet.",
+        "The hero adapts gracefully to mobile screens.",
+        "Both English and Arabic versions preserve hierarchy and readability."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned as warm minimal pill button. Secondary background (F5F2EE), mutedForeground text at 12.sp, pill radius (100.r), AnimatedSwitcher for language text crossfade, MunawalaPressScale for press effect, MunawalaShadows.subtle shadow. API-compatible. All tests pass."
+      "priority": 1,
+      "passes": false,
+      "notes": "This is the product's front door and should mirror the prototype closely."
     },
     {
       "id": "US-018",
-      "title": "Redesign OtpTimerButton with warm minimal style",
-      "description": "Update OTP resend timer button to match warm minimal design.",
+      "title": "Implement the 'What is a skill?' explainer section",
+      "description": "Add the centered explanatory block that teaches new users what a skill is and why an AI coding agent benefits from it.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/otp_timer_button.dart",
-        "Timer text in mutedForeground",
-        "Resend text in primary when active",
-        "Subtle fade transition between states",
-        "ScreenUtil for all sizing",
-        "Typecheck passes"
+        "The landing page includes a dedicated explainer section below the hero.",
+        "The section uses a sunken or elevated editorial card treatment consistent with the prototype.",
+        "Copy is available in English and Arabic.",
+        "The section reads as product education rather than marketing fluff.",
+        "The section remains legible and balanced in RTL."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/buttons/otp_timer_button.dart"
+      "priority": 2,
+      "passes": false,
+      "notes": "This section is important for first-time users unfamiliar with agent skills."
     },
     {
       "id": "US-019",
-      "title": "Redesign AppTextButton with warm minimal style",
-      "description": "Update text button to use primary color and warm styling.",
+      "title": "Add the three-column feature grid on the landing page",
+      "description": "Implement the feature summary section that explains stack-specific rendering, compliance awareness, and multi-agent output support.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/buttons/text_button.dart",
-        "Text color: primary by default",
-        "Font: 14.sp, w500",
-        "No underline — color differentiation only",
-        "Typecheck passes"
+        "The landing page renders three distinct feature blocks.",
+        "Each feature block includes a marker, title, and explanatory body copy.",
+        "The feature layout works on desktop and stacks cleanly on mobile.",
+        "Feature content exists in English and Arabic.",
+        "The section visually matches the editorial tone of the rest of the page."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with MunawalaPressScale for press feedback, MunawalaStateSwitcher for loading crossfade. Primary color default, 14.sp w500, TextDecoration.none. ScreenUtil sizing throughout. Legacy tooltip+gesture path preserved with same warm styling."
+      "priority": 2,
+      "passes": false,
+      "notes": "Prototype features are specific; the implementation should preserve their meaning."
     },
     {
       "id": "US-020",
-      "title": "Redesign AdaptiveInputField with warm minimal style",
-      "description": "Update the main text input field to warm minimal: surfaceVariant fill, no hard border, focus glow.",
+      "title": "Show a landing-page preview of the skill library",
+      "description": "Let users sample the catalog directly from the landing page using a grid of skill cards and a clear route into the full library.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/form/adaptive_input_field.dart",
-        "Fill color: surfaceVariant Color(0xFFFAF7F3) unfocused, white focused",
-        "No visible border — only subtle focus glow shadow using primary at 10%",
-        "Radius: 10.r",
-        "Hint text: mutedForeground",
-        "Error state: destructive color border",
-        "AnimatedContainer for smooth focus transitions",
-        "ScreenUtil for all sizing",
-        "Typecheck passes"
+        "The landing page includes a library preview section with heading and lede.",
+        "The section shows a subset of the catalog as mini skill cards.",
+        "Each card can navigate to the skill detail view.",
+        "A secondary action takes the user to the full library page.",
+        "The preview grid remains browsable in both locales and on mobile."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Converted to StatefulWidget with FocusNode listener. AnimatedContainer wraps TextFormField for focus glow shadow (primary at 10%, blur 8). Fill transitions surfaceVariant → white on focus. All InputDecoration borders set to BorderSide.none except error (destructive). Radius 10.r, contentPadding uses EdgeInsetsDirectional, ScreenUtil throughout."
+      "priority": 2,
+      "passes": false,
+      "notes": "This story ties product discovery directly into the content moat."
     },
     {
       "id": "US-021",
-      "title": "Redesign DarkInputField and DarkPhoneInputField",
-      "description": "Remove dark theme styling from input fields, apply warm minimal design.",
+      "title": "Implement the skill library page with category and status filters",
+      "description": "Build the full library browsing experience using the prototype's dual filter model for category and review status.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/form/dark_input_field.dart",
-        "Same warm styling as AdaptiveInputField: surfaceVariant fill, no border, focus glow",
-        "Phone field +966 prefix in mutedForeground, divider in border color",
-        "Animated color transition on focus",
-        "Radius: 18.r (keep premium auth radius)",
-        "Typecheck passes"
+        "The library page lists all available skills.",
+        "Users can filter by all, saudi, security, and architecture categories.",
+        "Users can filter by all, reviewed, community, and draft statuses.",
+        "Empty filter states render a deliberate empty-state card rather than a broken layout.",
+        "The filter controls work in both English and Arabic."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Both DarkInputField and DarkPhoneInputField converted to StatefulWidget with FocusNode listener. AnimatedContainer wraps TextFormField for focus glow shadow (primary at 10%, blur 8). Fill transitions surfaceVariant → white on focus. All borders BorderSide.none except error (destructive). Radius 18.r preserved for premium auth aesthetic. Phone +966 prefix in mutedForeground, divider uses colorScheme.outline. EdgeInsetsDirectional for RTL, ScreenUtil throughout."
+      "priority": 1,
+      "passes": false,
+      "notes": "The filter taxonomy should match the prototype's actual catalog behavior."
     },
     {
       "id": "US-022",
-      "title": "Redesign DarkOtpTextField with warm minimal style",
-      "description": "Update OTP field boxes from dark theme to warm minimal.",
+      "title": "Create the reusable skill mini card component",
+      "description": "Build the compact card used in the landing preview and library grid so status, category, description, and verification date are surfaced consistently.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/form/dark_otp_text_field.dart",
-        "Box fill: surfaceVariant unfocused, white focused",
-        "Focus glow: primary at 10% opacity shadow",
-        "Radius: 16.r per box",
-        "Dimensions: 64.w x 64.h per box",
-        "Active box has primary bottom border accent (2px)",
-        "Typecheck passes"
+        "The mini card shows category, status, title, summary, version, and verification metadata.",
+        "The card is clickable via pointer and keyboard.",
+        "Card styling follows the editorial card language and hover treatment from the prototype.",
+        "The card supports English and Arabic text without layout breakage.",
+        "The same component can be reused across landing and library contexts."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with AnimatedContainer focus glow (primary 10%, blur 8), surfaceVariant → white on focus, 16.r radius, 64.w x 64.h defaults, primary bottom border accent (2px) on focused/filled boxes. FocusNode listeners trigger rebuilds. All InputDecoration borders set to BorderSide.none. ClipRRect ensures content respects border radius."
+      "priority": 2,
+      "passes": false,
+      "notes": "Mini cards are a key reusable unit in the Wathba Skills system."
     },
     {
       "id": "US-023",
-      "title": "Redesign PhoneTextField with warm minimal style",
-      "description": "Update the phone text field to warm minimal styling.",
+      "title": "Implement the skill detail header and disclaimer treatment",
+      "description": "Build the detail-page hero area with category badge, status badge, version, last verified metadata, title, summary, and warning notice for compliance skills.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/form/phone_text_field.dart",
-        "Match warm styling of AdaptiveInputField",
-        "Saudi flag / +966 prefix styled with mutedForeground",
-        "Typecheck passes"
+        "The skill detail page shows category, status, version, and last verified badges at the top.",
+        "The page shows localized title and plain-language summary.",
+        "Skills with disclaimers render a warning notice prominently near the top.",
+        "The page includes a clear back-to-library action.",
+        "The header layout remains readable in English and Arabic."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/form/phone_text_field.dart. Redesigned with AnimatedContainer focus glow (primary 10%, blur 8), surfaceVariant → white on focus, 10.r radius, no hard borders (BorderSide.none) except error/focusedError. Saudi flag emoji + +966 prefix styled with mutedForeground. FocusNode listener for smooth state transitions. Divider between prefix and input uses mutedForeground at 30% opacity."
+      "priority": 1,
+      "passes": false,
+      "notes": "Compliance metadata must be impossible to miss."
     },
     {
       "id": "US-024",
-      "title": "Redesign PremiumInputField for warm minimal auth",
-      "description": "Update the premium auth input field to warm minimal colors.",
+      "title": "Render skill detail previews, metadata panels, and sources",
+      "description": "Finish the skill detail experience with the raw skill preview, variables panel, references count, scripts count, source list, maintainers, and version row.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_input_field.dart",
-        "Fill: surfaceVariant → white on focus",
-        "Focus shadow glow: primary at 8% opacity",
-        "Radius: 18.r",
-        "Smooth AnimatedContainer transitions (150ms ease)",
-        "Typecheck passes"
+        "The detail page includes a preview block for the skill body.",
+        "The page includes summary panels for variables, references, and scripts.",
+        "The page renders the skill's source links or source labels.",
+        "The page renders maintainer and version information.",
+        "The preview and metadata adapt correctly to RTL and narrow screens."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Fill transitions surfaceVariant → white on focus. Focus glow: primary at 8% opacity, blur 8, offset (0,2). All borders BorderSide.none except error (destructive). 18.r radius preserved. 150ms ease AnimatedContainer transitions. didUpdateWidget added for FocusNode lifecycle. EdgeInsetsDirectional for RTL. Removed munawala_theme import — uses hardcoded palette constants."
+      "priority": 1,
+      "passes": false,
+      "notes": "This story turns the prototype detail layout into a production-grade browsing view."
     },
     {
       "id": "US-025",
-      "title": "Redesign PremiumPhoneField for warm minimal auth",
-      "description": "Update premium phone field with warm minimal colors and animations.",
+      "title": "Implement the recommendation engine from questionnaire answers",
+      "description": "Translate the prototype's answer-to-skill logic into a reusable recommendation engine that suggests the right skills based on market, invoicing, PII, identity, payments, CI, and secrets answers.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_phone_field.dart",
-        "Match warm minimal palette: surfaceVariant fill, primary accents",
-        "Animated +966 prefix color transition",
-        "Divider line in border color",
-        "Typecheck passes"
+        "KSA or GCC plus invoicing recommends zatca-phase2.",
+        "KSA or GCC plus PII recommends pdpl-basics.",
+        "KSA or GCC plus identity recommends nafath-yakeen-basics.",
+        "KSA or GCC plus payments recommends mada-stcpay-basics.",
+        "Secrets handling other than a proper manager recommends secrets-baseline.",
+        "Identity or PII recommends auth-isolation.",
+        "Missing CI recommends ci-hygiene.",
+        "Testability-check is always included.",
+        "Recommended skills are ordered saudi first, then security, then architecture."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Fill transitions surfaceVariant → white on focus. Focus glow: primary at 8% opacity, blur 8, offset (0,2). All borders BorderSide.none except error (destructive). 18.r radius preserved. 150ms ease AnimatedContainer transitions. didUpdateWidget added for FocusNode lifecycle. EdgeInsetsDirectional for RTL. Animated +966 prefix transitions foreground↔mutedForeground. Divider line uses _border color, transitions to primary on focus. Removed munawala_theme import — uses hardcoded palette constants."
+      "type": "logic",
+      "priority": 1,
+      "passes": false,
+      "notes": "This logic is explicitly present in the prototype and should be preserved as the initial rules engine."
     },
     {
       "id": "US-026",
-      "title": "Redesign PremiumOtpField for warm minimal auth",
-      "description": "Update premium OTP field with warm minimal styling.",
+      "title": "Build the four-step questionnaire shell and stepper",
+      "description": "Implement the generator flow shell using the prototype's four-step structure and visible progress stepper.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_otp_field.dart",
-        "Box fill: surfaceVariant, focus: white + primary glow",
-        "Per-digit scale animation preserved",
-        "Completion flash animation in primary color",
-        "Dimensions: 64.w x 64.h per box",
-        "Typecheck passes"
+        "The generate flow is split into About your project, Tech & agents, Review & variables, and Generate steps.",
+        "A stepper shows the current step and completed steps.",
+        "Back and continue actions behave predictably across steps.",
+        "The stepper works in both English and Arabic.",
+        "The flow is usable from keyboard alone."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/auth/premium_otp_field.dart"
+      "priority": 1,
+      "passes": false,
+      "notes": "The questionnaire should feel like the prototype, not a generic long form."
     },
     {
       "id": "US-027",
-      "title": "Redesign PremiumOrangeButton for warm minimal auth",
-      "description": "Update premium auth CTA button with warm minimal design.",
+      "title": "Implement the 'About your project' step with KSA-aware branching",
+      "description": "Build the first questionnaire step so market selection drives whether invoicing, payments, and identity questions appear, while PII remains relevant more broadly.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_orange_button.dart",
-        "Background: primary Color(0xFFE26B27)",
-        "Press-scale 0.97 with elasticOut",
-        "Shadow: primary at 25% → 15% on press",
-        "Loading: AnimatedSwitcher to spinner",
-        "Typecheck passes"
+        "The first step asks for primary market.",
+        "If the selected market is KSA or GCC, invoicing, payments, and identity questions are shown.",
+        "If the selected market is global or other, the Saudi-specific follow-up questions are hidden.",
+        "The PII question is still asked when the market is global or other.",
+        "Each question can show a 'why we ask' explanation where the prototype provides one."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with AnimationController+ScaleTransition for press-scale (0.97, 120ms, elasticOut release). Primary-glow shadow (25% → 15% on press) via MunawalaShadows.primaryGlow. AnimatedSwitcher crossfade for loading state. Disabled state at 35% opacity with no shadow. Removed AuthAnimations dependency — uses inline durations. Hardcoded warm minimal palette constants. 18.r radius preserved. API-compatible."
+      "priority": 1,
+      "passes": false,
+      "notes": "This step captures the most important domain branching in the product."
     },
     {
       "id": "US-028",
-      "title": "Redesign PremiumResendRow for warm minimal auth",
-      "description": "Update OTP resend row with warm minimal colors.",
+      "title": "Implement the 'Tech & agents' step",
+      "description": "Build the second questionnaire step so users can specify stack, target agents, CI posture, and current secret handling.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_resend_row.dart",
-        "Timer arc in mutedForeground, countdown text in foreground",
-        "Resend text in primary when active",
-        "Sin-wave pulse animation preserved but uses warm colors",
-        "Typecheck passes"
+        "Users can select a primary backend stack from the supported options.",
+        "Users can multi-select one or more target agents.",
+        "Users can answer whether CI runs on pull requests.",
+        "Users can choose how secrets are handled today.",
+        "All controls remain accessible and correctly localized."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Timer arc uses secondary (F5F2EE) background and primary active color. Countdown text in foreground (1E1B18). Resend text in primary when active with sin-wave pulse animation preserved. Prompt text in mutedForeground. Removed munawala_theme import — uses hardcoded palette constants. Spinner uses const primary color. API-compatible."
+      "priority": 1,
+      "passes": false,
+      "notes": "The available options should mirror the prototype's stack and agent taxonomy unless intentionally extended."
     },
     {
       "id": "US-029",
-      "title": "Redesign PremiumTermsFooter for warm minimal auth",
-      "description": "Update terms footer with warm minimal styling.",
+      "title": "Add step-level validation and required-state handling",
+      "description": "Prevent users from advancing with incomplete data by enforcing the prototype's conditional required fields and inline error presentation.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/premium_terms_footer.dart",
-        "Text in mutedForeground",
-        "Tappable links in primary color",
-        "Separator lines in border color",
-        "Typecheck passes"
+        "Market is required on the first step.",
+        "PII is required on the first step in all markets.",
+        "When market is KSA or GCC, invoicing, payments, and identity are required on the first step.",
+        "Stack, at least one agent, CI, and secrets are required on the second step.",
+        "Error feedback appears inline and clears when the field is corrected."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Text in mutedForeground (7A7470). Tappable links in primary (E26B27). Separator lines in warm border color (E8E4DF). Removed theme dependency — uses hardcoded palette constants matching other auth components. API-compatible."
+      "type": "logic",
+      "priority": 1,
+      "passes": false,
+      "notes": "Validation must respect branching rather than treating all fields as globally required."
     },
     {
       "id": "US-030",
-      "title": "Redesign AuthBackground for warm minimal",
-      "description": "Replace dark auth background with warm off-white background and subtle radial glows.",
+      "title": "Render the review step with auto-recommended skills",
+      "description": "Build the review experience that lists recommended skills first, lets users inspect what was chosen for them, and prepares the selection state for generation.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/auth_background.dart",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "Top-center radial glow: primary at 5% opacity, breathing scale animation",
-        "Bottom-right: subtle warm gradient accent",
-        "No dark colors — fully light theme",
-        "Typecheck passes"
+        "The review step shows the recommended skills derived from the user's answers.",
+        "Each recommended skill row includes title, description, status badge, version, last verified date, and disclaimer marker when applicable.",
+        "Recommended rows are selected by default when first entering the step.",
+        "Users can toggle recommended rows on or off without losing the record of their recommendation source.",
+        "The review step has localized lede copy and labels."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/auth/auth_background.dart"
+      "priority": 1,
+      "passes": false,
+      "notes": "This story captures the prototype's conversion moment where recommendations become editable choices."
     },
     {
       "id": "US-031",
-      "title": "Redesign AuthHeader for warm minimal",
-      "description": "Update auth header from dark to warm minimal styling.",
+      "title": "Implement the manual 'add another skill' drawer",
+      "description": "Allow users to go beyond recommendations by expanding a manual picker of non-recommended skills and adding them to the current selection.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/auth_header.dart",
-        "Back button: white with soft shadow (use updated DarkBackButton)",
-        "Title text: foreground color",
-        "Language pill: secondary background, mutedForeground text",
-        "Typecheck passes"
+        "The review step contains an 'add another skill' control.",
+        "Expanding the control reveals non-recommended skills from the library.",
+        "Users can add or remove those skills from the active selection.",
+        "Manually added skills are visibly labeled differently from recommended ones.",
+        "The manual picker works in English and Arabic and on mobile."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Back button: white (FFFFFF) with MunawalaShadows.subtle, MunawalaPressScale for press feedback, 10.r radius, 40.w x 40.h. Title: foreground (1E1B18), 20.sp w600. Language pill: secondary (F5F2EE) background, pill radius (100.r), mutedForeground (7A7470) text at 12.sp, AnimatedSwitcher crossfade, MunawalaPressScale. Removed munawala_theme import — uses hardcoded palette constants. EdgeInsetsDirectional for RTL. API-compatible."
+      "priority": 2,
+      "passes": false,
+      "notes": "This is present in the prototype and important for expert users."
     },
     {
       "id": "US-032",
-      "title": "Redesign AuthStepIndicator for warm minimal",
-      "description": "Update step indicator with warm minimal colors.",
+      "title": "Model selected skills with source provenance",
+      "description": "Keep track of whether a selected skill was recommended automatically or added manually so the UI and later analytics-free product logic can distinguish them.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/auth_step_indicator.dart",
-        "Active dot: primary color with pulse animation",
-        "Completed line: primary at 60%",
-        "Pending: secondary color (muted)",
-        "Typecheck passes"
+        "Selection state stores whether a skill is on or off.",
+        "Selection state stores whether the skill came from an auto recommendation or manual addition.",
+        "Selection state can be restored from persisted answers.",
+        "Toggling a skill preserves its provenance unless intentionally changed.",
+        "The review UI consumes this state without special-case branching."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/auth/auth_step_indicator.dart. Changed pending dots/lines from outline to secondary color."
+      "type": "state",
+      "priority": 2,
+      "passes": false,
+      "notes": "The prototype uses selected[id] = { on, source }; the production app should keep an equivalent model."
     },
     {
       "id": "US-033",
-      "title": "Redesign AuthLoadingOverlay for warm minimal",
-      "description": "Update loading overlay from dark blur to warm blur.",
+      "title": "Collect variable values for active selected skills",
+      "description": "Build the review-step variable forms so active skills that require extra information can collect those values before generation.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/auth/auth_loading_overlay.dart",
-        "Blur: ImageFilter.blur sigma=10",
-        "Tint: white at 60% opacity instead of dark",
-        "Centered LoadingWidget in primary color",
-        "Typecheck passes"
+        "Only active selected skills with variables render variable input forms.",
+        "Select variables render as select inputs with the declared options.",
+        "Boolean variables render as accessible toggle or yes/no controls.",
+        "Variable values are stored in a stable per-skill key structure.",
+        "Where useful, a skill can inherit defaults from earlier questionnaire answers such as stack."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Redesigned with warm frosted-glass effect: sigma 10 blur (was 5), white tint at 60% opacity (was dark onSurface at 30%), LoadingWidget with hardcoded primary color. Removed munawala_theme import — uses hardcoded palette constant. Replaced AuthAnimations.overlayFadeDuration with inline const Duration(milliseconds: 300). API-compatible."
+      "priority": 1,
+      "passes": false,
+      "notes": "This story turns the prototype's varVals behavior into a real input layer for generation."
     },
     {
       "id": "US-034",
-      "title": "Redesign ConnectivityWrapper for warm minimal",
-      "description": "Update no-connection overlay and back-online banner with warm minimal styling.",
+      "title": "Build the generate-step file tree summary",
+      "description": "Show users exactly what their zip will contain by grouping the generated file paths by selected target and surfacing file totals before download.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/connectivity/connectivity_wrapper.dart",
-        "No-connection overlay: warm off-white background, muted illustration",
-        "Back-online banner: success green Color(0xFF5BAA5E) with slide-in animation",
-        "Typecheck passes"
+        "The generate step shows a zip summary card.",
+        "The summary card groups files by target and directory.",
+        "The summary shows total file count and selected skill count.",
+        "The summary updates when targets or selected skills change.",
+        "The summary remains readable in both locales and on mobile."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/connectivity/connectivity_wrapper.dart"
+      "priority": 1,
+      "passes": false,
+      "notes": "This is a core trust-building surface from the prototype."
     },
     {
       "id": "US-035",
-      "title": "Redesign NoConnectionOverlay for warm minimal",
-      "description": "Update the full-screen no-connection screen with warm minimal design.",
+      "title": "Implement target preview tabs and target-specific notes",
+      "description": "Let users switch between Claude, Cursor, Codex, and generic previews so they can inspect how the same selected skill set will be rendered per agent.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/connectivity/no_connection_overlay.dart",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "Custom painter: muted warm tones instead of dark",
-        "Retry button: primary styled CTA",
-        "Warning text in mutedForeground",
-        "Typecheck passes"
+        "The generate step shows one tab for each selected target agent.",
+        "Switching tabs updates the previewed file path and content.",
+        "Each target displays explanatory notes about how rendering works for that agent.",
+        "If the active target is no longer selected, the preview falls back to an available target.",
+        "Target labels remain clear and localized where appropriate."
       ],
       "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/connectivity/no_connection_overlay.dart"
+      "priority": 1,
+      "passes": false,
+      "notes": "The prototype proves the UX; the production system must back it with real renderers."
     },
     {
       "id": "US-036",
-      "title": "Redesign NoConnectionCard for warm minimal",
-      "description": "Update inline no-connection card with warm minimal colors.",
+      "title": "Implement canonical markdown variable resolution",
+      "description": "Resolve skill content templates into concrete rendered markdown using questionnaire answers and per-skill variables before adapters turn them into target-specific files.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/connectivity/no_connection_card.dart",
-        "Background: white with soft shadow",
-        "Warning accent: Color(0xFFC9963A)",
-        "Wifi-off icon in warning color",
-        "Retry button: text button in primary",
-        "Typecheck passes"
+        "Canonical skill bodies support variable placeholders defined by the schema.",
+        "Variable values are resolved from skill-specific inputs and relevant questionnaire defaults.",
+        "Missing required variable values are surfaced before download.",
+        "Rendered markdown is deterministic for the same inputs.",
+        "The resolver is reusable by all target adapters."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/connectivity/no_connection_card.dart"
+      "type": "generator",
+      "priority": 1,
+      "passes": false,
+      "notes": "This story turns the prototype's sample previews into real content generation."
     },
     {
       "id": "US-037",
-      "title": "Redesign LoadingWidget for warm minimal",
-      "description": "Update the custom dot loading animation to use warm minimal colors.",
+      "title": "Implement the Claude Code adapter",
+      "description": "Render selected skills into Claude Code's expected .claude/skills folder structure while preserving references and helper scripts when available.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/loaders/loading_widget.dart",
-        "Dot color: primary Color(0xFFE26B27) by default",
-        "Smooth rotation animation preserved",
-        "Size configurable via ScreenUtil",
-        "Typecheck passes"
+        "Each selected skill renders to its own .claude/skills/<slug>/ folder.",
+        "The adapter outputs a SKILL.md file for each skill.",
+        "Reference files are included under references/ when present.",
+        "Scripts are included under scripts/ when present.",
+        "The Claude preview in the generate step reflects the real adapter output."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/loaders/loading_widget.dart"
+      "type": "adapter",
+      "priority": 1,
+      "passes": false,
+      "notes": "Claude is the highest-fidelity target in the prototype and should stay that way."
     },
     {
       "id": "US-038",
-      "title": "Redesign CustomImage and ErrorImage for warm minimal",
-      "description": "Update image components with warm minimal fallback/error states.",
+      "title": "Implement the Cursor adapter",
+      "description": "Render selected skills into Cursor's .cursor/rules format while clearly handling references or scripts that cannot execute in Cursor's rule model.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/images/custom_image.dart",
-        "Error fallback uses warm-toned placeholder",
-        "Loading shimmer for network images",
-        "ErrorImage uses surfaceVariant background with muted icon",
-        "Typecheck passes"
+        "Each selected skill can render to a .cursor/rules/<slug>.mdc file.",
+        "Cursor output is derived from the same canonical rendered content as other targets.",
+        "Unsupported executable behavior is expressed as read-only guidance rather than being silently dropped.",
+        "The Cursor preview reflects the real adapter output.",
+        "Generated Cursor output remains readable and consistent across multiple selected skills."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "Files: packages/munawala_ui/lib/src/components/images/"
+      "type": "adapter",
+      "priority": 1,
+      "passes": false,
+      "notes": "The prototype already promises Cursor output, so the PRD must make it explicit."
     },
     {
       "id": "US-039",
-      "title": "Redesign ToastCard for warm minimal",
-      "description": "Update toast notifications with warm minimal styling.",
+      "title": "Implement the Codex adapter",
+      "description": "Render the selected skill set into a project-level AGENTS.md format suitable for Codex or ChatGPT-style coding agents.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/toast/toast_card.dart",
-        "Card background: white with premium soft shadow",
-        "Left accent bar preserved but uses theme colors",
-        "Icon container: 10% opacity accent fill",
-        "Radius: 14.r",
-        "Typecheck passes"
+        "Codex output generates a single AGENTS.md file.",
+        "Selected skills are aggregated into clear sections inside that file.",
+        "Each section includes source metadata such as version and last verified date where appropriate.",
+        "The preview shown for Codex matches the actual generated output.",
+        "The adapter can handle multiple selected skills without ambiguous ordering."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/toast/toast_card.dart"
+      "type": "adapter",
+      "priority": 1,
+      "passes": false,
+      "notes": "The prototype treats Codex as an AGENTS.md target; the implementation should formalize that behavior."
     },
     {
       "id": "US-040",
-      "title": "Redesign CustomDivider for warm minimal",
-      "description": "Update divider to use warm border color.",
+      "title": "Implement the generic AGENTS.md adapter",
+      "description": "Provide a generic AGENTS.md output for tools that do not have a dedicated adapter but still consume repository-level instructions.",
       "acceptanceCriteria": [
-        "Update packages/munawala_ui/lib/src/components/divider/custom_divider.dart",
-        "Color: border color from theme Color(0xFFE8E3DD)",
-        "Thickness: 0.5px for subtle appearance",
-        "Typecheck passes"
+        "Generic output generates a single AGENTS.md file.",
+        "Its content is distinct from Codex only where target-specific wording is needed.",
+        "The generic preview reflects the real adapter output.",
+        "The adapter can be selected independently of Codex.",
+        "The generated file remains portable across agent tools that read AGENTS.md."
       ],
-      "type": "frontend",
-      "priority": 3,
-      "passes": true,
-      "notes": "File: packages/munawala_ui/lib/src/components/divider/custom_divider.dart"
+      "type": "adapter",
+      "priority": 2,
+      "passes": false,
+      "notes": "This story keeps the product useful beyond branded agents."
     },
     {
       "id": "US-041",
-      "title": "Remove Customer BottomNavBar and implement single-screen dashboard",
-      "description": "Remove the bottom navigation bar from the Customer app. Replace with single-screen CustomScrollView dashboard architecture.",
+      "title": "Build browser-side zip packaging and download",
+      "description": "Generate the final downloadable archive entirely in the browser so users can download their selected targets without any backend service.",
       "acceptanceCriteria": [
-        "Remove or deprecate apps/customer/lib/src/features/navigation/presentation/widgets/bottom_nav_bar.dart",
-        "Update MainShellScreen to remove BottomNavBar",
-        "Home screen becomes the single dashboard with all content in a CustomScrollView with slivers",
-        "Secondary screens accessed via full-screen pushes or showModalBottomSheet",
-        "Activities accessible via Quick Actions, not a persistent tab",
-        "GoRouter routes updated — remove StatefulShellRoute shell branches",
-        "FAB positioned with FloatingActionButtonLocation.startFloat (LEFT-aligned)",
-        "FAB is extended: primary Color(0xFFE26B27), label 'New Order'",
-        "Typecheck passes"
+        "The browser assembles all selected target outputs into one zip file.",
+        "The zip filename follows a predictable project-skills-date style.",
+        "The download button enters a working state while the zip is being assembled.",
+        "The UI shows a completed state when the zip is ready.",
+        "No skill content or answers are sent to a remote service during packaging."
       ],
-      "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "MainShellScreen simplified to single-screen dashboard with extended FAB. StatefulShellRoute replaced with GoRoute. BottomNavBar deprecated. Activities route is now a full-screen push."
+      "type": "generator",
+      "priority": 1,
+      "passes": false,
+      "notes": "The prototype fakes download state; this story makes it real."
     },
     {
       "id": "US-042",
-      "title": "Update Customer AppRouter for single-screen architecture",
-      "description": "Update GoRouter configuration to remove shell routes and support single-screen dashboard.",
+      "title": "Implement the bilingual compare canvas route",
+      "description": "Build the side-by-side parity canvas used in the prototype so designers and reviewers can compare English/LTR and Arabic/RTL renderings of the same screen from a single data source.",
       "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/router/app_router.dart",
-        "Remove StatefulShellRoute — use standard GoRoute for /home",
-        "All secondary screens are standard GoRoutes: /activities, /orders/:id, /profile, /wallet, etc.",
-        "CupertinoPage transitions preserved for iOS feel",
-        "Auth redirect logic preserved",
-        "Typecheck passes"
+        "The app has a compare view reachable from the main navigation.",
+        "The compare view can switch between landing, questionnaire, review, generate, and detail screens.",
+        "Each compare screen shows English/LTR and Arabic/RTL side by side.",
+        "Both frames are rendered from the same underlying data and component structure.",
+        "The compare view is useful for visual QA rather than just decorative."
       ],
       "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "Already completed as part of US-041. StatefulShellRoute removed, all routes are standard GoRoutes with CupertinoPage, auth redirect preserved."
+      "priority": 2,
+      "passes": false,
+      "notes": "This is a concrete system-design element from the prototype and should remain part of the product workflow."
     },
     {
       "id": "US-043",
-      "title": "Redesign Customer HomeScreen as single-screen dashboard",
-      "description": "Rebuild the Customer home screen as a CustomScrollView dashboard with SliverAppBar, hero section, quick actions, and activity feed.",
+      "title": "Implement the edit-mode tweaks panel",
+      "description": "Carry over the prototype's internal tweaks panel so designers or maintainers can quickly switch language, theme, and primary swatch in edit mode without affecting normal users.",
       "acceptanceCriteria": [
-        "Rebuild apps/customer/lib/src/features/home/presentation/pages/home_screen.dart",
-        "Use CustomScrollView with SliverAppBar (pinned, transparent background Color(0xFFFEFCF9))",
-        "SliverAppBar: Greeting text ('Good Morning, [Name]') from ProfileBloc, notification bell icon opposite side",
-        "All content as SliverToBoxAdapter sections",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "Pull-to-refresh preserved",
-        "Shimmer loading state for all sections",
-        "Error state with MunawalaErrorCard",
-        "ScreenUtil for all dimensions",
-        "RTL-ready with EdgeInsetsDirectional",
-        "Typecheck passes"
+        "An edit-mode-only tweaks panel exists.",
+        "The panel can switch language, theme, and primary swatch.",
+        "The panel can collapse and expand.",
+        "The panel communicates with the host or app state without breaking normal navigation.",
+        "When edit mode is inactive, the panel is hidden from regular users."
       ],
       "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Rebuilt with CustomScrollView + SliverAppBar. Greeting + notification bell in pinned app bar. All sections as SliverToBoxAdapter. Background 0xFFFEFCF9. Pull-to-refresh preserved. ScreenUtil + RTL-ready."
+      "priority": 3,
+      "passes": false,
+      "notes": "This story is primarily for design iteration, but it is part of the prototype system design."
     },
     {
       "id": "US-044",
-      "title": "Redesign Customer HomeHeader with greeting and notifications",
-      "description": "Update home header widget with warm minimal greeting and notification bell.",
+      "title": "Create complete English and Arabic message catalogs",
+      "description": "Move the prototype's bilingual copy into structured locale files so every screen, label, hint, and status string has a production-ready translation source.",
       "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/home/presentation/widgets/home_header.dart",
-        "Greeting text: 'Good Morning/Afternoon/Evening, [Name]' in foreground, 20.sp bold",
-        "Subtitle: date or friendly text in mutedForeground, 14.sp",
-        "Notification bell with unread badge in primary color",
-        "Profile settings icon navigates to profile",
-        "No heavy background — transparent on SliverAppBar",
-        "Text overflow handled with maxLines and ellipsis",
-        "Typecheck passes"
+        "All user-facing UI strings live in structured English and Arabic locale files.",
+        "Landing, library, detail, questionnaire, review, generate, compare, and footer copy are covered.",
+        "Status labels, action labels, and helper text are localized.",
+        "There is no hard-coded English-only UI text left in the main product flow.",
+        "Locale files are organized so contributors can add more languages later without rewriting components."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Redesigned with combined greeting + name (20.sp bold), locale-aware date subtitle (14.sp mutedForeground), notification bell with unread badge (primary dot) via NotificationsBloc, profile icon. Both icons use MunawalaPressScale + white bg + MunawalaShadows.subtle + 10.r radius. PositionedDirectional for RTL badge. Home screen updated to create local NotificationsBloc for unread count."
+      "type": "i18n",
+      "priority": 1,
+      "passes": false,
+      "notes": "The prototype already contains near-complete bilingual copy and should be treated as the baseline."
     },
     {
       "id": "US-045",
-      "title": "Build Customer Hero Section — Active Order Card",
-      "description": "Create the hero section showing the active order as a large elevated card, or an empty-state invite to send a package.",
+      "title": "Meet the accessibility bar across the core flows",
+      "description": "Make the product fully keyboard navigable and screen-reader friendly across landing, questionnaire, library, detail, review, and generate screens.",
       "acceptanceCriteria": [
-        "Create/update hero section widget in home/presentation/widgets/",
-        "Active state: Large white MunawalaCard (hero radius 16.4.r) showing route (pickup → destination), visual progress bar in primary Color(0xFFE26B27), ETA, status text",
-        "Progress bar: segmented or continuous based on order lifecycle status",
-        "Tap navigates to order detail / live tracking",
-        "Empty state: beautifully styled surfaceVariant container inviting user to send a package — acts as massive secondary CTA",
-        "Empty state has subtle illustration/icon, friendly text, and 'Send a Package' button",
-        "Shimmer loading state for the hero card",
-        "ScreenUtil for all dimensions",
-        "Typecheck passes"
+        "All interactive controls are reachable and usable by keyboard alone.",
+        "Custom radio-card, checkbox-card, toggle, and stepper interactions expose appropriate semantics.",
+        "Visible focus states exist for all interactive controls.",
+        "There are no keyboard traps in the questionnaire, compare view, or previews.",
+        "The main flows are screen-reader navigable with meaningful labels and headings."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Created hero_section.dart with HeroActiveOrderCard (MunawalaCard.hero, route visualization, segmented progress bar, status-aware colors/icons), HeroEmptyState (surfaceVariant CTA with send icon and pill button), HeroShimmer. Replaced ActiveOrdersList in HomeScreen. L10n strings: hero_your_delivery, hero_payment_confirmed, hero_ready_to_send, hero_ready_to_send_subtitle."
+      "type": "quality",
+      "priority": 1,
+      "passes": false,
+      "notes": "Accessibility is a core product requirement, not a later polish pass."
     },
     {
       "id": "US-046",
-      "title": "Build Customer Quick Actions horizontal pills",
-      "description": "Create horizontal row of muted pill buttons for History, Estimate, Receivers.",
+      "title": "Verify RTL and bilingual visual parity",
+      "description": "Systematically validate that Arabic RTL layouts are first-class across navigation, forms, cards, code previews, and detail metadata layouts.",
       "acceptanceCriteria": [
-        "Create QuickActionPills widget in home/presentation/widgets/",
-        "Horizontal scrollable row of pill buttons",
-        "Each pill: secondary Color(0xFFF5F2EE) background, foreground text, icon + label",
-        "Pills: 'History' (clock icon), 'Estimate' (calculator icon), 'Receivers' (people icon)",
-        "Pill radius: full circular (pill shape)",
-        "Padding: 8.h vertical, 16.w horizontal per pill",
-        "Press-scale animation on tap",
-        "Navigate to respective screens on tap",
-        "ScreenUtil for all dimensions",
-        "Typecheck passes"
+        "All core screens are tested in both English and Arabic.",
+        "RTL flipping works for spacing, alignment, icon placement, and navigation direction.",
+        "Typography changes appropriately for Arabic headings and body copy.",
+        "The compare canvas helps reviewers detect parity regressions quickly.",
+        "Any component added to the system is considered incomplete until it has been checked in both directions."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Created quick_action_pills.dart with QuickActionPills widget. Three pills: History (clock icon → activities), Estimate (calculator icon → orderFlow), Receivers (people icon → activities). MunawalaPressScale animation, secondary background, pill-shaped, ScreenUtil sizing. L10n strings added (en/ar). Exported via home/exports.dart."
+      "type": "quality",
+      "priority": 1,
+      "passes": false,
+      "notes": "This story operationalizes the prototype's compare route as a quality discipline."
     },
     {
       "id": "US-047",
-      "title": "Build Customer Recent Activity Feed section",
-      "description": "Create vertical list of recent orders/activity with empty and loading states.",
+      "title": "Add automated tests for logic, state, and rendering primitives",
+      "description": "Protect the product's recommendation logic, state restoration, and rendering helpers with unit and component-level tests.",
       "acceptanceCriteria": [
-        "Create RecentActivitySection widget in home/presentation/widgets/",
-        "Section header: 'Recent Activity' in foreground 16.sp semibold, 'See All' link in primary",
-        "List of recent order cards (3-5 items max) using redesigned OrderListCard",
-        "Each card: white background, soft shadow, route summary, status badge, date",
-        "Empty state: MunawalaEmptyState with 'No recent activity' message",
-        "Shimmer loading: MunawalaShimmer.list(3)",
-        "Error state: MunawalaErrorCard with retry",
-        "Typecheck passes"
+        "The recommendation engine has test coverage for its major branching rules.",
+        "State restoration from localStorage has test coverage for valid and malformed values.",
+        "Variable resolution logic has test coverage.",
+        "At least key UI primitives or page-level components have component tests.",
+        "Test failures block CI."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Created recent_activity_section.dart with RecentActivitySection widget. Shows recent non-draft orders as compact MunawalaCard items with status badge, route summary, status label, and date. Empty/loading/error states via MunawalaEmptyState, MunawalaShimmer.list(3), MunawalaErrorCard. Section header with 'See All' link to activities. L10n strings added (en/ar). Exported via home/exports.dart. Integrated into HomeScreen after DraftOrdersList with 350ms staggered animation."
+      "type": "quality",
+      "priority": 2,
+      "passes": false,
+      "notes": "The prototype logic is simple enough to test exhaustively; the production system should do so."
     },
     {
       "id": "US-048",
-      "title": "Redesign PromoBannerCarousel for warm minimal",
-      "description": "Update promotional banner carousel with warm minimal styling.",
+      "title": "Add end-to-end coverage for questionnaire to download",
+      "description": "Test the main value path from answering questions to downloading a zip so regressions in generation, routing, or state handling are caught early.",
       "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/home/presentation/widgets/promo_banner_carousel.dart",
-        "Carousel cards: hero radius 16.4.r, no hard border",
-        "Page indicator dots: primary for active, secondary for inactive",
-        "Auto-scroll preserved",
-        "Default fallback banner styled warmly",
-        "Typecheck passes"
+        "An end-to-end test covers landing to questionnaire entry.",
+        "The test fills the questionnaire, reaches review, and selects or confirms skills.",
+        "The test reaches the generate step and triggers download.",
+        "The test verifies the resulting file list or archive structure for at least one multi-target path.",
+        "At least one end-to-end scenario exercises Arabic or RTL behavior."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/home/presentation/widgets/promo_banner_carousel.dart. Redesigned with hero radius 16.4.r, warm gradient cards, soft primary glow shadow, auto-scroll timer, shimmer loading, warm default banner, animated page indicators with primary/secondary colors."
+      "type": "quality",
+      "priority": 2,
+      "passes": false,
+      "notes": "The acceptance flow in the prototype should become the first real E2E path."
     },
     {
       "id": "US-049",
-      "title": "Redesign ActiveOrdersList carousel cards",
-      "description": "Update active order cards (FindingTravellerCard, etc.) with warm minimal styling.",
+      "title": "Run CI quality gates on every pull request",
+      "description": "Automate validation for linting, typechecking, testing, skill generation, and build so the repo remains healthy as content and features expand.",
       "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/home/presentation/widgets/active_orders_list.dart",
-        "Update apps/customer/lib/src/features/home/presentation/widgets/active_order_cards.dart",
-        "Cards: white background, soft shadow, hero radius 16.4.r",
-        "Status indicators: primary for active, success for matched, warning for pending",
-        "Animated transitions between states",
-        "Typecheck passes"
+        "A GitHub Actions workflow runs on pull requests.",
+        "CI installs dependencies with pnpm.",
+        "CI runs skill generation before dependent checks.",
+        "CI runs lint, typecheck, tests, and build.",
+        "Build or generation failures prevent merges."
       ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Redesigned _CardShell: white bg, hero shadow (MunawalaShadows.hero), 16.4.r radius, no border. All cards wrap in MunawalaPressScale for press animation. Status colors updated: primary for active (FindingTraveller), warning for pending (AwaitingPayment), success for matched (InTransitPickup, InTransitReceiver). RTL-ready with EdgeInsetsDirectional. Warm minimal design tokens throughout."
+      "type": "foundation",
+      "priority": 1,
+      "passes": false,
+      "notes": "This story turns local discipline into enforced repository policy."
     },
     {
       "id": "US-050",
-      "title": "Redesign DraftOrderCard and DraftOrdersList",
-      "description": "Update draft order cards with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/home/presentation/widgets/draft_order_card.dart",
-        "Update apps/customer/lib/src/features/home/presentation/widgets/draft_orders_list.dart",
-        "Card: surfaceVariant background, subtle border, route summary",
-        "Resume button in primary color",
-        "Radius: 10.r",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Redesigned DraftOrderCard: surfaceVariant (0xFFFAF7F3) background, MunawalaShadows.subtle, 10.r radius, MunawalaPressScale for press feedback, primary-colored resume pill button with l10n text, draft icon badge. DraftOrdersList: surfaceVariant empty state with layered icon, warm minimal palette constants, removed hard borders."
-    },
-    {
-      "id": "US-051",
-      "title": "Redesign Customer SignInScreen for warm minimal",
-      "description": "Update sign-in screen with warm off-white background, premium inputs, and warm styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/auth/presentation/pages/sign_in/sign_in_screen.dart",
-        "Background: AuthBackground with warm off-white Color(0xFFFEFCF9)",
-        "Phone field: PremiumPhoneField with warm colors",
-        "National ID field: PremiumInputField with warm colors",
-        "Submit button: PremiumOrangeButton",
-        "Step indicator: AuthStepIndicator with warm colors",
-        "Terms footer: PremiumTermsFooter with warm colors",
-        "Language toggle: warm pill button",
-        "Staggered entrance animations preserved",
-        "All ScreenUtil dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Replaced MunawalaColors.light.* references with colorScheme tokens. Removed munawala_theme import. All underlying auth components already warm minimal from prior stories. Staggered animations, ScreenUtil dimensions, RTL-ready all preserved."
-    },
-    {
-      "id": "US-052",
-      "title": "Redesign Customer VerificationScreen for warm minimal",
-      "description": "Update OTP verification screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/auth/presentation/pages/verification/verification.dart",
-        "Background: warm off-white",
-        "OTP field: PremiumOtpField with warm colors",
-        "Resend row: PremiumResendRow with warm colors",
-        "Submit button: PremiumOrangeButton",
-        "Loading overlay: AuthLoadingOverlay with warm blur",
-        "Auto-read SMS preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Replaced MunawalaColors.light.foreground with colorScheme.onSurface. Replaced EdgeInsets with EdgeInsetsDirectional for RTL. All underlying auth components already warm minimal from prior stories (US-026 to US-033)."
-    },
-    {
-      "id": "US-053",
-      "title": "Redesign Customer NafathScreen for warm minimal",
-      "description": "Update Nafath verification screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/auth/presentation/pages/nafath/nafath_screen.dart",
-        "Background: warm off-white",
-        "Verification code circle: white card with soft shadow, primary text",
-        "Nafath illustration: warm-toned pulsing animation",
-        "Open Nafath button: outlined style in primary",
-        "Polling indicator: subtle pulse in primary color",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Redesigned NafathScreen: replaced MunawalaColors.light.foreground with file-level Warm Minimal palette constants, replaced raw CircularProgressIndicator with warm pulsing dot (_WarmPollingIndicator), replaced PremiumOrangeButton with outlined _NafathOutlinedButton (primary border + open_in_new icon + press-scale), extracted _buildLoadingSkeleton and _buildContent helpers, warm shimmer skeleton lines (_WarmShimmerLine with surfaceVariant base), EdgeInsetsDirectional for RTL. All auth tests pass."
-    },
-    {
-      "id": "US-054",
-      "title": "Redesign Customer auth widgets (NafathIllustration, VerificationCodeCircle)",
-      "description": "Update auth-specific widgets with warm minimal colors.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/auth/presentation/widgets/nafath_illustration.dart",
-        "Update apps/customer/lib/src/features/auth/presentation/widgets/verification_code_circle.dart",
-        "NafathIllustration: warm-toned pulse, primary color accents",
-        "VerificationCodeCircle: white background, soft shadow, primary number text, 20.sp",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Redesigned NafathIllustration: file-level const _primary palette, warmer pulse (softer blur 24-40, opacity 0.18-0.35), deeper warm gradient endpoint (0xFFD45E1F), subtler ring borders (1.5 width, 0.25 max opacity), Warm Minimal soft shadow (offset 0,8 blur 24 black 0.04). Redesigned VerificationCodeCircle: white background (removed primary border), soft shadow (black 0.04, blur 24, offset 0,8), primary 20.sp text (was 32.sp), 16.r radius, softer shimmer (0.06 alpha)."
-    },
-    {
-      "id": "US-055",
-      "title": "Redesign Customer OrderFlowScreen for warm minimal",
-      "description": "Update the multi-step order creation flow coordinator with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/pages/order_flow_screen.dart",
-        "Progress indicator: warm colors, primary for active steps",
-        "Smooth page transitions between steps",
-        "Background: warm off-white",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/pages/order_flow_screen.dart"
-    },
-    {
-      "id": "US-056",
-      "title": "Redesign Customer LocationScreen for warm minimal",
-      "description": "Update the map-based city/location selection screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/pages/location_screen.dart",
-        "Bottom sheet: white background, xxxl radius 22.8.r",
-        "AddressChip: white pill with soft shadow, primary text",
-        "PrecisionPin: warm-toned pin with bounce animation",
-        "CityQuickSelect: warm surfaceVariant background, primary selected state",
-        "RouteInfoBar: white card with route info, distance badge",
-        "GPS permission overlay: warm frosted glass",
-        "Map style: light mode appropriate (remove dark style)",
-        "All ScreenUtil dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "Updated LocationScreen bottom sheet (white bg, 22.8.r radius), AddressChip (white pill, soft shadow, primary text), RouteInfoBar (white card, distance badge), GpsPermissionOverlay (warm frosted glass), CityQuickSelect (surfaceVariant bg). Map style was already warm light mode."
-    },
-    {
-      "id": "US-057",
-      "title": "Redesign Customer DraftDetailsScreen for warm minimal",
-      "description": "Update the draft details form screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/pages/draft_details_screen.dart",
-        "Background: warm off-white",
-        "Location summary card: white, soft shadow, route display",
-        "Transport type selector: warm card style, primary selected state",
-        "Receiver fields: warm input styling (surfaceVariant fill)",
-        "Saved receivers chips: secondary background, horizontal scroll",
-        "Long-press delete sheet: warm bottom sheet xxxl radius",
-        "All ScreenUtil dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/pages/draft_details_screen.dart. Redesigned with warm minimal: soft shadows instead of borders on location card, secondary bg on receiver chips, xxxl radius bottom sheet, MunawalaPressScale on edit button, RTL-ready EdgeInsetsDirectional."
-    },
-    {
-      "id": "US-058",
-      "title": "Redesign Customer OrderDetailsScreen for warm minimal",
-      "description": "Update the package details screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/pages/order_details_screen.dart",
-        "Photo upload area: surfaceVariant dashed border, camera/gallery icons",
-        "Dimension presets: pill chips in secondary color, primary when selected",
-        "Weight input: warm styled input field",
-        "All ScreenUtil dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/pages/order_details_screen.dart"
-    },
-    {
-      "id": "US-059",
-      "title": "Redesign Customer OrderSubmittedScreen for warm minimal",
-      "description": "Update the post-submission radar/matching screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/pages/order_submitted_screen.dart",
-        "Background: warm off-white",
-        "Radar sweep: primary color with warm gradient",
-        "Celebration particles: primary and warm accent colors",
-        "Status text: foreground color, 18.sp",
-        "Action buttons: primary CTA, ghost secondary",
-        "All ScreenUtil dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/pages/order_submitted_screen.dart"
-    },
-    {
-      "id": "US-060",
-      "title": "Redesign Customer order flow location widgets",
-      "description": "Update all location-related widgets (AddressChip, AnimatedDashedLine, GpsPermissionOverlay, LocationDot, PrecisionPin, RouteInfoBar, ShimmerLine) with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update all files in apps/customer/lib/src/features/order_flow/presentation/widgets/location/",
-        "AddressChip: white pill, soft shadow, foreground text",
-        "AnimatedDashedLine: mutedForeground color dashes",
-        "GpsPermissionOverlay: warm frosted glass (white 60% opacity + blur)",
-        "LocationDot: primary color for active, mutedForeground for inactive",
-        "PrecisionPin: primary accent with warm shadow",
-        "RouteInfoBar: white card, soft shadow, distance in mutedForeground",
-        "ShimmerLine: warm shimmer tones",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "Directory: apps/customer/lib/src/features/order_flow/presentation/widgets/location/. All 7 widgets redesigned with warm minimal palette constants."
-    },
-    {
-      "id": "US-061",
-      "title": "Redesign Customer TransportTypeSelector for warm minimal",
-      "description": "Update transport selection cards with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/widgets/components/transport_type_selector.dart",
-        "Card: white background, soft shadow when selected, surfaceVariant when unselected",
-        "Selected border: primary 2px",
-        "Price text: foreground bold, badge in primary for premium (air)",
-        "Icons: warm-toned transport icons",
-        "Press-scale animation",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/widgets/components/transport_type_selector.dart"
-    },
-    {
-      "id": "US-062",
-      "title": "Redesign Customer CityQuickSelect for warm minimal",
-      "description": "Update city picker with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/widgets/components/city_quick_select.dart",
-        "Tab bar: primary selected, mutedForeground unselected",
-        "City chips: secondary background, primary when selected",
-        "Search field: surfaceVariant fill, warm styling",
-        "List items: foreground text, subtle dividers",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/widgets/components/city_quick_select.dart"
-    },
-    {
-      "id": "US-063",
-      "title": "Redesign Customer PaymentMethodSelector for warm minimal",
-      "description": "Update payment method selection list with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/widgets/components/payment_method_selector.dart",
-        "Method cards: white, soft shadow, primary check when selected",
-        "Apple Pay: warm-styled native button",
-        "Card icons: warm-toned payment provider logos",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/widgets/components/payment_method_selector.dart"
-    },
-    {
-      "id": "US-064",
-      "title": "Redesign Customer RadarSearchPainter for warm minimal",
-      "description": "Update the radar sweep custom painter with warm minimal colors.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/widgets/radar_search_painter.dart",
-        "Sweep color: primary gradient (Color(0xFFE26B27) to transparent)",
-        "Ring colors: secondary Color(0xFFF5F2EE) expanding",
-        "Center dot: primary color",
-        "Background: transparent (warm off-white shows through)",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/widgets/radar_search_painter.dart"
-    },
-    {
-      "id": "US-065",
-      "title": "Redesign Customer CelebrationPainter for warm minimal",
-      "description": "Update the celebration particles painter with warm palette.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order_flow/presentation/widgets/celebration_painter.dart",
-        "Particle colors: primary, success, warning warm tones",
-        "Burst animation preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order_flow/presentation/widgets/celebration_painter.dart"
-    },
-    {
-      "id": "US-066",
-      "title": "Redesign Customer MapHomeScreen for warm minimal",
-      "description": "Update the full-screen map screen with warm minimal controls and panel.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/map/presentation/pages/map_home_screen.dart",
-        "SlidingUpPanel: white, xxxl radius 22.8.r top corners",
-        "Search bar: surfaceVariant fill, rounded, warm icon",
-        "My-location FAB: white circle, soft shadow, primary icon",
-        "Map controls: warm-styled buttons",
-        "Light map style (no dark mode)",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/map/presentation/pages/map_home_screen.dart"
-    },
-    {
-      "id": "US-067",
-      "title": "Redesign Customer LocationPermissionScreen for warm minimal",
-      "description": "Update location permission request screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/map/presentation/pages/location_permission_screen.dart",
-        "Background: warm off-white",
-        "Illustration: warm-toned location/map graphic",
-        "Permission text: foreground title, mutedForeground description",
-        "CTA button: primary styled",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/map/presentation/pages/location_permission_screen.dart"
-    },
-    {
-      "id": "US-068",
-      "title": "Redesign Customer map widgets (MapWidget, AnimatedRouteMapWidget, PulsingMarkerOverlay)",
-      "description": "Update map widgets with warm minimal overlay styling.",
-      "acceptanceCriteria": [
-        "Update all files in apps/customer/lib/src/features/map/presentation/widgets/",
-        "MapWidget: light map style only",
-        "AnimatedRouteMapWidget: primary color polyline, warm marker colors",
-        "PulsingMarkerOverlay: primary color pulse with warm glow",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "Directory: apps/customer/lib/src/features/map/presentation/widgets/"
-    },
-    {
-      "id": "US-069",
-      "title": "Redesign Customer ActivitiesScreen for warm minimal",
-      "description": "Update order history screen with warm minimal styling, filter tabs, and cards.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/activities/presentation/pages/activities_screen.dart",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "AppBar: transparent, foreground title 'My Orders'",
-        "Filter tabs: secondary pills (active/completed/draft), primary when selected",
-        "Pull-to-refresh preserved",
-        "Empty state: MunawalaEmptyState per tab",
-        "Loading: shimmer cards",
-        "Error: MunawalaErrorCard",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/activities/presentation/pages/activities_screen.dart"
-    },
-    {
-      "id": "US-070",
-      "title": "Redesign Customer OrderDetailScreen for warm minimal",
-      "description": "Update the full order detail view with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/activities/presentation/pages/order_detail_screen.dart",
-        "Background: warm off-white",
-        "Route card: white, hero radius, route visualization",
-        "Status section: primary progress bar, status text",
-        "Action buttons: primary CTA, ghost secondary",
-        "Payment sheet: warm bottom sheet styling",
-        "Cancel/delete confirmation: AppConfirmationSheet with warm colors",
-        "Chat button: primary icon",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/activities/presentation/pages/order_detail_screen.dart"
-    },
-    {
-      "id": "US-071",
-      "title": "Redesign Customer OrderListCard for warm minimal",
-      "description": "Update the order card used in activities list.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/activities/presentation/widgets/order_list_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Route: pickup → destination in foreground, mutedForeground secondary text",
-        "Status badge: colored pill (primary active, success completed, warning draft, destructive cancelled)",
-        "Date in mutedForeground, 12.sp",
-        "Traveller name with ellipsis overflow",
-        "Press-scale animation on tap",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/activities/presentation/widgets/order_list_card.dart"
-    },
-    {
-      "id": "US-072",
-      "title": "Redesign Customer LiveTrackingScreen for warm minimal",
-      "description": "Update the live tracking map screen with warm minimal overlay controls.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order/presentation/pages/live_tracking_screen.dart",
-        "Map: light style only",
-        "Info overlay: white card, soft shadow, xxxl radius bottom",
-        "Route: primary color polyline",
-        "Traveller marker: primary accent",
-        "Chat button: white circle FAB, primary icon",
-        "Status text: foreground color",
-        "ETA badge: primary background, white text",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 10,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order/presentation/pages/live_tracking_screen.dart"
-    },
-    {
-      "id": "US-073",
-      "title": "Redesign Customer TapPaymentCallbackScreen for warm minimal",
-      "description": "Update the payment callback screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/order/presentation/pages/tap_payment_callback_screen.dart",
-        "Background: warm off-white",
-        "Loading indicator: warm styled spinner/animation",
-        "Success/error states: warm themed",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 10,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/order/presentation/pages/tap_payment_callback_screen.dart"
-    },
-    {
-      "id": "US-074",
-      "title": "Redesign Customer ChatScreen for warm minimal",
-      "description": "Update the in-order chat screen with warm minimal message bubbles and composer.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/chat/presentation/pages/chat_screen.dart",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "AppBar: transparent, order info subtitle",
-        "Message list: warm spacing, date separators",
-        "Auto-scroll preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/chat/presentation/pages/chat_screen.dart"
-    },
-    {
-      "id": "US-075",
-      "title": "Redesign Customer MessageBubble for warm minimal",
-      "description": "Update chat message bubbles with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/chat/presentation/widgets/message_bubble.dart",
-        "User bubble: primary Color(0xFFE26B27) background, white text",
-        "Other bubble: surfaceElevated white, foreground text, soft shadow",
-        "Radius: 16.r with directional corners",
-        "Timestamp: mutedForeground, 10.sp",
-        "Image bubbles: rounded with shadow",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/chat/presentation/widgets/message_bubble.dart"
-    },
-    {
-      "id": "US-076",
-      "title": "Redesign Customer ChatComposer for warm minimal",
-      "description": "Update the chat input bar with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/chat/presentation/widgets/chat_composer.dart",
-        "Container: white background, soft shadow top, radius 16.r",
-        "Input field: surfaceVariant fill, no border",
-        "Send button: primary circular icon button, appears only with text",
-        "Image picker: subtle icon button",
-        "No frosted glass — clean white with shadow",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "Redesigned: removed BackdropFilter/frosted glass, white background with soft top shadow, radius 16.r, surfaceVariant input fill with no border, primary circular send button with scale+opacity animation (appears only with text), subtle image picker icon."
-    },
-    {
-      "id": "US-077",
-      "title": "Redesign Customer DateSeparator for warm minimal",
-      "description": "Update chat date separator with warm styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/chat/presentation/widgets/date_separator.dart",
-        "Text: mutedForeground, 12.sp",
-        "Line: border color, 0.5px",
-        "Centered label",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "Redesigned: centered label with horizontal divider lines (0.5px, border color at 0.15 alpha), mutedForeground text at 12.sp w500."
-    },
-    {
-      "id": "US-078",
-      "title": "Redesign Customer ImagePreviewScreen for warm minimal",
-      "description": "Update full-screen image preview with warm minimal controls.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/chat/presentation/widgets/image_preview_screen.dart",
-        "Background: warm dark (semi-transparent overlay on warm off-white)",
-        "Controls: white icons with soft shadow",
-        "Close button: warm styled back button",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "Redesigned: warm dark background (Color(0xF01E1B18)), warm overlay for AppBar (Color(0x801E1B18)), circular close button with white at 0.15 alpha and soft shadow."
-    },
-    {
-      "id": "US-079",
-      "title": "Redesign Customer ProfileScreen for warm minimal",
-      "description": "Update profile screen with warm minimal card sections and menu items.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/profile/presentation/pages/profile/profile_screen.dart",
-        "Background: warm off-white",
-        "Profile header: avatar initial in primary circle, name + phone in foreground",
-        "Menu sections in white MunawalaCard groups with subtle shadow",
-        "Each TapItem: icon in mutedForeground, label in foreground, trailing arrow",
-        "Logout: destructive colored text",
-        "Version info: mutedForeground small text at bottom",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 12,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/profile/presentation/pages/profile/profile_screen.dart"
-    },
-    {
-      "id": "US-080",
-      "title": "Redesign Customer Profile components (AppBar, TapItem)",
-      "description": "Update profile sub-components with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/profile/presentation/pages/profile/components/app_bar.dart",
-        "Update apps/customer/lib/src/features/profile/presentation/pages/profile/components/tap_item.dart",
-        "AppBar: transparent, foreground title",
-        "TapItem: 56.h height, icon 20.sp, horizontal padding 16.w, trailing arrow in mutedForeground",
-        "Subtle divider between items within same card section",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 12,
-      "passes": true,
-      "notes": "Files: apps/customer/lib/src/features/profile/presentation/pages/profile/components/"
-    },
-    {
-      "id": "US-081",
-      "title": "Redesign Customer WalletScreen for warm minimal",
-      "description": "Update wallet screen with warm minimal cards, balance display, and transactions.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/wallet/presentation/pages/wallet_screen.dart",
-        "Background: warm off-white",
-        "Tab switcher: warm pill tabs",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/wallet/presentation/pages/wallet_screen.dart"
-    },
-    {
-      "id": "US-082",
-      "title": "Redesign Customer WalletTap view for warm minimal",
-      "description": "Update the wallet view with balance card, tab bar, and transactions list.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/wallet/presentation/pages/wallet_tap.dart",
-        "Balance card: white hero card, soft shadow, primary balance text",
-        "Tab bar: warm styled tabs",
-        "Transaction list: warm cards with icons",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/wallet/presentation/pages/wallet_tap.dart"
-    },
-    {
-      "id": "US-083",
-      "title": "Redesign Customer wallet widgets (Balance, TabBar, TransactionItem, Transactions, Welcome)",
-      "description": "Update all wallet sub-widgets with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update all files in apps/customer/lib/src/features/wallet/presentation/widgets/",
-        "Balance: hero card, large primary amount text, soft shadow",
-        "WalletShipmentTabBar: secondary pills, primary selected",
-        "TransactionItem: white row, icon + description + amount, date in mutedForeground",
-        "Transactions: scrollable list with pull-to-refresh",
-        "Welcome: greeting in foreground color",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "All wallet widgets redesigned: Balance (hero card with amount prop), WalletShipmentTabBar (secondary pill tabs with primary selected), TransactionItem (icon prop added), Transactions (RefreshIndicator + ListView), Welcome (foreground colors default). WalletTap updated to use Balance widget."
-    },
-    {
-      "id": "US-084",
-      "title": "Redesign Customer ShippingScreen for warm minimal",
-      "description": "Update shipping screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/shipping/presentation/pages/shipping_screen.dart",
-        "Background: warm off-white",
-        "Header: warm greeting, no dark overlay",
-        "Order list container: white card with radius 16.r",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/shipping/presentation/pages/shipping_screen.dart"
-    },
-    {
-      "id": "US-085",
-      "title": "Redesign Customer ShippingItem widget for warm minimal",
-      "description": "Update shipping item with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/shipping/presentation/widgets/shipping_item.dart",
-        "White card, soft shadow, route info, status badge",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/shipping/presentation/widgets/shipping_item.dart"
-    },
-    {
-      "id": "US-086",
-      "title": "Redesign Customer NotificationsScreen for warm minimal",
-      "description": "Update notification inbox with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/notifications/presentation/pages/notifications_screen.dart",
-        "Background: warm off-white",
-        "AppBar: transparent, 'Notifications' title",
-        "Empty state: MunawalaEmptyState with bell icon",
-        "Loading: shimmer cards",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 14,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/notifications/presentation/pages/notifications_screen.dart"
-    },
-    {
-      "id": "US-087",
-      "title": "Redesign Customer NotificationItem for warm minimal",
-      "description": "Update notification item widget with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/notifications/presentation/widgets/notification_item.dart",
-        "Unread: white card with primary left accent (3px), soft shadow",
-        "Read: surfaceVariant background, no shadow",
-        "Title: foreground, 14.sp semibold",
-        "Body: mutedForeground, 12.sp",
-        "Timestamp: mutedForeground, 11.sp",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 14,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/notifications/presentation/widgets/notification_item.dart"
-    },
-    {
-      "id": "US-088",
-      "title": "Redesign Customer PhoneUpdateFormScreen for warm minimal",
-      "description": "Update phone update form with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/phone_update/presentation/pages/phone_update_form_screen.dart",
-        "Background: warm off-white",
-        "Input fields: warm styled (surfaceVariant fill, no border, focus glow)",
-        "Submit button: primary CTA",
-        "Recovery flow variant preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 15,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/phone_update/presentation/pages/phone_update_form_screen.dart"
-    },
-    {
-      "id": "US-089",
-      "title": "Redesign Customer PhoneUpdateOtpScreen for warm minimal",
-      "description": "Update phone update OTP screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/features/phone_update/presentation/pages/phone_update_otp_screen.dart",
-        "Background: warm off-white",
-        "OTP field: warm styled boxes",
-        "Resend timer: warm colors",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 15,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/features/phone_update/presentation/pages/phone_update_otp_screen.dart"
-    },
-    {
-      "id": "US-090",
-      "title": "Redesign Customer AppConfirmationSheet for warm minimal",
-      "description": "Update the generic confirmation bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/components/dialogs/app_confirmation_sheet.dart",
-        "Sheet: white background, xxxl radius 22.8.r top corners",
-        "Handle bar: secondary color, 40.w wide, 4.h tall",
-        "Primary button: primary background, white text",
-        "Secondary button: ghost (transparent bg, foreground text, border)",
-        "Destructive variant: destructive red text/border",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/core/components/dialogs/app_confirmation_sheet.dart"
-    },
-    {
-      "id": "US-091",
-      "title": "Redesign Customer UpdateBottomSheet for warm minimal",
-      "description": "Update the app update bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/components/dialogs/update_bottom_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Update icon/illustration: warm-toned",
-        "Update button: primary CTA",
-        "Force-update: non-dismissible preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/core/components/dialogs/update_bottom_sheet.dart"
-    },
-    {
-      "id": "US-092",
-      "title": "Redesign Customer LanguageBottomSheet for warm minimal",
-      "description": "Update language selection sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/components/buttons/widgets/language_bottom_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Language options: white cards with primary check when selected",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/customer/lib/src/core/components/buttons/widgets/language_bottom_sheet.dart"
-    },
-    {
-      "id": "US-093",
-      "title": "Redesign Customer core components (DatePicker, CustomDivider, CustomDropDown, MainTabBar)",
-      "description": "Update all core shared components with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/components/date/date_picker.dart — warm colors",
-        "Update apps/customer/lib/src/core/components/divider/custom_divider.dart — warm border color",
-        "Update apps/customer/lib/src/core/components/drop_down/custom_drop_down.dart — surfaceVariant fill, warm styling",
-        "Update apps/customer/lib/src/core/components/tabbar/widgets/main_tab_bar.dart — primary selected, secondary unselected",
-        "Update apps/customer/lib/src/core/components/tabbar/widgets/tab_indicator.widget.dart — primary indicator",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "Directory: apps/customer/lib/src/core/components/"
-    },
-    {
-      "id": "US-094",
-      "title": "Redesign Customer custom painters for warm minimal",
-      "description": "Update all custom painters with warm palette colors.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/components/painters/paints/celebration.dart",
-        "Update apps/customer/lib/src/core/components/painters/paints/logo.dart",
-        "Update apps/customer/lib/src/core/components/painters/paints/divider_painter.dart",
-        "Update apps/customer/lib/src/core/components/painters/paints/left_line_painter.dart",
-        "Update apps/customer/lib/src/core/components/painters/paints/right_line_painter.dart",
-        "All painters use warm palette colors",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "Directory: apps/customer/lib/src/core/components/painters/"
-    },
-    {
-      "id": "US-095",
-      "title": "Update Customer app theme files for warm minimal",
-      "description": "Update app-level theme configuration to only use warm minimal light theme.",
-      "acceptanceCriteria": [
-        "Update apps/customer/lib/src/core/resources/themes/app_theme.dart",
-        "Update apps/customer/lib/src/core/resources/themes/light.dart — use MunawalaThemeData.light()",
-        "Remove or stub apps/customer/lib/src/core/resources/themes/dark.dart",
-        "Update birth_day_picker_theme.dart with warm colors",
-        "appThemesData only contains light theme",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "Directory: apps/customer/lib/src/core/resources/themes/"
-    },
-    {
-      "id": "US-096",
-      "title": "Update Customer AppImages and AppVectors for warm minimal assets",
-      "description": "Audit and update image/vector assets to match warm minimal aesthetic.",
-      "acceptanceCriteria": [
-        "Review apps/customer/lib/src/core/resources/images/app_images.dart",
-        "Review apps/customer/lib/src/core/resources/images/app_vectors.dart",
-        "Identify any dark-themed SVGs/PNGs that need warm variants",
-        "Update asset references if new warm assets are created",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "Audit-only story. All assets compatible with warm minimal: PNGs are theme-independent branding assets, SVG illustrations use dark line art strokes that contrast well on warm off-white, SVG icons are rendered with colorFilter (inherent colors overridden at runtime), nav icons only used in deprecated BottomNavBar. No dark-themed assets needing warm variants identified."
-    },
-    {
-      "id": "US-097",
-      "title": "Remove legacy map bottom sheet steps from Customer",
-      "description": "Clean up legacy order flow bottom sheets that are superseded by the new order_flow screens.",
-      "acceptanceCriteria": [
-        "Evaluate if apps/customer/lib/src/features/map/presentation/widgets/bottom_sheets/ files are still referenced",
-        "If unreferenced, remove: order_step_sheet.dart, trip_details_step.dart, transport_selection_step.dart, package_details_step.dart, receiver_info_step.dart, payment_step.dart, confirmed_step.dart",
-        "If still referenced, update with warm minimal styling",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "All 7 bottom sheet files were dead code — only exported but never imported or instantiated. Removed all files and cleaned exports from map/exports.dart. flutter analyze passes."
-    },
-    {
-      "id": "US-098",
-      "title": "Remove Traveller BottomNavBar and implement single-screen dashboard",
-      "description": "Remove the bottom navigation bar from the Traveller app. Replace with single-screen CustomScrollView dashboard architecture.",
-      "acceptanceCriteria": [
-        "Remove or deprecate apps/traveller/lib/src/features/navigation/presentation/widgets/bottom_nav_bar.dart",
-        "Update MainShellScreen to remove TravellerBottomNavBar",
-        "Home screen becomes the single dashboard with all content in CustomScrollView with slivers",
-        "Secondary screens (Deliveries, Wallet, Profile) accessed via Quick Actions pills or full-screen pushes",
-        "GoRouter routes updated — remove StatefulShellRoute shell branches",
-        "FAB positioned with FloatingActionButtonLocation.endFloat (RIGHT-aligned)",
-        "FAB is extended: primary Color(0xFFE26B27), label 'Add Trip'",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "Removed StatefulShellRoute + TravellerBottomNavBar. MainShellScreen now wraps HomeScreen directly with extended FAB (endFloat). Secondary screens (deliveries, wallet, profile) are separate GoRoute entries for full-screen push navigation."
-    },
-    {
-      "id": "US-099",
-      "title": "Update Traveller AppRouter for single-screen architecture",
-      "description": "Update GoRouter configuration to remove shell routes and support single-screen dashboard.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/router/app_router.dart",
-        "Remove StatefulShellRoute — use standard GoRoute for /home",
-        "All secondary screens are standard GoRoutes",
-        "CupertinoPage transitions preserved",
-        "Auth + onboarding redirect logic preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "Router already fully updated in US-098. StatefulShellRoute removed, all secondary screens are standard GoRoutes with CupertinoPage transitions. Auth + onboarding redirect logic preserved. Cleaned up stale shell branch comment in route_paths.dart."
-    },
-    {
-      "id": "US-100",
-      "title": "Redesign Traveller HomeScreen as single-screen dashboard",
-      "description": "Rebuild the Traveller home screen as a CustomScrollView dashboard with SliverAppBar, earnings, hero trip section, quick actions, and delivery feed.",
-      "acceptanceCriteria": [
-        "Rebuild apps/traveller/lib/src/features/home/presentation/pages/home_screen.dart",
-        "Use CustomScrollView with SliverAppBar (pinned, transparent background)",
-        "SliverAppBar: Greeting text + highly visible 'Total Earnings' metric in success green",
-        "Notification bell with badge",
-        "All content as SliverToBoxAdapter sections",
-        "Background: warm off-white Color(0xFFFEFCF9)",
-        "Shimmer loading for all sections",
-        "Error states with MunawalaErrorCard",
-        "ScreenUtil for all dimensions",
-        "RTL-ready",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Rebuilt HomeScreen with SliverAppBar (greeting + total earnings in success green), notification bell with MunawalaPressScale, CustomScrollView sliver sections, MunawalaShimmer/MunawalaErrorCard/MunawalaEmptyState, warm off-white background, RTL-ready."
-    },
-    {
-      "id": "US-101",
-      "title": "Build Traveller Hero Section — Active Trip Card",
-      "description": "Create the hero section showing the active trip with next required action, or empty state prompting trip creation.",
-      "acceptanceCriteria": [
-        "Create/update hero section widget in traveller home/presentation/widgets/",
-        "Active state: white MunawalaCard (hero radius 16.4.r) showing next action (e.g., 'Go to Pickup'), swipe-to-confirm slider in primary color",
-        "Swipe slider: primary gradient background, white thumb, 'Slide to confirm' text",
-        "Trip route info: pickup → destination cities",
-        "Status indicator: colored left border based on status",
-        "Empty state: surfaceVariant card with illustration prompting to log next trip",
-        "Shimmer loading state",
-        "ScreenUtil for all dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Created hero_section.dart with _HeroActiveTripCard (hero card with colored left border, route visualization, capacity indicator, swipe-to-confirm slider), _HeroEmptyState (CTA to log trip), _HeroShimmer, and _SwipeToConfirmSlider. Integrated into HomeScreen above BalanceSummaryCard."
-    },
-    {
-      "id": "US-102",
-      "title": "Build Traveller Quick Actions horizontal pills",
-      "description": "Create horizontal row of muted pill buttons for My Trips, Wallet, Vehicle.",
-      "acceptanceCriteria": [
-        "Create QuickActionPills widget in traveller home/presentation/widgets/",
-        "Horizontal scrollable row of pill buttons",
-        "Pills: 'My Trips' (route icon), 'Wallet' (wallet icon), 'Vehicle' (car icon)",
-        "Each pill: secondary Color(0xFFF5F2EE) background, foreground text",
-        "Pill radius: full circular",
-        "Press-scale animation",
-        "Navigate to respective screens on tap",
-        "ScreenUtil for all dimensions",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "New widget in apps/traveller/lib/src/features/home/presentation/widgets/"
-    },
-    {
-      "id": "US-103",
-      "title": "Build Traveller Available Requests feed section",
-      "description": "Create the available delivery requests feed showing matching packages with payout emphasis.",
-      "acceptanceCriteria": [
-        "Create AvailableRequestsSection widget in traveller home/presentation/widgets/",
-        "Section header: 'Available Requests' in foreground, count badge",
-        "Request cards: white, soft shadow, route + package info + payout",
-        "Payout emphasized in success green Color(0xFF5BAA5E), bold",
-        "Accept/Decline buttons on each card",
-        "Shimmer loader while matching",
-        "Empty state: MunawalaEmptyState with 'No packages matching your route'",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "Created AvailableRequestsSection in apps/traveller/lib/src/features/home/presentation/widgets/available_requests_section.dart. Uses DeliveryRequestsBloc for state. Section header with count badge, request cards with route visualization, weight/volume info badges, payout in success green, accept/decline buttons with in-flight loading states. Shimmer, error, and empty states. Exported via home/exports.dart. Integrated into HomeScreen after BalanceSummaryCard."
-    },
-    {
-      "id": "US-104",
-      "title": "Redesign Traveller BalanceSummaryCard for warm minimal",
-      "description": "Update the balance summary card widget with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/home/presentation/widgets/balance_summary_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Available balance: foreground large text, 24.sp bold",
-        "Pending/total: mutedForeground, 14.sp",
-        "Icon/label in primary color accent",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/home/presentation/widgets/balance_summary_card.dart"
-    },
-    {
-      "id": "US-105",
-      "title": "Redesign Traveller TripCard for warm minimal",
-      "description": "Update trip card widget with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/home/presentation/widgets/trip_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Route: pickup → destination in foreground",
-        "Date: mutedForeground, 12.sp",
-        "Status chip: colored pill (primary active, success completed, warning pending)",
-        "Luggage info: secondary badge",
-        "Press-scale animation on tap",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 5,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/home/presentation/widgets/trip_card.dart. Redesigned with MunawalaCard, MunawalaPressScale, warm minimal color palette, secondary luggage badge, themed status chips."
-    },
-    {
-      "id": "US-106",
-      "title": "Redesign Traveller TripDetailScreen for warm minimal",
-      "description": "Update trip detail screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/home/presentation/pages/trip_detail_screen.dart",
-        "Background: warm off-white",
-        "Route card: white hero card with route visualization",
-        "Status section: primary progress, status text",
-        "Luggage/weight info in secondary badges",
-        "Edit controls: warm styled inputs and buttons",
-        "Cancel trip: destructive colored action",
-        "TripResultDialog: warm styled success/error",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/home/presentation/pages/trip_detail_screen.dart. Redesigned with MunawalaCard.hero for route card (white bg, theme colors instead of gradient), MunawalaCard for details/capacity cards, theme-based status colors (context.statusColors), MunawalaPressScale on interactive elements, xxxl radius bottom sheets, RTL-ready EdgeInsetsDirectional, 52.h button heights, 10.r radii."
-    },
-    {
-      "id": "US-107",
-      "title": "Redesign Traveller SignInScreen for warm minimal",
-      "description": "Update sign-in screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/auth/presentation/pages/sign_in/sign_in_screen.dart",
-        "Same warm minimal treatment as Customer auth: warm off-white background, premium inputs, premium button",
-        "Staggered entrance animations with flutter_animate",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Redesigned with warm minimal pattern matching Customer SignInScreen. Changes: MunawalaColors.light.* → colorScheme.*, added AuthLoadingOverlay in Stack, BlocConsumer instead of separate BlocListener+BlocBuilder, showDelightToastBar instead of SnackBar, _isInitialized tracking, _fullPhoneNumber getter, idempotency key reset after success."
-    },
-    {
-      "id": "US-108",
-      "title": "Redesign Traveller VerificationScreen for warm minimal",
-      "description": "Update OTP verification screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/auth/presentation/pages/verification/verification.dart",
-        "Warm off-white background, premium OTP field, resend row, submit button",
-        "Loading overlay: warm blur",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/auth/presentation/pages/verification/verification.dart. Aligned with Customer VerificationScreen pattern: theme-aware colors, RTL-ready EdgeInsetsDirectional, showDelightToastBar, AuthLoadingOverlay, MultiBlocListener."
-    },
-    {
-      "id": "US-109",
-      "title": "Redesign Traveller NafathScreen for warm minimal",
-      "description": "Update Nafath verification screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/auth/presentation/pages/nafath/nafath_screen.dart",
-        "Warm off-white background, warm verification code circle, warm pulsing animation",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/auth/presentation/pages/nafath/nafath_screen.dart. Redesigned with warm minimal palette constants, EdgeInsetsDirectional, MunawalaShimmer for skeleton loading, AuthLoadingOverlay for init loading, removed munawala_theme import."
-    },
-    {
-      "id": "US-110",
-      "title": "Redesign Traveller auth widgets (NafathIllustration, VerificationCodeCircle)",
-      "description": "Update traveller auth widgets with warm minimal colors.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/auth/presentation/widgets/nafath_illustration.dart",
-        "Update apps/traveller/lib/src/features/auth/presentation/widgets/verification_code_circle.dart",
-        "Match Customer auth widget styling (warm palette)",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 6,
-      "passes": true,
-      "notes": "Files: apps/traveller/lib/src/features/auth/presentation/widgets/. Matched customer warm minimal pattern: file-level const _primary, const gradient, soft shadow (0.04 opacity, blur 24, offset 0,8), reduced pulse intensity, removed munawala_theme Theme.of(context) lookups for colors."
-    },
-    {
-      "id": "US-111",
-      "title": "Redesign Traveller CreateTripScreen for warm minimal",
-      "description": "Update trip creation screen with warm minimal styling and all sub-components.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/pages/create_trip_screen.dart",
-        "Background: warm off-white",
-        "Payout readiness gate: warm styled checklist with success/warning icons",
-        "Location tracking gate: warm styled permission request",
-        "City selector: warm cards with swap button in primary",
-        "Bottom sheet city picker: white, xxxl radius, CityQuickSelect warm styling",
-        "RouteInfoCard: white card, soft shadow, transport type chips in secondary/primary",
-        "InlineDatePicker: warm calendar strip",
-        "LuggagePresetChips: secondary pills, primary selected",
-        "WeightSelector: warm buttons",
-        "OrderSlotChips: secondary pills, primary selected",
-        "Submit button: primary CTA",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/pages/create_trip_screen.dart"
-    },
-    {
-      "id": "US-112",
-      "title": "Redesign Traveller CityQuickSelect for warm minimal",
-      "description": "Update city picker widget with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/city_quick_select.dart",
-        "Remove dark theme support — light warm only",
-        "Search field: surfaceVariant fill",
-        "City items: foreground text, subtle dividers",
-        "Selected: primary accent",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/city_quick_select.dart"
-    },
-    {
-      "id": "US-113",
-      "title": "Redesign Traveller InlineDatePicker for warm minimal",
-      "description": "Update horizontal date picker with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/inline_date_picker.dart",
-        "Date cells: secondary background unselected, primary background selected",
-        "Text: foreground for selected, mutedForeground for unselected",
-        "Month/year header: foreground semibold",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/inline_date_picker.dart"
-    },
-    {
-      "id": "US-114",
-      "title": "Redesign Traveller LuggagePresetChips for warm minimal",
-      "description": "Update luggage preset chips with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/luggage_preset_chips.dart",
-        "Chips: secondary background, primary when selected",
-        "Text: foreground selected, mutedForeground unselected",
-        "Radius: pill (full circular)",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/luggage_preset_chips.dart"
-    },
-    {
-      "id": "US-115",
-      "title": "Redesign Traveller WeightSelector for warm minimal",
-      "description": "Update weight selection buttons with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/weight_selector.dart",
-        "Buttons: secondary background, primary when selected",
-        "Weight text: foreground, unit text: mutedForeground",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/weight_selector.dart"
-    },
-    {
-      "id": "US-116",
-      "title": "Redesign Traveller OrderSlotChips for warm minimal",
-      "description": "Update order slot chips with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/order_slot_chips.dart",
-        "Chips: secondary background, primary when selected",
-        "Count text: foreground selected, mutedForeground unselected",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/order_slot_chips.dart"
-    },
-    {
-      "id": "US-117",
-      "title": "Redesign Traveller RouteInfoCard for warm minimal",
-      "description": "Update route info card with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/route_info_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Distance: foreground bold",
-        "Transport type chips: secondary unselected, primary selected",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/route_info_card.dart"
-    },
-    {
-      "id": "US-118",
-      "title": "Redesign Traveller BankSetupSheet for warm minimal",
-      "description": "Update bank account setup bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/bank_setup_sheet.dart",
-        "Sheet: white, xxxl radius top corners",
-        "Input fields: warm styled",
-        "Submit button: primary CTA",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette constants. Sheet: white (FFFFFF) with 22.8.r xxxl radius, soft shadow. Drag handle: secondary (F5F2EE). Input fields: surfaceVariant fill, no hard borders (BorderSide.none), AnimatedContainer focus glow (primary 10%, blur 8). Icons transition mutedForeground to primary on focus. Floating label transitions color on focus. Submit button: MunawalaPressScale + AnimatedContainer with primary-glow shadow (25%), AnimatedSwitcher crossfade for loading. Focus tracking via FocusNode listeners. EdgeInsetsDirectional for RTL. API-compatible."
-    },
-    {
-      "id": "US-119",
-      "title": "Redesign Traveller TripLocationPermissionSheet for warm minimal",
-      "description": "Update location permission bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/trip_location_permission_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Permission text: foreground title, mutedForeground description",
-        "CTA: primary button",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/trip_location_permission_sheet.dart"
-    },
-    {
-      "id": "US-120",
-      "title": "Redesign Traveller TripResultDialog for warm minimal",
-      "description": "Update trip success/error dialogs with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/trip/presentation/widgets/trip_result_dialog.dart",
-        "Success dialog: warm off-white background, success green icon, celebration animation",
-        "Error dialog: warm background, destructive icon, retry button",
-        "Auto-dismiss timer preserved for success",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 7,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/trip/presentation/widgets/trip_result_dialog.dart"
-    },
-    {
-      "id": "US-121",
-      "title": "Redesign Traveller DeliveryRequestsScreen for warm minimal",
-      "description": "Update the main delivery hub screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/delivery_requests/presentation/pages/delivery_requests_screen.dart",
-        "Background: warm off-white",
-        "Active orders carousel: horizontal scroll of warm-styled cards",
-        "Filter tabs: secondary pills, primary selected",
-        "Request list: warm-styled DeliveryRequestCards",
-        "Pull-to-refresh, shimmer loading, empty state, error state",
-        "Decline-reason bottom sheet: warm styling, xxxl radius",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/delivery_requests/presentation/pages/delivery_requests_screen.dart"
-    },
-    {
-      "id": "US-122",
-      "title": "Redesign Traveller DeliveryRequestCard for warm minimal",
-      "description": "Update delivery request card with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/delivery_requests/presentation/widgets/delivery_request_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Route: foreground pickup → destination",
-        "Package info: mutedForeground",
-        "Price/payout: success green bold",
-        "Countdown timer: primary color ring",
-        "Accept button: primary CTA",
-        "Decline button: ghost/outlined style",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/delivery_requests/presentation/widgets/delivery_request_card.dart"
-    },
-    {
-      "id": "US-123",
-      "title": "Redesign Traveller ActiveDeliveryOrderCard for warm minimal",
-      "description": "Update active delivery order card with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/delivery_requests/presentation/widgets/active_delivery_order_card.dart",
-        "White card, soft shadow, hero radius for carousel",
-        "Status indicator: primary left border",
-        "Manage button: primary outlined",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/delivery_requests/presentation/widgets/active_delivery_order_card.dart"
-    },
-    {
-      "id": "US-124",
-      "title": "Redesign Traveller DeliveryActionSheet for warm minimal",
-      "description": "Update the delivery action bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/delivery_requests/presentation/widgets/delivery_action_sheet.dart",
-        "Sheet: white, xxxl radius top corners",
-        "Step indicators: primary for completed, secondary for pending",
-        "Action buttons: primary CTA for confirm actions",
-        "Slot/proof inputs: warm styled",
-        "OTP entry: warm OTP field",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/delivery_requests/presentation/widgets/delivery_action_sheet.dart"
-    },
-    {
-      "id": "US-125",
-      "title": "Redesign Traveller IncomingRequestOverlay for warm minimal",
-      "description": "Update the global incoming delivery request overlay with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/delivery_requests/presentation/widgets/incoming_request_overlay.dart",
-        "Card: white background, hero radius, prominent soft shadow",
-        "Backdrop blur: warm frosted glass (white 60% + blur)",
-        "Countdown ring: primary color",
-        "Accept button: primary CTA, full width",
-        "Decline button: ghost secondary",
-        "Swipe-up dismiss preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/delivery_requests/presentation/widgets/incoming_request_overlay.dart"
-    },
-    {
-      "id": "US-126",
-      "title": "Redesign Traveller DeliveryDetailScreen for warm minimal",
-      "description": "Update delivery detail screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/deliveries/presentation/pages/delivery_detail_screen.dart",
-        "Background: warm off-white",
-        "Route card: white card with gradient in warm tones (not dark)",
-        "DeliveryStepTracker: warm styled timeline",
-        "Order info section: white card, soft shadow",
-        "Receiver info section: warm card",
-        "Chat icon: primary in app bar",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/deliveries/presentation/pages/delivery_detail_screen.dart"
-    },
-    {
-      "id": "US-127",
-      "title": "Redesign Traveller DeliveryStepTracker for warm minimal",
-      "description": "Update the delivery timeline/step tracker with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/deliveries/presentation/widgets/delivery_step_tracker.dart",
-        "Completed steps: primary color line + checkmark",
-        "Active step: primary dot with pulse animation",
-        "Pending steps: secondary color line + empty circle in mutedForeground",
-        "Step labels: foreground for active, mutedForeground for pending",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette: white card with soft shadow (0.04 opacity), primary checkmarks for completed steps, pulsing dot for active step, hollow circles for pending. RTL-ready with EdgeInsetsDirectional."
-    },
-    {
-      "id": "US-128",
-      "title": "Redesign Traveller DeliveryCard for warm minimal",
-      "description": "Update delivery card widget with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/deliveries/presentation/widgets/delivery_card.dart",
-        "White card, soft shadow, radius 10.r",
-        "Route and status info with warm palette",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/deliveries/presentation/widgets/delivery_card.dart"
-    },
-    {
-      "id": "US-129",
-      "title": "Redesign Traveller DeliveriesScreen wrapper for warm minimal",
-      "description": "Update the deliveries tab wrapper screen.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/deliveries/presentation/pages/deliveries_screen.dart",
-        "Ensure warm minimal styling passes through to DeliveryRequestsScreen",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 8,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/deliveries/presentation/pages/deliveries_screen.dart"
-    },
-    {
-      "id": "US-130",
-      "title": "Redesign Traveller WalletHomeScreen for warm minimal",
-      "description": "Update wallet home screen with gradient balance card, quick actions, and transactions.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/wallet/presentation/pages/wallet_home_screen.dart",
-        "Background: warm off-white",
-        "Balance card: white hero card with soft shadow — available/pending/total",
-        "Balance amounts: foreground for available (large, bold), mutedForeground for pending/total",
-        "No dark gradient — clean white card",
-        "Quick action cards (bank accounts, payout): surfaceVariant, warm icons",
-        "Recent transactions: white list items with shimmer loading",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/wallet/presentation/pages/wallet_home_screen.dart"
-    },
-    {
-      "id": "US-131",
-      "title": "Redesign Traveller legacy wallet screens (WalletScreen, WalletTap)",
-      "description": "Update legacy wallet screens with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/wallet/presentation/pages/wallet_screen.dart",
-        "Update apps/traveller/lib/src/features/wallet/presentation/pages/wallet_tap.dart",
-        "Warm off-white backgrounds, warm cards, warm tabs",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "Files: apps/traveller/lib/src/features/wallet/presentation/pages/. WalletScreen: warm off-white background, transparent status bar (dark icons). WalletTap: replaced AppInsets.content with EdgeInsetsDirectional, foreground section titles, removed MyScreenUtil.init calls, removed spacing shorthand."
-    },
-    {
-      "id": "US-132",
-      "title": "Redesign Traveller wallet widgets (Balance, TabBar, TransactionItem, Transactions, Welcome)",
-      "description": "Update all traveller wallet widgets with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update all files in apps/traveller/lib/src/features/wallet/presentation/widgets/",
-        "Balance: warm hero card, primary amount",
-        "TabBar: secondary pills, primary selected",
-        "TransactionItem: white row, warm colors, amount formatting",
-        "Transactions: scrollable warm list",
-        "Welcome: warm greeting, foreground text",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 9,
-      "passes": true,
-      "notes": "Directory: apps/traveller/lib/src/features/wallet/presentation/widgets/"
-    },
-    {
-      "id": "US-133",
-      "title": "Redesign Traveller ProfileScreen for warm minimal",
-      "description": "Update the comprehensive profile screen with warm minimal card sections.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/profile/presentation/pages/profile/profile_screen.dart",
-        "Background: warm off-white",
-        "Profile header: avatar initial in primary circle, Nafath verified badge in success green",
-        "Personal Info card: white MunawalaCard, foreground labels, mutedForeground values",
-        "Contact Info card: warm styling, change phone link in primary",
-        "Banking card: IBAN, bank name, primary/verified badges in success green",
-        "Earnings card: wallet summary with primary balance",
-        "Payout Readiness card: checklist with success/warning icons",
-        "Account Settings: warm menu items, logout in destructive color",
-        "App Settings: warm toggle switches (success green track when on)",
-        "Language toggle, notification switch, Face ID switch",
-        "Support section with warm styling",
-        "Build metadata footer: mutedForeground small text",
-        "Animated sections with staggered entrance",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 10,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/profile/presentation/pages/profile/profile_screen.dart. Redesigned with warm minimal palette constants, MunawalaCard sections, _SectionCard/_InfoRow/_MenuRow/_Badge private widgets, staggered animations, success green switches, inline _WarmMinimalProfileAppBar."
-    },
-    {
-      "id": "US-134",
-      "title": "Redesign Traveller Profile components (AppBar, TapItem)",
-      "description": "Update traveller profile sub-components with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/profile/presentation/pages/profile/components/app_bar.dart",
-        "Update apps/traveller/lib/src/features/profile/presentation/pages/profile/components/tap_item.dart",
-        "AppBar: transparent, foreground title",
-        "TapItem: warm styled menu row with icon, label, trailing",
-        "Switch items: success green track color",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 10,
-      "passes": true,
-      "notes": "Files: apps/traveller/lib/src/features/profile/presentation/pages/profile/components/. Updated to match customer app warm minimal pattern."
-    },
-    {
-      "id": "US-135",
-      "title": "Redesign Traveller ChatScreen for warm minimal",
-      "description": "Update traveller chat screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/chat/presentation/pages/chat_screen.dart",
-        "Background: warm off-white",
-        "AppBar: transparent, avatar initials in primary circle",
-        "Message list: warm spacing",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/chat/presentation/pages/chat_screen.dart"
-    },
-    {
-      "id": "US-136",
-      "title": "Redesign Traveller chat widgets (MessageBubble, ChatComposer, DateSeparator, ImagePreviewScreen)",
-      "description": "Update all traveller chat widgets with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update all files in apps/traveller/lib/src/features/chat/presentation/widgets/",
-        "MessageBubble: primary for user, white for other, warm corners",
-        "ChatComposer: white bar, surfaceVariant input, primary send button",
-        "DateSeparator: mutedForeground text, border line",
-        "ImagePreviewScreen: warm overlay controls",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 11,
-      "passes": true,
-      "notes": "All 4 chat widgets redesigned: MessageBubble (solid primary, white received, RTL-ready), ChatComposer (white bar, surfaceVariant input, animated send), DateSeparator (line-date-line with l10n), ImagePreviewScreen (warm dark bg, circle close button)."
-    },
-    {
-      "id": "US-137",
-      "title": "Redesign Traveller NotificationsScreen for warm minimal",
-      "description": "Update notification inbox screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/notifications/presentation/pages/notifications_screen.dart",
-        "Background: warm off-white",
-        "AppBar: transparent, 'Notifications' title",
-        "Notification list: warm styled items",
-        "Empty state: MunawalaEmptyState",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 12,
-      "passes": true,
-      "notes": "Redesigned with warm minimal palette: transparent AppBar with MunawalaPressScale back button, MunawalaEmptyState for empty, MunawalaShimmer for loading, MunawalaErrorCard for errors. Notification items use white cards with soft shadows (subtle for read, elevated for unread), primary accent for unread icons, MunawalaPressScale for tap feedback. RTL-ready with EdgeInsetsDirectional."
-    },
-    {
-      "id": "US-138",
-      "title": "Redesign Traveller NotificationSettingsScreen for warm minimal",
-      "description": "Update notification settings screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/notifications/presentation/pages/notification_settings_screen.dart",
-        "Background: warm off-white",
-        "Toggle switches: success green track",
-        "Section headers: foreground semibold",
-        "Descriptions: mutedForeground",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 12,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/notifications/presentation/pages/notification_settings_screen.dart"
-    },
-    {
-      "id": "US-139",
-      "title": "Redesign Traveller notification widgets",
-      "description": "Update notification item, permission card, and FCM token display with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/notifications/presentation/widgets/notification_item.dart",
-        "Update apps/traveller/lib/src/features/notifications/presentation/widgets/notification_permission_card.dart",
-        "NotificationItem: white card, primary accent for unread, warm text colors",
-        "NotificationPermissionCard: surfaceVariant card, primary CTA",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 12,
-      "passes": true,
-      "notes": "Directory: apps/traveller/lib/src/features/notifications/presentation/widgets/"
-    },
-    {
-      "id": "US-140",
-      "title": "Redesign Traveller ShippingScreen for warm minimal",
-      "description": "Update legacy shipping/orders screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/shipping/presentation/pages/shipping_screen.dart",
-        "Background: warm off-white",
-        "Header: warm greeting, no dark overlay",
-        "Filter tabs: secondary pills, primary selected",
-        "Order list: warm styled cards with shimmer and pull-to-refresh",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "Redesigned with warm off-white background, warm greeting header (Welcome widget), secondary pill filter tabs with primary selected, MunawalaShimmer/MunawalaEmptyState/MunawalaErrorCard shared components, ListView.separated with soft shadow cards, pull-to-refresh, infinite scroll with shimmer load-more indicator."
-    },
-    {
-      "id": "US-141",
-      "title": "Redesign Traveller shipping widgets (OrderListCard, ShippingItem)",
-      "description": "Update shipping list widgets with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/shipping/presentation/widgets/order_list_card.dart",
-        "Update apps/traveller/lib/src/features/shipping/presentation/widgets/shipping_item.dart",
-        "White cards, soft shadow, warm status badges, foreground text",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 13,
-      "passes": true,
-      "notes": "Redesigned with MunawalaCard+MunawalaPressScale wrappers, file-level const palette, Dart 3 switch expressions for status mapping, warm status badges (primary/success/warning/destructive), soft shadow, foreground text, RTL-ready EdgeInsetsDirectional, ScreenUtil dimensions. ShippingItem follows customer US-085 pattern. OrderListCard preserves chat button and navigation."
-    },
-    {
-      "id": "US-142",
-      "title": "Redesign Traveller PhoneUpdateFormScreen for warm minimal",
-      "description": "Update phone update form screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/phone_update/presentation/pages/phone_update_form_screen.dart",
-        "Background: warm off-white",
-        "Input fields: warm styled (surfaceVariant fill, focus glow)",
-        "Submit button: primary CTA",
-        "Recovery flow variant preserved",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 14,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/phone_update/presentation/pages/phone_update_form_screen.dart"
-    },
-    {
-      "id": "US-143",
-      "title": "Redesign Traveller PhoneUpdateOtpScreen for warm minimal",
-      "description": "Update phone update OTP screen with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/phone_update/presentation/pages/phone_update_otp_screen.dart",
-        "Background: warm off-white",
-        "OTP field: warm styled boxes",
-        "Resend timer: warm colors",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 14,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/phone_update/presentation/pages/phone_update_otp_screen.dart"
-    },
-    {
-      "id": "US-144",
-      "title": "Redesign Traveller OnboardingScreen for warm minimal",
-      "description": "Update first-launch onboarding with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/features/welcoming/onboarding_screen.dart",
-        "Background: warm off-white",
-        "Page indicators: primary for active, secondary for inactive",
-        "SVG illustrations: warm-toned (may need new assets)",
-        "Text: foreground title, mutedForeground description",
-        "Language toggle: warm pill button",
-        "Next FAB: primary color, arrow icon",
-        "Last slide 'Get Started' button: primary CTA",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 15,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/features/welcoming/onboarding_screen.dart"
-    },
-    {
-      "id": "US-145",
-      "title": "Redesign Traveller AppConfirmationSheet for warm minimal",
-      "description": "Update confirmation bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/dialogs/app_confirmation_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Primary button: primary CTA",
-        "Secondary button: ghost style",
-        "Destructive variant: red text/border",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/core/components/dialogs/app_confirmation_sheet.dart"
-    },
-    {
-      "id": "US-146",
-      "title": "Redesign Traveller UpdateBottomSheet for warm minimal",
-      "description": "Update app update bottom sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/dialogs/update_bottom_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Update illustration: warm-toned",
-        "Update button: primary CTA",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/core/components/dialogs/update_bottom_sheet.dart"
-    },
-    {
-      "id": "US-147",
-      "title": "Redesign Traveller LanguageBottomSheet for warm minimal",
-      "description": "Update language selection sheet with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/buttons/widgets/language_bottom_sheet.dart",
-        "Sheet: white, xxxl radius",
-        "Language options: white cards, primary check when selected",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/core/components/buttons/widgets/language_bottom_sheet.dart"
-    },
-    {
-      "id": "US-148",
-      "title": "Redesign Traveller core components for warm minimal",
-      "description": "Update all traveller core shared components with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/date/date_picker.dart",
-        "Update apps/traveller/lib/src/core/components/divider/custom_divider.dart",
-        "Update apps/traveller/lib/src/core/components/drop_down/custom_drop_down.dart",
-        "Update apps/traveller/lib/src/core/components/loaders/loading_widget.dart",
-        "Update apps/traveller/lib/src/core/components/tabbar/ (main_tab_bar, tab_indicator)",
-        "All warm palette colors, no dark theme references",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "DatePickerItem: replaced lightTheme with Theme.of(context). CustomDivider: removed MyScreenUtil.init, softened color. CustomDropDown: warm minimal input decorator (surfaceVariant fill, no borders, 10.r radius). MainTabBar: ScreenUtil padding, mutedForeground unselected, transparent overlay. LoadingWidget and TabIndicator already theme-aware — no changes needed."
-    },
-    {
-      "id": "US-149",
-      "title": "Redesign Traveller custom painters for warm minimal",
-      "description": "Update all traveller custom painters with warm palette colors.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/painters/paints/celebration.dart",
-        "Update apps/traveller/lib/src/core/components/painters/paints/logo.dart",
-        "Update apps/traveller/lib/src/core/components/painters/paints/divider_painter.dart",
-        "Update apps/traveller/lib/src/core/components/painters/paints/left_line_painter.dart",
-        "Update apps/traveller/lib/src/core/components/painters/paints/right_line_painter.dart",
-        "All painters use warm palette colors (primary, success, warning, foreground)",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "CelebrationPainter: replaced MyHexColor with warm palette constants (mutedForeground, primary, warning). LogoPainter: updated to warm minimal primary (0xFFE26B27). LeftLinePainter/RightLinePainter: gradient and fill colors updated to warm palette. DividerPainter: already warm minimal (0xFF7A7470)."
-    },
-    {
-      "id": "US-150",
-      "title": "Update Traveller app theme files for warm minimal",
-      "description": "Update traveller app-level theme configuration for light-only warm minimal.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/resources/themes/app_theme.dart",
-        "Update apps/traveller/lib/src/core/resources/themes/light.dart — use MunawalaThemeData.light()",
-        "Remove or stub apps/traveller/lib/src/core/resources/themes/dark.dart",
-        "Update birth_day_picker_theme.dart with warm colors",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 4,
-      "passes": true,
-      "notes": "app_theme.dart already light-only. light.dart already uses MunawalaThemeData.light(). dark.dart already aliased to light. BirthDayPickerTheme updated: warm off-white background, outline borders (1px), ScreenUtil radii, transparent surfaceTint."
-    },
-    {
-      "id": "US-151",
-      "title": "Update Traveller AppImages and AppVectors for warm minimal assets",
-      "description": "Audit and update traveller image/vector assets.",
-      "acceptanceCriteria": [
-        "Review apps/traveller/lib/src/core/resources/images/app_images.dart",
-        "Review apps/traveller/lib/src/core/resources/images/app_vectors.dart",
-        "Identify dark-themed SVGs/PNGs that need warm variants",
-        "Update references",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "Audit-only story. Same conclusion as US-096 (customer). All assets compatible with warm minimal: PNGs are theme-independent branding, SVG illustrations use dark line art strokes appropriate for light bg, SVG icons rendered with colorFilter. No dark-themed assets needing warm variants."
-    },
-    {
-      "id": "US-152",
-      "title": "Update Traveller AuthWrapper for warm minimal",
-      "description": "Update the auth wrapper and incoming request overlay host with warm styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/main/widgets/auth_wrapper.dart",
-        "Incoming request overlay host: uses updated warm IncomingRequestOverlay",
-        "No dark overlays or tints",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 16,
-      "passes": true,
-      "notes": "File: apps/traveller/lib/src/core/components/main/widgets/auth_wrapper.dart"
-    },
-    {
-      "id": "US-153",
-      "title": "Update Traveller form utilities for warm minimal",
-      "description": "Update core form utilities with warm minimal styling.",
-      "acceptanceCriteria": [
-        "Update apps/traveller/lib/src/core/components/form/ files if they contain styling",
-        "context_menu_builder.dart: warm popup menu styling",
-        "Typecheck passes"
-      ],
-      "type": "frontend",
-      "priority": 17,
-      "passes": true,
-      "notes": "Audit-only story. All form utilities are pure logic or platform-adaptive: ContextMenuBuilder uses AdaptiveTextSelectionToolbar (platform-native, no custom styling), TextFieldUtils/SpaceFormatter/types_def are logic-only. No dark theme references, no styling to update."
-    },
-    {
-      "id": "US-154",
-      "title": "Run typecheck across all packages and apps",
-      "description": "Verify all code compiles after the warm minimal redesign changes.",
-      "acceptanceCriteria": [
-        "Run melos run analyze from repo root — passes",
-        "No unresolved imports, missing classes, or type errors",
-        "All deprecated references resolved"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "All 9 core packages and apps pass with zero issues. widgetbook_app has 4 pre-existing issues (undefined directories variable from ungenerated file + deprecated APIs) — not from our redesign changes."
-    },
-    {
-      "id": "US-155",
-      "title": "Run format check across all packages and apps",
-      "description": "Verify all code is properly formatted.",
-      "acceptanceCriteria": [
-        "Run melos run format:check from repo root — passes",
-        "dart format --line-length 120 . — no changes needed"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "All 1456 files formatted. 89 files had pre-existing formatting drift (not from redesign changes) — now fixed. Second run confirms 0 changes needed."
-    },
-    {
-      "id": "US-156",
-      "title": "Run all existing tests",
-      "description": "Verify all existing tests pass after the redesign.",
-      "acceptanceCriteria": [
-        "Run melos run test from repo root — all tests pass",
-        "No test modifications needed (UI changes shouldn't break BLoC/logic tests)",
-        "If any tests reference specific colors/styles, update them"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "All tests pass: customer 216, traveller 173, munawala_ui 6. Total: 395 tests passed."
-    },
-    {
-      "id": "US-157",
-      "title": "Verify no hardcoded dark colors remain",
-      "description": "Audit both apps for any remaining dark theme color references.",
-      "acceptanceCriteria": [
-        "Search for Color(0xFF0D0D0D), Color(0xFF141414), Color(0xFF1A1A1A) and similar dark hex values",
-        "Search for 'darkBackground', 'darkCard', 'darkSurface' string references",
-        "All replaced with theme token equivalents",
-        "No raw Color() for semantic colors — all via Theme/extensions"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "No hardcoded dark colors in active code. Only references to darkBackground/darkCard exist in deprecated AppColors class files (zero active usages confirmed in US-006). All semantic colors use Theme tokens."
-    },
-    {
-      "id": "US-158",
-      "title": "Verify ScreenUtil usage across all new/modified files",
-      "description": "Ensure all dimensions use ScreenUtil extensions.",
-      "acceptanceCriteria": [
-        "Audit all modified files for raw number dimensions without .w, .h, .sp, .r",
-        "Widths/margins/paddings use .w",
-        "Heights use .h",
-        "Font sizes use .sp",
-        "Border radii use .r",
-        "No hardcoded pixel values for layout dimensions"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "Excellent compliance (98%+). All redesigned components in munawala_ui, customer home, and traveller core properly use .w, .h, .sp, .r extensions. Acceptable exceptions: border widths of 1, CustomPainter numeric literals, and color values."
-    },
-    {
-      "id": "US-159",
-      "title": "Verify RTL support in all redesigned screens",
-      "description": "Ensure all screens render correctly in Arabic RTL mode.",
-      "acceptanceCriteria": [
-        "All padding uses EdgeInsetsDirectional instead of EdgeInsets",
-        "Alignment uses AlignmentDirectional or Align with directional values",
-        "Icons/arrows flip correctly in RTL",
-        "Text alignment is start/end, not left/right",
-        "Test both Customer and Traveller apps in Arabic locale"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "Excellent compliance (95%+). EdgeInsetsDirectional used throughout, AlignmentDirectional for alignment, BorderDirectional for error card. Minor issues: DarkPhoneInputField uses EdgeInsets.only(left:) in LTR-enforced context (acceptable), CreateTripScreen uses Alignment.centerLeft (low priority — pre-existing)."
-    },
-    {
-      "id": "US-160",
-      "title": "Verify empty states in all list screens",
-      "description": "Ensure all screens with lists show proper empty states using MunawalaEmptyState.",
-      "acceptanceCriteria": [
-        "Customer: Home (orders, activity), Activities (per tab), Notifications, Wallet (transactions)",
-        "Traveller: Home (trips), Delivery Requests (per tab), Wallet (transactions), Notifications, Shipping (per tab)",
-        "All use MunawalaEmptyState with appropriate icon, message, and CTA",
-        "No blank white screens when data is empty"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "MunawalaEmptyState used in customer (Activities, Notifications, Home via RecentActivitySection) and traveller (Home trips/requests, Notifications). Wallet screens use placeholder content (no empty state needed — they show default placeholder data). DeliveryRequests has custom empty state implementation."
-    },
-    {
-      "id": "US-161",
-      "title": "Verify shimmer loading in all data-fetching screens",
-      "description": "Ensure all screens show shimmer loading instead of raw progress indicators.",
-      "acceptanceCriteria": [
-        "No raw CircularProgressIndicator shown in the middle of a blank screen",
-        "All list screens use MunawalaShimmer during loading",
-        "Hero sections use appropriate shimmer cards",
-        "Balance/summary sections use shimmer placeholders",
-        "Smooth transition from shimmer to content via AnimatedSwitcher"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "MunawalaShimmer used across all main data-fetching screens: customer (Activities, Notifications, Home hero/recent/banner) and traveller (Home trips, Wallet balance/transactions, Notifications, DeliveryRequests). Some screens have custom shimmer implementations for layout-specific needs. No raw CircularProgressIndicator on blank screens."
-    },
-    {
-      "id": "US-162",
-      "title": "Verify text overflow handling in all cards and lists",
-      "description": "Ensure all dynamic text has proper overflow handling.",
-      "acceptanceCriteria": [
-        "All name fields (arabic_full_name, city names, etc.) use TextOverflow.ellipsis + maxLines",
-        "Route text (pickup → destination) handles long city names",
-        "Card content doesn't overflow card bounds",
-        "Long notification messages truncate properly"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "Text overflow handling well-implemented. Route displays (pickup/destination) consistently use TextOverflow.ellipsis. Card titles use maxLines:1 + ellipsis. Minor gaps: notification title relies on parent Expanded (acceptable), live tracking status text could add ellipsis (low priority). All core cards and list items properly handle overflow."
-    },
-    {
-      "id": "US-163",
-      "title": "Verify error states with MunawalaErrorCard in all screens",
-      "description": "Ensure all gRPC error states show inline error cards with retry.",
-      "acceptanceCriteria": [
-        "All BLoC error states render MunawalaErrorCard",
-        "Error card shows destructive red accent, error message, retry button",
-        "Retry triggers the appropriate BLoC event to reload data",
-        "No unhandled error crashes or blank screens"
-      ],
-      "type": "test",
-      "priority": 18,
-      "passes": true,
-      "notes": "MunawalaErrorCard used in customer (Activities, Notifications, Home RecentActivitySection) and traveller (Home trips/requests, Notifications, HeroSection). Wallet screens delegate error handling to sub-widgets. DeliveryRequests has custom error display implementation. No unhandled error crashes."
+      "title": "Ship the open-source governance and contributor documents",
+      "description": "Complete the public project surface with README, CONTRIBUTING, DISCLAIMER, CODEOWNERS, issue templates, and license files that match Wathba Skills' content-first open-source model.",
+      "acceptanceCriteria": [
+        "The repository includes an MIT license.",
+        "The repository includes a clear disclaimer document linked from the product.",
+        "The repository includes bilingual contribution guidance.",
+        "CODEOWNERS routes Saudi compliance, security, and web changes to the right maintainers.",
+        "README explains the product, repository structure, local development commands, and content contribution model."
+      ],
+      "type": "docs",
+      "priority": 1,
+      "passes": false,
+      "notes": "Open-source trust is part of the product, especially for compliance-oriented content."
     }
   ]
 }

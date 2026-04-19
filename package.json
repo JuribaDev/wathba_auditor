@@ -1,0 +1,29 @@
+{
+  "name": "agent-skills",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "prepare": "husky",
+    "generate:skills": "tsx scripts/generate-skills.ts",
+    "dev": "pnpm generate:skills && pnpm --filter @agent-skills/web dev",
+    "build": "pnpm generate:skills && pnpm --filter @agent-skills/web build",
+    "lint": "pnpm --filter @agent-skills/web lint",
+    "doctor:react": "pnpm --filter @agent-skills/web doctor:react",
+    "typecheck": "pnpm generate:skills && pnpm --filter @agent-skills/skill-schema typecheck && pnpm --filter @agent-skills/web typecheck",
+    "test": "pnpm generate:skills && pnpm --filter @agent-skills/web test",
+    "test:e2e": "pnpm generate:skills && pnpm --filter @agent-skills/web test:e2e",
+    "verify": "pnpm generate:skills && pnpm doctor:react && pnpm --filter @agent-skills/skill-schema typecheck && pnpm --filter @agent-skills/web typecheck && pnpm --filter @agent-skills/web test && pnpm --filter @agent-skills/web build",
+    "verify:full": "pnpm verify && pnpm --filter @agent-skills/web test:e2e"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
+  }
+}

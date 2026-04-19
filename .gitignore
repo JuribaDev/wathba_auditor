@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+dist
+.turbo
+coverage
+playwright-report
+test-results
+.husky/_
+.DS_Store
