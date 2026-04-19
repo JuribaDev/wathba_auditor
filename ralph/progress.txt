@@ -406,3 +406,19 @@
   - `resolveSkillSummary` is deliberately pure (no React). Adapters and any future landing-hero preview can reuse it without pulling in component code.
   - No visual regression test yet — the e2e suite covers routes/RTL parity but does not snapshot the library grid. If future stories introduce a 3-column breakpoint or card-density variant, add a Playwright screenshot for both `en` and `ar` to guard against RTL drift.
 ---
+
+## 2026-04-19 17:18 UTC - US-020
+- Implemented: Added the landing-page "§ 02 · The library" preview section below the feature grid. Shows `generatedSkills.slice(0, 6)` rendered via the existing `SkillMiniCard`, a 1/2/3-column responsive grid (`sm:grid-cols-2 lg:grid-cols-3`), a serif H2 heading + muted lede on the left of the section header, and a secondary `Browse the library` Button linking to `/{locale}/skills` on the right (wraps to its own line on mobile via `sm:flex-row`). Mini cards link directly to `/{locale}/skills/{id}`, so navigation to detail works via pointer + keyboard out of the box. RTL: the arrow icon on the section CTA flips through the existing `data-icon="inline-end"` affordance; the card arrows flip via the component's own `rtl:-scale-x-100`.
+- Files changed:
+  - apps/web/app/[locale]/page.tsx (added SkillMiniCard import, generatedSkills import, Skills translator, cardLabels object, library-preview section)
+  - apps/web/messages/en.json (added Landing.libraryEyebrow / libraryHeading / libraryLede / libraryViewAll / libraryAriaLabel)
+  - apps/web/messages/ar.json (same five keys in Arabic, with Arabic-Indic numerals on `§ ٠٢`)
+  - ralph/prd.json (US-020 → passes: true)
+- Checks run: `pnpm verify` — skill generation + lint + schema typecheck + app typecheck + 27 test files / 217 unit tests + Next.js production build (27 static pages including /en and /ar landing) all green.
+- Notes for future work:
+  - Reused Skills-namespace card labels rather than duplicating the localized strings under Landing. Same pattern as `apps/web/app/[locale]/skills/page.tsx` — if US-022's mini-card label shape ever changes, update both call sites in lockstep. An alternative worth considering once a third consumer appears is extracting a shared `resolveSkillMiniCardLabels(t)` helper under `apps/web/lib/skills/`, but two call sites doesn't justify the indirection yet.
+  - `generatedSkills` is sorted alphabetically by id (architecture → saudi → security), so the current 6-card slice is architecture-ci-hygiene, architecture-testability-check, saudi-mada-stcpay-basics, saudi-nafath-yakeen-basics, saudi-pdpl-basics, saudi-zatca-phase2 — no security skills in the preview. If that distribution is unwanted, the two clean options are (a) a handpicked featured-skill list keyed by id, or (b) a stable shuffled-by-id-hash preview. Don't reorder the loader sort — it's the invariant that makes `generatedSkills[0]` a safe fixture in zip.test.ts (see the US-015 progress note about id-prefix scheme).
+  - Added `size="default"` (implicit) for the secondary Button — `size="md"` does NOT exist in `components/ui/button.tsx` (only default/xs/sm/lg/icon variants). If a future landing tweak wants a larger CTA, use `size="lg"` to match the hero's primary/secondary pair.
+  - The section heading uses the same `text-[clamp(1.75rem,3.2vw,2.5rem)]` scale as the "What's a skill?" card heading to keep the editorial rhythm consistent. Don't introduce a new scale without updating both.
+  - No snapshot test yet for the landing library preview. If US-047's unit coverage extends to landing page components, assert (1) exactly 6 cards render when generatedSkills.length >= 6, (2) `libraryViewAll` Button href equals `/{locale}/skills`, (3) each card href equals `/{locale}/skills/{id}`. The e2e/routes.spec.ts currently only checks route reachability, so a Playwright snapshot for both locales would be the fastest RTL-parity guard.
+---

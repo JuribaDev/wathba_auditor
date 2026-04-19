@@ -72,7 +72,12 @@
     "feature2Body": "Saudi skills (ZATCA Phase 2, PDPL, Nafath) ship with disclaimers, source links, and a verification date — never stale and never silent.",
     "feature3Marker": "iii.",
     "feature3Title": "One zip, every agent",
-    "feature3Body": "Pick Claude Code, Cursor, Codex, or plain AGENTS.md. Same canonical content, rendered for the target you actually use."
+    "feature3Body": "Pick Claude Code, Cursor, Codex, or plain AGENTS.md. Same canonical content, rendered for the target you actually use.",
+    "libraryEyebrow": "§ 02",
+    "libraryHeading": "The library",
+    "libraryLede": "Every skill is versioned, dated, and reviewed. Draft items are clearly marked — use them as starting points, not gospel.",
+    "libraryViewAll": "Browse the library",
+    "libraryAriaLabel": "Preview of the skill library"
   },
   "Generate": {
     "title": "Questionnaire foundation",

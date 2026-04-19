@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { SkillMiniCard } from "@/components/skill-mini-card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { isLocale } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
+import { generatedSkills } from "@/lib/skills/generated";
 
 const SAMPLE_SKILL_BODY = `---
 name: zatca-phase2
@@ -56,6 +58,27 @@ export default async function LandingPage({ params }: LandingProps) {
   }
 
   const t = await getTranslator(locale, "Landing");
+  const tSkills = await getTranslator(locale, "Skills");
+
+  const previewSkills = generatedSkills.slice(0, 6);
+  const cardLabels = {
+    category: {
+      categorySaudi: tSkills("filterCategorySaudi"),
+      categoryCompliance: tSkills("cardCategoryCompliance"),
+      categorySecurity: tSkills("filterCategorySecurity"),
+      categoryArchitecture: tSkills("filterCategoryArchitecture"),
+    },
+    status: {
+      statusReviewed: tSkills("filterStatusReviewed"),
+      statusCommunity: tSkills("filterStatusCommunity"),
+      statusDraft: tSkills("filterStatusDraft"),
+    },
+    disclaimer: tSkills("cardDisclaimerLabel"),
+    disclaimerTitle: tSkills("cardDisclaimerTitle"),
+    versionPrefix: tSkills("cardVersionPrefix"),
+    verifiedPrefix: tSkills("cardVerifiedPrefix"),
+    viewSkill: tSkills("viewSkill"),
+  };
 
   return (
     <AppShell locale={locale} section="home">
@@ -156,6 +179,46 @@ export default async function LandingPage({ params }: LandingProps) {
             </p>
           </article>
         ))}
+      </section>
+
+      <section
+        aria-labelledby="landing-library-preview-heading"
+        aria-label={t("libraryAriaLabel")}
+        className="py-10 lg:py-14"
+      >
+        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary rtl:tracking-normal rtl:normal-case">
+              {t("libraryEyebrow")}
+            </p>
+            <h2
+              id="landing-library-preview-heading"
+              className="font-heading text-[clamp(1.75rem,3.2vw,2.5rem)] font-semibold leading-[1.12] tracking-tight text-foreground"
+            >
+              {t("libraryHeading")}
+            </h2>
+            <p className="max-w-[65ch] text-base leading-[1.65] text-muted-foreground sm:text-[17px]">
+              {t("libraryLede")}
+            </p>
+          </div>
+          <Button asChild variant="secondary">
+            <Link href={`/${locale}/skills`}>
+              {t("libraryViewAll")}
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {previewSkills.map((skill) => (
+            <SkillMiniCard
+              key={skill.id}
+              locale={locale}
+              skill={skill}
+              href={`/${locale}/skills/${skill.id}`}
+              labels={cardLabels}
+            />
+          ))}
+        </div>
       </section>
     </AppShell>
   );

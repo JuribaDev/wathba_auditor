@@ -412,7 +412,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story ties product discovery directly into the content moat."
     },
     {
