@@ -496,7 +496,7 @@
       ],
       "type": "logic",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This logic is explicitly present in the prototype and should be preserved as the initial rules engine."
     },
     {
