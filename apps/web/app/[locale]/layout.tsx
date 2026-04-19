@@ -18,8 +18,8 @@ const notoSansArabic = Noto_Sans_Arabic({
 
 export const metadata: Metadata = {
   title: {
-    default: "Agent Skills",
-    template: "%s | Agent Skills",
+    default: "Wathba Skills",
+    template: "%s | Wathba Skills",
   },
   description:
     "Open-source skill pack generator for Saudi compliance, security, and architecture guidance.",

@@ -1,4 +1,25 @@
 {
+  "Shell": {
+    "brand": "Wathba Skills",
+    "brandBadge": "alpha",
+    "navOverview": "Overview",
+    "navSkills": "Skills",
+    "navGenerate": "Generate",
+    "navCompare": "Compare",
+    "github": "GitHub",
+    "cta": "Generate skill pack",
+    "footerDisclaimer": "Engineering guidance and templates, not legal advice.",
+    "footerLicense": "MIT License",
+    "footerDisclaimerLink": "Disclaimer",
+    "footerContributing": "Contributing",
+    "footerRepo": "Repository",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu"
+  },
+  "Compare": {
+    "title": "Bilingual parity canvas",
+    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. The full compare flow lands in a later story; this stub keeps the navigation link wired."
+  },
   "Landing": {
     "title": "Open-source skill packs for developers shipping into Saudi and MENA markets.",
     "description": "Frontend-only generator for agent-ready compliance, security, and architecture guidance.",

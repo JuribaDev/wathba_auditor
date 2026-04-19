@@ -172,7 +172,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Reflect the prototype's editorial shell rather than a generic dashboard wrapper."
     },
     {
