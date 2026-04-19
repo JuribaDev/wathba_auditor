@@ -624,7 +624,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story turns the prototype's varVals behavior into a real input layer for generation."
     },
     {

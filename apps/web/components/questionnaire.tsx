@@ -20,6 +20,10 @@ import {
   StepTech,
   type TechStepLabels,
 } from "@/components/questionnaire/step-tech";
+import {
+  StepVariables,
+  type VariablesStepLabels,
+} from "@/components/questionnaire/step-variables";
 import type { AppLocale } from "@/lib/i18n";
 import type { QuestionnaireStepId } from "@/lib/questionnaire/steps";
 import {
@@ -31,6 +35,12 @@ import {
   type ValidationMessages,
 } from "@/lib/questionnaire/validation";
 import {
+  getActiveVariableSkills,
+  type VariableValue,
+  type VariableValues,
+} from "@/lib/questionnaire/variables";
+import { generatedSkills } from "@/lib/skills/generated";
+import {
   recommendSkills,
   type QuestionnaireAnswers,
 } from "@/lib/skills/recommendations";
@@ -41,6 +51,7 @@ export type QuestionnaireProps = {
   aboutLabels: AboutStepLabels;
   techLabels: TechStepLabels;
   reviewLabels: ReviewStepLabels;
+  variablesLabels: VariablesStepLabels;
   validationMessages: ValidationMessages;
 };
 
@@ -50,6 +61,7 @@ export function Questionnaire({
   aboutLabels,
   techLabels,
   reviewLabels,
+  variablesLabels,
   validationMessages,
 }: QuestionnaireProps) {
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
@@ -57,6 +69,8 @@ export function Questionnaire({
     ReadonlySet<QuestionnaireStepId>
   >(() => new Set());
   const [selections, setSelections] = React.useState<ReviewSelections>({});
+  const [variableValues, setVariableValues] =
+    React.useState<VariableValues>({});
   const seededRecommendationsRef = React.useRef<boolean>(false);
 
   const handleAboutChange = React.useCallback(
@@ -115,6 +129,18 @@ export function Questionnaire({
     [],
   );
 
+  const handleVariableChange = React.useCallback(
+    (key: string, value: VariableValue) => {
+      setVariableValues((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
+
+  const activeVariableSkills = React.useMemo(
+    () => getActiveVariableSkills(generatedSkills, selections),
+    [selections],
+  );
+
   const handleBeforeNext = React.useCallback(
     (step: QuestionnaireStepId): boolean => {
       if (step === "about" || step === "tech") {
@@ -168,13 +194,23 @@ export function Questionnaire({
         />
       }
       reviewSlot={
-        <StepReview
-          locale={locale}
-          recommendations={recommendations}
-          selections={selections}
-          onToggle={handleToggleSelection}
-          labels={reviewLabels}
-        />
+        <>
+          <StepReview
+            locale={locale}
+            recommendations={recommendations}
+            selections={selections}
+            onToggle={handleToggleSelection}
+            labels={reviewLabels}
+          />
+          <StepVariables
+            locale={locale}
+            skills={activeVariableSkills}
+            values={variableValues}
+            answers={answers}
+            onChange={handleVariableChange}
+            labels={variablesLabels}
+          />
+        </>
       }
     />
   );

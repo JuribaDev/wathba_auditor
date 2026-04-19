@@ -63,6 +63,13 @@
       "disable": "Remove from skill pack",
       "empty": "Answer the earlier steps so we can recommend the right skills for your project."
     },
+    "variables": {
+      "heading": "Set values for your skills",
+      "lede": "These skills need a few more details to be useful. Your answers get baked into the rendered output.",
+      "yes": "Yes",
+      "no": "No",
+      "selectPlaceholder": "—"
+    },
     "generateHeading": "Generate your skill pack",
     "generateLede": "Preview the exact files per target, then download a single zip — everything stays in your browser.",
     "generatePlaceholder": "Target previews, zip summary, and download button will land here in the next iteration.",

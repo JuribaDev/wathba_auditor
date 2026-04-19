@@ -6,6 +6,7 @@ import type { QuestionnaireLabels } from "@/components/questionnaire-shell";
 import type { AboutStepLabels } from "@/components/questionnaire/step-about";
 import type { ReviewStepLabels } from "@/components/questionnaire/step-review";
 import type { TechStepLabels } from "@/components/questionnaire/step-tech";
+import type { VariablesStepLabels } from "@/components/questionnaire/step-variables";
 import { isLocale } from "@/lib/i18n";
 import type { ValidationMessages } from "@/lib/questionnaire/validation";
 import { getTranslator } from "@/lib/messages";
@@ -116,6 +117,14 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     whyAsk: t("about.whyAsk"),
   };
 
+  const variablesLabels: VariablesStepLabels = {
+    heading: t("variables.heading"),
+    lede: t("variables.lede"),
+    yes: t("variables.yes"),
+    no: t("variables.no"),
+    selectPlaceholder: t("variables.selectPlaceholder"),
+  };
+
   const reviewLabels: ReviewStepLabels = {
     autoLabel: t("review.autoLabel"),
     manualLabel: t("review.manualLabel"),
@@ -151,6 +160,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
           aboutLabels={aboutLabels}
           techLabels={techLabels}
           reviewLabels={reviewLabels}
+          variablesLabels={variablesLabels}
           validationMessages={validationMessages}
         />
       </div>
