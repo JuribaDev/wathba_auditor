@@ -364,7 +364,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This is the product's front door and should mirror the prototype closely."
     },
     {

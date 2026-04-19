@@ -21,18 +21,15 @@
     "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. The full compare flow lands in a later story; this stub keeps the navigation link wired."
   },
   "Landing": {
-    "title": "Open-source skill packs for developers shipping into Saudi and MENA markets.",
-    "description": "Frontend-only generator for agent-ready compliance, security, and architecture guidance.",
-    "primaryAction": "Generate your skill pack",
-    "secondaryAction": "Browse skills",
-    "statusBadge": "frontend-only",
-    "rtlBadge": "EN / AR with RTL",
-    "headline": "The app stays static. The value lives in the skill library.",
-    "seedSkillBadge": "seed skill",
-    "seedSkillStatus": "The first ZATCA skill is in draft and ready for review hardening.",
-    "seedSkillDescription": "This repository now includes the canonical schema, generated skill data, and a browsable seed compliance skill as the quality bar for future additions.",
-    "seedSkillLocale": "English-first with Arabic metadata support.",
-    "seedSkillAction": "Inspect the ZATCA skill"
+    "eyebrow": "Open source · MIT",
+    "headline": "Give your AI coding agent the guardrails you wish it came with.",
+    "lede": "Answer a short questionnaire about what you're building. Get a ready-to-drop-in skill pack for Claude Code, Cursor, Codex, or any agent that reads AGENTS.md — covering Saudi compliance, security hygiene, and architecture discipline.",
+    "primaryAction": "Start the questionnaire",
+    "secondaryAction": "Browse the library",
+    "microcopy": "Takes about 3 minutes. No account. Nothing leaves your browser.",
+    "samplePreviewLabel": "Sample skill preview",
+    "sampleFilename": ".claude/skills/zatca-phase2/SKILL.md",
+    "sampleHeaderBadge": "Peer-reviewed"
   },
   "Generate": {
     "title": "Questionnaire foundation",
