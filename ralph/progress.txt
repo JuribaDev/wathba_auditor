@@ -1,3 +1,10 @@
+## 2026-04-19 - US-003
+- Implemented: Verified static-export configuration meets all acceptance criteria. next.config.ts sets output: "export", trailingSlash: true, images.unoptimized: true. Both [locale] layout and [locale]/skills/[id] page declare dynamicParams=false with generateStaticParams enumerating all supported locales and skill IDs. Build emits out/ with index.html, /en, /ar, /en/skills, /ar/skills, /en/skills/saudi-zatca-phase2, /ar/skills/saudi-zatca-phase2, /en/generate, /ar/generate, favicon, _next/ assets, plus 404.html. Served out/ via pnpm serve and curl-probed /, /en/, /ar/, /en/skills/, /ar/skills/, /en/skills/saudi-zatca-phase2/, /en/generate/ — all returned 200. No code changes required.
+- Files changed: ralph/prd.json (marked US-003 passes=true), ralph/progress.txt
+- Checks run: pnpm verify (generate skills, doctor:react, schema typecheck, web typecheck, vitest, next build with static export) — all green. Manual static-serve probe — all 200.
+- Notes for future work: Root index (/) currently serves Next's default app landing because the top-level app/page is inherited from root; acceptance only requires locale routes to work, and they do. A future story (US-004 / US-005) may want a root redirect to /en or a locale-picker index; track there. Still no root app/layout.tsx at apps/web/app — only [locale]/layout.tsx — which is why root / resolves via Next's fallback; acceptable for static hosting where /en/ and /ar/ are the canonical entry points.
+---
+
 ## 2026-04-19 - US-002
 - Implemented: Verified apps/web Next.js App Router scaffold meets acceptance criteria — app/ at package root (not src/), Tailwind v4 via @tailwindcss/postcss, ESLint via eslint-config-next flat config, package filterable as @agent-skills/web, locale-aware routing at app/[locale]/, and next.config.ts configured for static export (output: "export", trailingSlash, images.unoptimized). No code changes required.
 - Files changed: ralph/prd.json (marked US-002 passes=true), ralph/progress.txt
