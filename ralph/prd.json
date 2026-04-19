@@ -896,7 +896,7 @@
       ],
       "type": "docs",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Open-source trust is part of the product, especially for compliance-oriented content."
     }
   ]

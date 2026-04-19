@@ -1,5 +1,42 @@
-* @juriba
-/apps/web/** @juriba
-/skills/saudi/** @juriba
-/skills/security/** @juriba
+# CODEOWNERS for Wathba Skills
+#
+# Routes review requests to the maintainers responsible for each capability
+# area. A PR that touches multiple areas will request review from every
+# matching owner. The last matching rule wins, so area-specific entries below
+# override the repo-wide default.
+#
+# Teams and individual handles can be added alongside @juriba as the
+# maintainer pool grows; the path groupings do not need to change.
 
+# Default: every path needs a maintainer review.
+*                                   @juriba
+
+# Saudi compliance skills (ZATCA, PDPL, Nafath/Yakeen, mada/STC Pay, …).
+# Changes here must be reviewed by a maintainer who tracks Saudi regulations.
+/skills/saudi/**                    @juriba
+
+# Security hygiene skills (secrets, auth isolation, …).
+/skills/security/**                 @juriba
+
+# Architecture discipline skills (testability, CI hygiene, …).
+/skills/architecture/**             @juriba
+
+# Canonical skill schema contract. Changes ripple through every skill and the
+# generator, so schema edits always need a core maintainer.
+/packages/skill-schema/**           @juriba
+
+# Build-time skill loader and generator scripts.
+/scripts/**                         @juriba
+
+# Web application (UI, routing, i18n, compare canvas, generate flow).
+/apps/web/**                        @juriba
+
+# Compliance-adjacent documents surfaced in the product footer. The
+# DISCLAIMER text is linked directly from the running app and must stay
+# accurate.
+/DISCLAIMER.md                      @juriba
+/CONTRIBUTING.md                    @juriba
+/README.md                          @juriba
+
+# CI and repository automation.
+/.github/**                         @juriba
