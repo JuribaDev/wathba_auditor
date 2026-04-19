@@ -832,7 +832,7 @@
       ],
       "type": "quality",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story operationalizes the prototype's compare route as a quality discipline."
     },
     {

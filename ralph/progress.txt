@@ -237,3 +237,10 @@
   - No axe-core or pa11y integration yet — adding one is a natural follow-up for US-047 (automated tests for primitives) or US-049 (CI quality gates). The new `accessibility-labels.test.ts` only catches missing strings; actual rendered ARIA assertions would need a DOM-level component test (JSDOM or Playwright). Leaving that for the broader testing stories.
   - Footer links in AppShell still lack explicit focus-visible rings; they inherit browser defaults which are visible. Adding class-level rings there is trivial but was outside the "core flows" scope of the AC and would clash with the editorial underline-on-hover aesthetic. If US-046 (RTL parity QA) flags them, the fix is a one-line `focus-visible:underline` addition.
 ---
+
+## 2026-04-19 16:10 - US-046
+- Implemented: Systematic RTL/bilingual parity checks as a quality discipline. Added vitest suite that validates getDirection, Arabic char coverage of every AR leaf (with explicit exemption allowlist for brand names / file paths / bilingual compare labels), duplicate-translation detection, core screen namespace presence, RTL-unsafe Tailwind class scan across app/ and components/, and compare-canvas frame presence. Added Playwright rtl-parity.spec.ts covering the 5 core routes × 2 locales plus the compare canvas.
+- Files changed: apps/web/tests/unit/rtl-parity.test.ts (new), apps/web/tests/e2e/rtl-parity.spec.ts (new)
+- Checks run: pnpm verify (20 test files, 149 tests pass; build emits static /en/* and /ar/* for all core routes)
+- Notes for future work: When adding new UI components that use physical Tailwind spacing/positioning (ml-/mr-/pl-/pr-/left-/right-) or text-left/text-right without a dir="ltr" guard, the parity suite will fail. Prefer logical properties (ms-/me-/ps-/pe-/start-/end-) or rely on dir-aware layout. ARABIC_EXEMPT_KEYS and SHARED_VALUE_KEYS in rtl-parity.test.ts need to be extended when new AR catalog entries are intentionally non-Arabic (brand names, placeholders) or intentionally identical in both locales (bilingual frame labels).
+---
