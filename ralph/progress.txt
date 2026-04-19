@@ -144,3 +144,9 @@
   - Boolean controls use `YesNoGroup` (role="radiogroup" under the hood). A dedicated `Toggle` primitive exists in the UI kit; using yes/no keeps parity with the prototype's "Yes/No" affordance and also satisfies the AC's "accessible toggle or yes/no controls" wording. Swapping to `Toggle` is trivial if US-045 wants a binary switch instead.
   - Active-skill filtering reuses `ReviewSelections` directly from `step-review.tsx`. If US-032 relocates selections to `@/lib/questionnaire/selection.ts`, update the import path in `variables.ts` at the same time.
 ---
+## 2026-04-19 - US-034
+- Implemented: generate-step zip summary card with file tree grouped by target/directory and totals for files and selected skills; bilingual labels and empty state when no agents or active skills.
+- Files changed: apps/web/lib/generate/file-plan.ts (new), apps/web/components/questionnaire/step-generate.tsx (new), apps/web/components/questionnaire.tsx, apps/web/app/[locale]/generate/page.tsx, apps/web/messages/en.json, apps/web/messages/ar.json, apps/web/tests/unit/file-plan.test.ts (new).
+- Checks run: pnpm verify (lint, typecheck, schema, tests, build) — all green.
+- Notes for future work: file-plan module is the seed for target adapters (US-037..US-040) and zip packaging (US-041); adapters can consume getActiveSkills/orderTargets and replace the placeholder file generation per target. Filename "skills-pack.zip" is a placeholder; US-041 should derive project-skills-<date> naming.
+---

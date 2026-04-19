@@ -73,6 +73,21 @@
     "generateHeading": "أنشئ حزمة المهارات",
     "generateLede": "عاين الملفات الفعلية لكل هدف، ثم نزّل ملف zip واحد — كل شيء يبقى داخل متصفحك.",
     "generatePlaceholder": "معاينات الأهداف وملخص حزمة zip وزر التنزيل ستظهر هنا في التكرار القادم.",
+    "generate": {
+      "zipLabel": "ملخص حزمة zip",
+      "zipFilename": "skills-pack.zip",
+      "totalLabel": "الإجمالي",
+      "filesLabel": "ملف",
+      "skillsLabel": "المهارات",
+      "targets": {
+        "claude": "Claude Code",
+        "cursor": "Cursor",
+        "codex": "Codex",
+        "generic": "AGENTS.md عام"
+      },
+      "emptyTitle": "لا يوجد ما يمكن توليده بعد",
+      "emptyBody": "اختر وكيلاً واحداً على الأقل في خطوة «التقنية والوكلاء» وأبقِ مهارة واحدة مفعّلة لعرض ملخص الحزمة."
+    },
     "eyebrowOf": "الخطوة {step} / {total}",
     "prev": "السابق",
     "next": "التالي",

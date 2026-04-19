@@ -73,6 +73,21 @@
     "generateHeading": "Generate your skill pack",
     "generateLede": "Preview the exact files per target, then download a single zip — everything stays in your browser.",
     "generatePlaceholder": "Target previews, zip summary, and download button will land here in the next iteration.",
+    "generate": {
+      "zipLabel": "Zip summary",
+      "zipFilename": "skills-pack.zip",
+      "totalLabel": "Total",
+      "filesLabel": "files",
+      "skillsLabel": "Skills",
+      "targets": {
+        "claude": "Claude Code",
+        "cursor": "Cursor",
+        "codex": "Codex",
+        "generic": "Generic AGENTS.md"
+      },
+      "emptyTitle": "Nothing to generate yet",
+      "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview."
+    },
     "eyebrowOf": "Step {step} / {total}",
     "prev": "Back",
     "next": "Continue",

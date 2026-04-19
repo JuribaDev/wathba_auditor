@@ -11,6 +11,10 @@ import {
   type AboutStepLabels,
 } from "@/components/questionnaire/step-about";
 import {
+  StepGenerate,
+  type GenerateStepLabels,
+} from "@/components/questionnaire/step-generate";
+import {
   StepReview,
   type ReviewSelections,
   type ReviewSelectionSource,
@@ -24,6 +28,7 @@ import {
   StepVariables,
   type VariablesStepLabels,
 } from "@/components/questionnaire/step-variables";
+import { buildFilePlan, getActiveSkills } from "@/lib/generate/file-plan";
 import type { AppLocale } from "@/lib/i18n";
 import type { QuestionnaireStepId } from "@/lib/questionnaire/steps";
 import {
@@ -52,6 +57,7 @@ export type QuestionnaireProps = {
   techLabels: TechStepLabels;
   reviewLabels: ReviewStepLabels;
   variablesLabels: VariablesStepLabels;
+  generateLabels: GenerateStepLabels;
   validationMessages: ValidationMessages;
 };
 
@@ -62,6 +68,7 @@ export function Questionnaire({
   techLabels,
   reviewLabels,
   variablesLabels,
+  generateLabels,
   validationMessages,
 }: QuestionnaireProps) {
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
@@ -141,6 +148,16 @@ export function Questionnaire({
     [selections],
   );
 
+  const activeSkills = React.useMemo(
+    () => getActiveSkills(generatedSkills, selections),
+    [selections],
+  );
+
+  const filePlan = React.useMemo(
+    () => buildFilePlan(answers.agents, activeSkills),
+    [answers.agents, activeSkills],
+  );
+
   const handleBeforeNext = React.useCallback(
     (step: QuestionnaireStepId): boolean => {
       if (step === "about" || step === "tech") {
@@ -212,6 +229,7 @@ export function Questionnaire({
           />
         </>
       }
+      generateSlot={<StepGenerate plan={filePlan} labels={generateLabels} />}
     />
   );
 }

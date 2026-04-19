@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { Questionnaire } from "@/components/questionnaire";
 import type { QuestionnaireLabels } from "@/components/questionnaire-shell";
 import type { AboutStepLabels } from "@/components/questionnaire/step-about";
+import type { GenerateStepLabels } from "@/components/questionnaire/step-generate";
 import type { ReviewStepLabels } from "@/components/questionnaire/step-review";
 import type { TechStepLabels } from "@/components/questionnaire/step-tech";
 import type { VariablesStepLabels } from "@/components/questionnaire/step-variables";
@@ -139,6 +140,20 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     empty: t("review.empty"),
   };
 
+  const generateLabels: GenerateStepLabels = {
+    zipLabel: t("generate.zipLabel"),
+    zipFilename: t("generate.zipFilename"),
+    totalLabel: t("generate.totalLabel"),
+    filesLabel: t("generate.filesLabel"),
+    skillsLabel: t("generate.skillsLabel"),
+    targetClaude: t("generate.targets.claude"),
+    targetCursor: t("generate.targets.cursor"),
+    targetCodex: t("generate.targets.codex"),
+    targetGeneric: t("generate.targets.generic"),
+    emptyTitle: t("generate.emptyTitle"),
+    emptyBody: t("generate.emptyBody"),
+  };
+
   const validationMessages: ValidationMessages = {
     market: t("errors.market"),
     pii: t("errors.pii"),
@@ -161,6 +176,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
           techLabels={techLabels}
           reviewLabels={reviewLabels}
           variablesLabels={variablesLabels}
+          generateLabels={generateLabels}
           validationMessages={validationMessages}
         />
       </div>
