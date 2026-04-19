@@ -1,4 +1,14 @@
 {
+  "Meta": {
+    "title": "Wathba Skills",
+    "titleTemplate": "%s | Wathba Skills",
+    "description": "Open-source skill pack generator for Saudi compliance, security, and architecture guidance."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The requested route is not part of the current static export.",
+    "cta": "Return to the start"
+  },
   "Shell": {
     "brand": "Wathba Skills",
     "brandBadge": "alpha",
@@ -18,7 +28,15 @@
   },
   "Compare": {
     "title": "Bilingual parity canvas",
-    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. The full compare flow lands in a later story; this stub keeps the navigation link wired."
+    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. The full compare flow lands in a later story; this stub keeps the navigation link wired.",
+    "enFrame": {
+      "title": "English · LTR",
+      "body": "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout."
+    },
+    "arFrame": {
+      "title": "العربية · RTL",
+      "body": "تظهر هنا شاشات الواجهة والاستبيان والمراجعة والتوليد والتفاصيل بالعربية وباتجاه من اليمين إلى اليسار."
+    }
   },
   "Landing": {
     "eyebrow": "Open source · MIT",

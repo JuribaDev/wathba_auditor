@@ -800,7 +800,7 @@
       ],
       "type": "i18n",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype already contains near-complete bilingual copy and should be treated as the baseline."
     },
     {

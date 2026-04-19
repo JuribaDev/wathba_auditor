@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 
 import { getDirection, isLocale, locales } from "@/lib/i18n";
+import { getTranslator } from "@/lib/messages";
 
 const latinSans = IBM_Plex_Sans({
   variable: "--font-latin-sans",
@@ -42,14 +43,21 @@ const arabicDisplay = Amiri({
   weight: ["400", "700"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Wathba Skills",
-    template: "%s | Wathba Skills",
-  },
-  description:
-    "Open-source skill pack generator for Saudi compliance, security, and architecture guidance.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return {};
+  }
+  const t = await getTranslator(locale, "Meta");
+  return {
+    title: { default: t("title"), template: t("titleTemplate") },
+    description: t("description"),
+  };
+}
 
 export const dynamicParams = false;
 

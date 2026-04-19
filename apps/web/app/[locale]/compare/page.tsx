@@ -23,7 +23,20 @@ export default async function ComparePage({ params }: ComparePageProps) {
   }
 
   const t = await getTranslator(locale, "Compare");
-  const frames = getFrames();
+  const frames = [
+    {
+      lang: "en" as const,
+      dir: "ltr" as const,
+      title: t("enFrame.title"),
+      body: t("enFrame.body"),
+    },
+    {
+      lang: "ar" as const,
+      dir: "rtl" as const,
+      title: t("arFrame.title"),
+      body: t("arFrame.body"),
+    },
+  ];
 
   return (
     <AppShell
@@ -46,21 +59,4 @@ export default async function ComparePage({ params }: ComparePageProps) {
       </section>
     </AppShell>
   );
-}
-
-function getFrames() {
-  return [
-    {
-      lang: "en",
-      dir: "ltr" as const,
-      title: "English · LTR",
-      body: "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout.",
-    },
-    {
-      lang: "ar",
-      dir: "rtl" as const,
-      title: "العربية · RTL",
-      body: "تظهر هنا شاشات الواجهة والاستبيان والمراجعة والتوليد والتفاصيل بالعربية وباتجاه من اليمين إلى اليسار.",
-    },
-  ];
 }
