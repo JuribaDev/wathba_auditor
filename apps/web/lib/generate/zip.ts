@@ -4,6 +4,7 @@ import {
   renderClaudeCodeFiles,
   type RenderedFile,
 } from "@/lib/generate/adapters/claude-code";
+import { renderAgentsMdFiles } from "@/lib/generate/adapters/agents-md";
 import { renderCodexFiles } from "@/lib/generate/adapters/codex";
 import { renderCursorFiles } from "@/lib/generate/adapters/cursor";
 import type { FilePlan } from "@/lib/generate/file-plan";
@@ -25,7 +26,7 @@ export function buildTargetFiles(
     case "codex":
       return renderCodexFiles(skills, resolutions);
     case "agents-md":
-      return renderCodexFiles(skills, resolutions);
+      return renderAgentsMdFiles(skills, resolutions);
   }
 }
 

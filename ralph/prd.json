@@ -736,7 +736,7 @@
       ],
       "type": "adapter",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story keeps the product useful beyond branded agents."
     },
     {

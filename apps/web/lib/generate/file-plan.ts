@@ -1,4 +1,5 @@
 import type { ReviewSelections } from "@/components/questionnaire/step-review";
+import { renderAgentsMdPaths } from "@/lib/generate/adapters/agents-md";
 import { renderClaudeCodePaths } from "@/lib/generate/adapters/claude-code";
 import { renderCodexPaths } from "@/lib/generate/adapters/codex";
 import { renderCursorPaths } from "@/lib/generate/adapters/cursor";
@@ -57,7 +58,7 @@ export function buildFilesForTarget(
     case "codex":
       return renderCodexPaths(skills);
     case "agents-md":
-      return ["AGENTS.md"];
+      return renderAgentsMdPaths(skills);
   }
 }
 
