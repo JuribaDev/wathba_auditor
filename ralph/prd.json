@@ -768,7 +768,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This is a concrete system-design element from the prototype and should remain part of the product workflow."
     },
     {

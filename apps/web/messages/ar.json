@@ -40,7 +40,22 @@
   },
   "Compare": {
     "title": "لوحة مقارنة ثنائية اللغة",
-    "description": "عرض جنباً إلى جنب للإنجليزية (LTR) والعربية (RTL) لفحص التكافؤ البصري. الإصدار الكامل يصل في قصة لاحقة، وهذه نسخة مبدئية لإبقاء رابط التنقل صالحاً.",
+    "description": "عرض جنباً إلى جنب للإنجليزية (LTR) والعربية (RTL) لفحص التكافؤ البصري. اختر شاشة لمقارنة نفس البيانات في الاتجاهين.",
+    "canvasEyebrow": "اللوحة",
+    "canvasTitle": "فحص التكافؤ ثنائي اللغة",
+    "canvasLede": "نفس الشاشة بالإنجليزية (LTR) وبالعربية (RTL)، ومصدر البيانات واحد.",
+    "tabsGroupLabel": "اختر شاشة للمقارنة",
+    "screenLandingLabel": "الواجهة",
+    "screenQuestionnaireLabel": "الاستبيان",
+    "screenReviewLabel": "المراجعة",
+    "screenGenerateLabel": "التوليد",
+    "screenDetailLabel": "تفاصيل المهارة",
+    "frameLangSlugEn": "/en",
+    "frameLangSlugAr": "/ar",
+    "reviewRecommendedLabel": "موصى به",
+    "generateZipFilename": "wathba-skills.zip",
+    "generateDownloadLabel": "تنزيل الملف",
+    "detailBackLabel": "العودة إلى المكتبة",
     "enFrame": {
       "title": "English · LTR",
       "body": "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout."

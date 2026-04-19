@@ -40,7 +40,22 @@
   },
   "Compare": {
     "title": "Bilingual parity canvas",
-    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. The full compare flow lands in a later story; this stub keeps the navigation link wired.",
+    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. Pick a screen to compare the same underlying data in both directions.",
+    "canvasEyebrow": "Canvas",
+    "canvasTitle": "Bilingual parity check",
+    "canvasLede": "The same screen in English (LTR) and Arabic (RTL), rendered from a single data source.",
+    "tabsGroupLabel": "Select a screen to compare",
+    "screenLandingLabel": "Landing",
+    "screenQuestionnaireLabel": "Questionnaire",
+    "screenReviewLabel": "Review",
+    "screenGenerateLabel": "Generate",
+    "screenDetailLabel": "Skill detail",
+    "frameLangSlugEn": "/en",
+    "frameLangSlugAr": "/ar",
+    "reviewRecommendedLabel": "Recommended",
+    "generateZipFilename": "wathba-skills.zip",
+    "generateDownloadLabel": "Download zip",
+    "detailBackLabel": "Back to library",
     "enFrame": {
       "title": "English · LTR",
       "body": "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout."
