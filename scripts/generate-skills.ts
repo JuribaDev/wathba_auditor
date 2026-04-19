@@ -3,31 +3,10 @@ import path from "node:path";
 import yaml from "js-yaml";
 
 import {
-  canonicalSkillSchema,
-  type CanonicalSkill,
+  parseCanonicalSkill,
+  SkillValidationError,
+  type GeneratedSkill,
 } from "../packages/skill-schema/src/index";
-
-type GeneratedSkill = {
-  id: string;
-  name: CanonicalSkill["name"];
-  summary: CanonicalSkill["summary"];
-  slug: string;
-  version: string;
-  category: CanonicalSkill["category"];
-  region: CanonicalSkill["region"];
-  targets: CanonicalSkill["targets"];
-  status: CanonicalSkill["status"];
-  lastVerified: string;
-  maintainers: CanonicalSkill["maintainers"];
-  sources: CanonicalSkill["sources"];
-  disclaimer: boolean;
-  variables: CanonicalSkill["variables"];
-  triggers: CanonicalSkill["triggers"];
-  body: string;
-  directory: string;
-  references: Array<{ path: string; content: string }>;
-  scripts: Array<{ path: string; content: string }>;
-};
 
 const repoRoot = process.cwd();
 const skillsRoot = path.join(repoRoot, "skills");
@@ -72,7 +51,9 @@ async function listRelativeFiles(
 async function loadSkill(skillYamlPath: string): Promise<GeneratedSkill> {
   const directory = path.dirname(skillYamlPath);
   const rawYaml = await fs.readFile(skillYamlPath, "utf8");
-  const parsed = canonicalSkillSchema.parse(yaml.load(rawYaml));
+  const parsed = parseCanonicalSkill(yaml.load(rawYaml), {
+    source: path.relative(repoRoot, skillYamlPath),
+  });
   const body = await fs.readFile(path.join(directory, "SKILL.md"), "utf8");
   const references = await listRelativeFiles(path.join(directory, "references"));
   const scripts = await listRelativeFiles(path.join(directory, "scripts"));
@@ -148,6 +129,10 @@ export const generatedSkillsById = Object.fromEntries(
 }
 
 main().catch((error) => {
-  console.error(error);
+  if (error instanceof SkillValidationError) {
+    console.error(error.message);
+  } else {
+    console.error(error);
+  }
   process.exitCode = 1;
 });

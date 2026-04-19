@@ -284,7 +284,7 @@
       ],
       "type": "data",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Even though the prototype stores catalog data inline, the production system needs a reusable canonical schema."
     },
     {
