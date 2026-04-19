@@ -268,7 +268,7 @@
       ],
       "type": "design-system",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story should mirror the prototype's interaction vocabulary instead of introducing unrelated controls."
     },
     {
