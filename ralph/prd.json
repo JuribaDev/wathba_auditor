@@ -544,7 +544,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The available options should mirror the prototype's stack and agent taxonomy unless intentionally extended."
     },
     {

@@ -101,6 +101,83 @@
         "desc": "Onboarding flows, account verification, age-gating, trust signals.",
         "why": "Nafath and Yakeen are the Saudi government-run identity services. They are gated — you cannot just call an API. The skill tells your agent the hard parts upfront so it does not invent fake endpoints."
       }
+    },
+    "tech": {
+      "stack": {
+        "title": "What is your main backend stack?",
+        "desc": "Pick the one the agent will be touching most. You can always add more later.",
+        "options": {
+          "nodejs": {
+            "label": "Node.js / TypeScript",
+            "desc": "Express, Next.js, NestJS, Hono."
+          },
+          "python": {
+            "label": "Python",
+            "desc": "Django, FastAPI, Flask."
+          },
+          "php": {
+            "label": "PHP",
+            "desc": "Laravel, Symfony."
+          },
+          "go": {
+            "label": "Go",
+            "desc": "Gin, Echo, net/http."
+          },
+          "other": {
+            "label": "Something else",
+            "desc": "We will keep the guidance stack-agnostic."
+          }
+        }
+      },
+      "agents": {
+        "title": "Which AI agents do you use?",
+        "desc": "Pick all that apply. We will generate a folder for each — the content is the same, just rendered for the agent's format.",
+        "options": {
+          "claude": {
+            "label": "Claude Code",
+            "desc": ".claude/skills/*"
+          },
+          "cursor": {
+            "label": "Cursor",
+            "desc": ".cursor/rules/*.mdc"
+          },
+          "codex": {
+            "label": "Codex / ChatGPT agents",
+            "desc": "AGENTS.md in the repo root"
+          },
+          "generic": {
+            "label": "Generic AGENTS.md",
+            "desc": "Any other agent that reads AGENTS.md"
+          }
+        }
+      },
+      "ci": {
+        "title": "Does your repo run CI on pull requests?",
+        "desc": "Lint, typecheck, tests — some or all of them.",
+        "why": "If not, we will add the CI hygiene skill so the agent learns to add checks as it changes code."
+      },
+      "secrets": {
+        "title": "How do you handle secrets today?",
+        "desc": "Be honest — the generator isn't judging. This just tailors the advice.",
+        "options": {
+          "manager": {
+            "label": "Secret manager",
+            "desc": "Vault, Doppler, AWS Secrets Manager, Infisical."
+          },
+          "env": {
+            "label": ".env files, git-ignored",
+            "desc": "Common; works until someone commits by accident."
+          },
+          "dotenv": {
+            "label": "A mix / not sure",
+            "desc": "We will add the secrets baseline skill to get you consistent."
+          },
+          "none": {
+            "label": "Honestly? They're in the repo.",
+            "desc": "We will make fixing this the agent's first priority."
+          }
+        }
+      }
     }
   },
   "Skills": {

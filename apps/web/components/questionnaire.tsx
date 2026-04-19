@@ -10,6 +10,10 @@ import {
   StepAbout,
   type AboutStepLabels,
 } from "@/components/questionnaire/step-about";
+import {
+  StepTech,
+  type TechStepLabels,
+} from "@/components/questionnaire/step-tech";
 import type { AppLocale } from "@/lib/i18n";
 import type { QuestionnaireAnswers } from "@/lib/skills/recommendations";
 
@@ -17,12 +21,14 @@ export type QuestionnaireProps = {
   locale: AppLocale;
   shellLabels: QuestionnaireLabels;
   aboutLabels: AboutStepLabels;
+  techLabels: TechStepLabels;
 };
 
 export function Questionnaire({
   locale,
   shellLabels,
   aboutLabels,
+  techLabels,
 }: QuestionnaireProps) {
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
 
@@ -45,6 +51,13 @@ export function Questionnaire({
     [],
   );
 
+  const handleTechChange = React.useCallback(
+    (patch: Partial<QuestionnaireAnswers>) => {
+      setAnswers((prev) => ({ ...prev, ...patch }));
+    },
+    [],
+  );
+
   return (
     <QuestionnaireShell
       locale={locale}
@@ -54,6 +67,13 @@ export function Questionnaire({
           answers={answers}
           onChange={handleAboutChange}
           labels={aboutLabels}
+        />
+      }
+      techSlot={
+        <StepTech
+          answers={answers}
+          onChange={handleTechChange}
+          labels={techLabels}
         />
       }
     />

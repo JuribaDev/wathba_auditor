@@ -3,7 +3,14 @@ import { generatedSkills } from "@/lib/skills/generated";
 
 export type Market = "ksa" | "gcc" | "global" | "other";
 export type SecretsHandling = "manager" | "env" | "dotenv" | "none";
-export type Stack = "nodejs" | "dotnet" | "python" | "php" | "java" | "go";
+export type Stack =
+  | "nodejs"
+  | "dotnet"
+  | "python"
+  | "php"
+  | "java"
+  | "go"
+  | "other";
 export type TargetAgent = "claude-code" | "cursor" | "codex" | "agents-md";
 
 export type QuestionnaireAnswers = {

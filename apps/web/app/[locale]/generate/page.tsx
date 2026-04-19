@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { Questionnaire } from "@/components/questionnaire";
 import type { QuestionnaireLabels } from "@/components/questionnaire-shell";
 import type { AboutStepLabels } from "@/components/questionnaire/step-about";
+import type { TechStepLabels } from "@/components/questionnaire/step-tech";
 import { isLocale } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
 
@@ -72,6 +73,47 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     whyAsk: t("about.whyAsk"),
   };
 
+  const techLabels: TechStepLabels = {
+    stackTitle: t("tech.stack.title"),
+    stackDesc: t("tech.stack.desc"),
+    stackOptionNodejsLabel: t("tech.stack.options.nodejs.label"),
+    stackOptionNodejsDesc: t("tech.stack.options.nodejs.desc"),
+    stackOptionPythonLabel: t("tech.stack.options.python.label"),
+    stackOptionPythonDesc: t("tech.stack.options.python.desc"),
+    stackOptionPhpLabel: t("tech.stack.options.php.label"),
+    stackOptionPhpDesc: t("tech.stack.options.php.desc"),
+    stackOptionGoLabel: t("tech.stack.options.go.label"),
+    stackOptionGoDesc: t("tech.stack.options.go.desc"),
+    stackOptionOtherLabel: t("tech.stack.options.other.label"),
+    stackOptionOtherDesc: t("tech.stack.options.other.desc"),
+    agentsTitle: t("tech.agents.title"),
+    agentsDesc: t("tech.agents.desc"),
+    agentsOptionClaudeLabel: t("tech.agents.options.claude.label"),
+    agentsOptionClaudeDesc: t("tech.agents.options.claude.desc"),
+    agentsOptionCursorLabel: t("tech.agents.options.cursor.label"),
+    agentsOptionCursorDesc: t("tech.agents.options.cursor.desc"),
+    agentsOptionCodexLabel: t("tech.agents.options.codex.label"),
+    agentsOptionCodexDesc: t("tech.agents.options.codex.desc"),
+    agentsOptionGenericLabel: t("tech.agents.options.generic.label"),
+    agentsOptionGenericDesc: t("tech.agents.options.generic.desc"),
+    ciTitle: t("tech.ci.title"),
+    ciDesc: t("tech.ci.desc"),
+    ciWhy: t("tech.ci.why"),
+    secretsTitle: t("tech.secrets.title"),
+    secretsDesc: t("tech.secrets.desc"),
+    secretsOptionManagerLabel: t("tech.secrets.options.manager.label"),
+    secretsOptionManagerDesc: t("tech.secrets.options.manager.desc"),
+    secretsOptionEnvLabel: t("tech.secrets.options.env.label"),
+    secretsOptionEnvDesc: t("tech.secrets.options.env.desc"),
+    secretsOptionDotenvLabel: t("tech.secrets.options.dotenv.label"),
+    secretsOptionDotenvDesc: t("tech.secrets.options.dotenv.desc"),
+    secretsOptionNoneLabel: t("tech.secrets.options.none.label"),
+    secretsOptionNoneDesc: t("tech.secrets.options.none.desc"),
+    yes: t("about.yes"),
+    no: t("about.no"),
+    whyAsk: t("about.whyAsk"),
+  };
+
   return (
     <AppShell locale={locale} section="generate">
       <div className="mx-auto w-full max-w-3xl">
@@ -79,6 +121,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
           locale={locale}
           shellLabels={shellLabels}
           aboutLabels={aboutLabels}
+          techLabels={techLabels}
         />
       </div>
     </AppShell>
