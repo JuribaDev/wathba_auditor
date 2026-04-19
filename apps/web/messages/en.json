@@ -178,6 +178,17 @@
           }
         }
       }
+    },
+    "errors": {
+      "market": "Pick the market this product primarily serves before continuing.",
+      "pii": "Tell us whether the product stores personal data before continuing.",
+      "invoicing": "Tell us whether you issue invoices in Saudi Arabia before continuing.",
+      "payments": "Tell us whether the product accepts payments before continuing.",
+      "identity": "Tell us whether the product verifies user identity before continuing.",
+      "stack": "Pick a primary backend stack before continuing.",
+      "agents": "Pick at least one AI agent before continuing.",
+      "ci": "Tell us whether CI runs on pull requests before continuing.",
+      "secrets": "Pick how secrets are handled today before continuing."
     }
   },
   "Skills": {

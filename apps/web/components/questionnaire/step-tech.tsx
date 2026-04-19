@@ -10,6 +10,7 @@ import {
   RadioCardGroup,
   type RadioCardOption,
 } from "@/components/ui/radio-card";
+import type { TechStepErrors } from "@/lib/questionnaire/validation";
 import type {
   QuestionnaireAnswers,
   SecretsHandling,
@@ -87,9 +88,10 @@ type StepTechProps = {
   answers: QuestionnaireAnswers;
   onChange: (patch: Partial<QuestionnaireAnswers>) => void;
   labels: TechStepLabels;
+  errors?: TechStepErrors;
 };
 
-export function StepTech({ answers, onChange, labels }: StepTechProps) {
+export function StepTech({ answers, onChange, labels, errors }: StepTechProps) {
   const stackOptions: RadioCardOption[] = [
     {
       value: "nodejs",
@@ -169,6 +171,7 @@ export function StepTech({ answers, onChange, labels }: StepTechProps) {
       <Question
         title={labels.stackTitle}
         description={labels.stackDesc}
+        error={errors?.stack}
       >
         <RadioCardGroup
           name="stack"
@@ -183,6 +186,7 @@ export function StepTech({ answers, onChange, labels }: StepTechProps) {
       <Question
         title={labels.agentsTitle}
         description={labels.agentsDesc}
+        error={errors?.agents}
       >
         <CheckboxCardGroup
           name="agents"
@@ -201,6 +205,7 @@ export function StepTech({ answers, onChange, labels }: StepTechProps) {
         description={labels.ciDesc}
         why={labels.ciWhy}
         whyAskLabel={labels.whyAsk}
+        error={errors?.ci}
       >
         <YesNoGroup
           name="ci"
@@ -215,6 +220,7 @@ export function StepTech({ answers, onChange, labels }: StepTechProps) {
       <Question
         title={labels.secretsTitle}
         description={labels.secretsDesc}
+        error={errors?.secrets}
       >
         <RadioCardGroup
           name="secrets"

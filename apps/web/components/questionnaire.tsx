@@ -15,6 +15,15 @@ import {
   type TechStepLabels,
 } from "@/components/questionnaire/step-tech";
 import type { AppLocale } from "@/lib/i18n";
+import type { QuestionnaireStepId } from "@/lib/questionnaire/steps";
+import {
+  hasAnyError,
+  validateAboutStep,
+  validateTechStep,
+  type AboutStepErrors,
+  type TechStepErrors,
+  type ValidationMessages,
+} from "@/lib/questionnaire/validation";
 import type { QuestionnaireAnswers } from "@/lib/skills/recommendations";
 
 export type QuestionnaireProps = {
@@ -22,6 +31,7 @@ export type QuestionnaireProps = {
   shellLabels: QuestionnaireLabels;
   aboutLabels: AboutStepLabels;
   techLabels: TechStepLabels;
+  validationMessages: ValidationMessages;
 };
 
 export function Questionnaire({
@@ -29,8 +39,12 @@ export function Questionnaire({
   shellLabels,
   aboutLabels,
   techLabels,
+  validationMessages,
 }: QuestionnaireProps) {
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
+  const [attemptedSteps, setAttemptedSteps] = React.useState<
+    ReadonlySet<QuestionnaireStepId>
+  >(() => new Set());
 
   const handleAboutChange = React.useCallback(
     (patch: Partial<QuestionnaireAnswers>) => {
@@ -58,15 +72,51 @@ export function Questionnaire({
     [],
   );
 
+  const aboutErrors: AboutStepErrors = React.useMemo(
+    () => validateAboutStep(answers, validationMessages),
+    [answers, validationMessages],
+  );
+  const techErrors: TechStepErrors = React.useMemo(
+    () => validateTechStep(answers, validationMessages),
+    [answers, validationMessages],
+  );
+
+  const showAboutErrors = attemptedSteps.has("about");
+  const showTechErrors = attemptedSteps.has("tech");
+
+  const handleBeforeNext = React.useCallback(
+    (step: QuestionnaireStepId): boolean => {
+      const stepErrors =
+        step === "about"
+          ? aboutErrors
+          : step === "tech"
+          ? techErrors
+          : undefined;
+      if (stepErrors && hasAnyError(stepErrors)) {
+        setAttemptedSteps((prev) => {
+          if (prev.has(step)) return prev;
+          const next = new Set(prev);
+          next.add(step);
+          return next;
+        });
+        return false;
+      }
+      return true;
+    },
+    [aboutErrors, techErrors],
+  );
+
   return (
     <QuestionnaireShell
       locale={locale}
       labels={shellLabels}
+      onBeforeNext={handleBeforeNext}
       aboutSlot={
         <StepAbout
           answers={answers}
           onChange={handleAboutChange}
           labels={aboutLabels}
+          errors={showAboutErrors ? aboutErrors : undefined}
         />
       }
       techSlot={
@@ -74,6 +124,7 @@ export function Questionnaire({
           answers={answers}
           onChange={handleTechChange}
           labels={techLabels}
+          errors={showTechErrors ? techErrors : undefined}
         />
       }
     />

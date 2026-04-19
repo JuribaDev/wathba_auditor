@@ -6,6 +6,7 @@ import type { QuestionnaireLabels } from "@/components/questionnaire-shell";
 import type { AboutStepLabels } from "@/components/questionnaire/step-about";
 import type { TechStepLabels } from "@/components/questionnaire/step-tech";
 import { isLocale } from "@/lib/i18n";
+import type { ValidationMessages } from "@/lib/questionnaire/validation";
 import { getTranslator } from "@/lib/messages";
 
 type GeneratePageProps = {
@@ -114,6 +115,18 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     whyAsk: t("about.whyAsk"),
   };
 
+  const validationMessages: ValidationMessages = {
+    market: t("errors.market"),
+    pii: t("errors.pii"),
+    invoicing: t("errors.invoicing"),
+    payments: t("errors.payments"),
+    identity: t("errors.identity"),
+    stack: t("errors.stack"),
+    agents: t("errors.agents"),
+    ci: t("errors.ci"),
+    secrets: t("errors.secrets"),
+  };
+
   return (
     <AppShell locale={locale} section="generate">
       <div className="mx-auto w-full max-w-3xl">
@@ -122,6 +135,7 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
           shellLabels={shellLabels}
           aboutLabels={aboutLabels}
           techLabels={techLabels}
+          validationMessages={validationMessages}
         />
       </div>
     </AppShell>

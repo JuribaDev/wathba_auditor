@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { RadioCardGroup, type RadioCardOption } from "@/components/ui/radio-card";
+import type { AboutStepErrors } from "@/lib/questionnaire/validation";
 import type {
   Market,
   QuestionnaireAnswers,
@@ -48,9 +49,10 @@ type StepAboutProps = {
   answers: QuestionnaireAnswers;
   onChange: (patch: Partial<QuestionnaireAnswers>) => void;
   labels: AboutStepLabels;
+  errors?: AboutStepErrors;
 };
 
-export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
+export function StepAbout({ answers, onChange, labels, errors }: StepAboutProps) {
   const ksa = isKsaMarket(answers.market);
 
   const marketOptions: RadioCardOption[] = [
@@ -78,6 +80,7 @@ export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
         description={labels.marketDesc}
         why={labels.marketWhy}
         whyAskLabel={labels.whyAsk}
+        error={errors?.market}
       >
         <RadioCardGroup
           name="market"
@@ -94,6 +97,7 @@ export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
           description={labels.invoicingDesc}
           why={labels.invoicingWhy}
           whyAskLabel={labels.whyAsk}
+          error={errors?.invoicing}
         >
           <YesNoGroup
             name="invoicing"
@@ -111,6 +115,7 @@ export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
         description={labels.piiDesc}
         why={labels.piiWhy}
         whyAskLabel={labels.whyAsk}
+        error={errors?.pii}
       >
         <YesNoGroup
           name="pii"
@@ -129,6 +134,7 @@ export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
             description={labels.paymentsDesc}
             why={labels.paymentsWhy}
             whyAskLabel={labels.whyAsk}
+            error={errors?.payments}
           >
             <YesNoGroup
               name="payments"
@@ -145,6 +151,7 @@ export function StepAbout({ answers, onChange, labels }: StepAboutProps) {
             description={labels.identityDesc}
             why={labels.identityWhy}
             whyAskLabel={labels.whyAsk}
+            error={errors?.identity}
           >
             <YesNoGroup
               name="identity"

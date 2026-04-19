@@ -79,6 +79,7 @@ export function QuestionnaireShell({
   techSlot,
   reviewSlot,
   generateSlot,
+  onBeforeNext,
 }: {
   locale: AppLocale;
   labels: QuestionnaireLabels;
@@ -87,6 +88,7 @@ export function QuestionnaireShell({
   techSlot?: React.ReactNode;
   reviewSlot?: React.ReactNode;
   generateSlot?: React.ReactNode;
+  onBeforeNext?: (step: QuestionnaireStepId) => boolean;
 }) {
   const [index, setIndex] = React.useState<number>(() => indexForStep(initialStep));
   const activeStep = stepForIndex(index);
@@ -111,8 +113,14 @@ export function QuestionnaireShell({
   );
 
   const goNext = React.useCallback(() => {
-    setIndex((current) => nextStepIndex(current));
-  }, []);
+    setIndex((current) => {
+      const currentStep = stepForIndex(current);
+      if (onBeforeNext && onBeforeNext(currentStep) === false) {
+        return current;
+      }
+      return nextStepIndex(current);
+    });
+  }, [onBeforeNext]);
 
   const goPrev = React.useCallback(() => {
     setIndex((current) => prevStepIndex(current));
