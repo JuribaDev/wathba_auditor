@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 
 test("landing page renders in English", async ({ page }) => {
   await page.goto("/en/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Open-source skill packs");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Give your AI coding agent",
+  );
 });
 
 test("skill detail renders in Arabic", async ({ page }) => {

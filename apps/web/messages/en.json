@@ -1,39 +1,374 @@
 {
+  "Meta": {
+    "title": "Wathba Skills",
+    "titleTemplate": "%s | Wathba Skills",
+    "description": "Open-source skill pack generator for Saudi compliance, security, and architecture guidance."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The requested route is not part of the current static export.",
+    "cta": "Return to the start"
+  },
+  "Shell": {
+    "brand": "Wathba Skills",
+    "brandBadge": "alpha",
+    "navOverview": "Overview",
+    "navSkills": "Skills",
+    "navGenerate": "Generate",
+    "navCompare": "Compare",
+    "github": "GitHub",
+    "cta": "Generate skill pack",
+    "footerDisclaimer": "Engineering guidance and templates, not legal advice.",
+    "footerLicense": "MIT License",
+    "footerDisclaimerLink": "Disclaimer",
+    "footerContributing": "Contributing",
+    "footerRepo": "Repository",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
+    "skipToContent": "Skip to main content",
+    "localeSwitchLabel": "Select language",
+    "localeEnglish": "English",
+    "localeArabic": "Arabic",
+    "themeGroupLabel": "Select theme",
+    "themeLight": "Light theme",
+    "themeDark": "Dark theme",
+    "primaryGroupLabel": "Select primary color",
+    "primaryDefault": "Terracotta",
+    "primaryInk": "Ink",
+    "primaryOlive": "Olive",
+    "primarySlate": "Slate"
+  },
+  "Compare": {
+    "title": "Bilingual parity canvas",
+    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. Pick a screen to compare the same underlying data in both directions.",
+    "canvasEyebrow": "Canvas",
+    "canvasTitle": "Bilingual parity check",
+    "canvasLede": "The same screen in English (LTR) and Arabic (RTL), rendered from a single data source.",
+    "tabsGroupLabel": "Select a screen to compare",
+    "screenLandingLabel": "Landing",
+    "screenQuestionnaireLabel": "Questionnaire",
+    "screenReviewLabel": "Review",
+    "screenGenerateLabel": "Generate",
+    "screenDetailLabel": "Skill detail",
+    "frameLangSlugEn": "/en",
+    "frameLangSlugAr": "/ar",
+    "reviewRecommendedLabel": "Recommended",
+    "generateZipFilename": "wathba-skills.zip",
+    "generateDownloadLabel": "Download zip",
+    "detailBackLabel": "Back to library",
+    "enFrame": {
+      "title": "English · LTR",
+      "body": "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout."
+    },
+    "arFrame": {
+      "title": "العربية · RTL",
+      "body": "تظهر هنا شاشات الواجهة والاستبيان والمراجعة والتوليد والتفاصيل بالعربية وباتجاه من اليمين إلى اليسار."
+    }
+  },
   "Landing": {
-    "title": "Open-source skill packs for developers shipping into Saudi and MENA markets.",
-    "description": "Frontend-only generator for agent-ready compliance, security, and architecture guidance.",
-    "primaryAction": "Generate your skill pack",
-    "secondaryAction": "Browse skills",
-    "statusBadge": "frontend-only",
-    "rtlBadge": "EN / AR with RTL",
-    "headline": "The app stays static. The value lives in the skill library.",
-    "seedSkillBadge": "seed skill",
-    "seedSkillStatus": "The first ZATCA skill is in draft and ready for review hardening.",
-    "seedSkillDescription": "This repository now includes the canonical schema, generated skill data, and a browsable seed compliance skill as the quality bar for future additions.",
-    "seedSkillLocale": "English-first with Arabic metadata support.",
-    "seedSkillAction": "Inspect the ZATCA skill"
+    "eyebrow": "Open source · MIT",
+    "headline": "Give your AI coding agent the guardrails you wish it came with.",
+    "lede": "Answer a short questionnaire about what you're building. Get a ready-to-drop-in skill pack for Claude Code, Cursor, Codex, or any agent that reads AGENTS.md — covering Saudi compliance, security hygiene, and architecture discipline.",
+    "primaryAction": "Start the questionnaire",
+    "secondaryAction": "Browse the library",
+    "microcopy": "Takes about 3 minutes. No account. Nothing leaves your browser.",
+    "samplePreviewLabel": "Sample skill preview",
+    "sampleFilename": ".claude/skills/zatca-phase2/SKILL.md",
+    "sampleHeaderBadge": "Peer-reviewed",
+    "whatIsEyebrow": "§ 01",
+    "whatIsTitle": "What’s a skill, and why do I want one?",
+    "whatIsBody": "When an AI coding agent opens your repo, it looks for instructions. A skill is a short, focused document — sometimes with helper scripts — that tells the agent the rules for one specific domain: how to handle invoices in Saudi Arabia, how to keep secrets out of commits, where to draw the line between admin and user code. Good skills turn an agent from “smart intern” into “teammate who read the handbook.”",
+    "featuresAriaLabel": "What Wathba Skills does for you",
+    "feature1Marker": "i.",
+    "feature1Title": "Written for your stack",
+    "feature1Body": "Answers to stack, payments, and PII questions rewrite the skill so Node/Django/Laravel projects get guidance that actually matches their code.",
+    "feature2Marker": "ii.",
+    "feature2Title": "Compliance-aware by default",
+    "feature2Body": "Saudi skills (ZATCA Phase 2, PDPL, Nafath) ship with disclaimers, source links, and a verification date — never stale and never silent.",
+    "feature3Marker": "iii.",
+    "feature3Title": "One zip, every agent",
+    "feature3Body": "Pick Claude Code, Cursor, Codex, or plain AGENTS.md. Same canonical content, rendered for the target you actually use.",
+    "libraryEyebrow": "§ 02",
+    "libraryHeading": "The library",
+    "libraryLede": "Every skill is versioned, dated, and reviewed. Draft items are clearly marked — use them as starting points, not gospel.",
+    "libraryViewAll": "Browse the library",
+    "libraryAriaLabel": "Preview of the skill library"
   },
   "Generate": {
     "title": "Questionnaire foundation",
     "description": "The route structure and content model now reflect the planned generator flow. The multi-step form and browser zip output are the next implementation layer."
   },
+  "Questionnaire": {
+    "ariaLabel": "Skill pack questionnaire",
+    "stepAbout": "About your project",
+    "stepTech": "Tech & agents",
+    "stepReview": "Review & variables",
+    "stepGenerate": "Generate",
+    "aboutHeading": "About your project",
+    "aboutLede": "Tell us the market you ship to and the compliance surface that applies, so the recommendations reflect where your code actually runs.",
+    "aboutPlaceholder": "Market, invoicing, PII, payments, and identity questions will land here in the next iteration.",
+    "techHeading": "Tech & agents",
+    "techLede": "Pick your stack, the AI coding agents you target, and how you currently handle CI and secrets.",
+    "techPlaceholder": "Stack, target agents, CI posture, and secrets handling will land here in the next iteration.",
+    "reviewHeading": "Here’s what we recommend",
+    "reviewLede": "Based on your answers. Uncheck anything you don’t want. Manual picks and variable inputs will land here in future iterations.",
+    "reviewPlaceholder": "Recommended skills, manual additions, and variable inputs will land here in the next iteration.",
+    "review": {
+      "autoLabel": "Recommended",
+      "manualLabel": "You added this",
+      "statusReviewed": "Peer-reviewed",
+      "statusCommunity": "Community",
+      "statusDraft": "Under review",
+      "versionPrefix": "v",
+      "verifiedPrefix": "verified",
+      "disclaimer": "disclaimer",
+      "enable": "Include in skill pack",
+      "disable": "Remove from skill pack",
+      "empty": "Answer the earlier steps so we can recommend the right skills for your project.",
+      "addAnotherSummary": "Add another skill",
+      "addAnotherLede": "Pull in any other skill from the catalog. Manual picks are tagged so you can tell them apart from automatic recommendations.",
+      "addAnotherEmpty": "Every skill in the catalog is already on your list.",
+      "addAction": "Add"
+    },
+    "variables": {
+      "heading": "Set values for your skills",
+      "lede": "These skills need a few more details to be useful. Your answers get baked into the rendered output.",
+      "yes": "Yes",
+      "no": "No",
+      "selectPlaceholder": "—"
+    },
+    "generateHeading": "Generate your skill pack",
+    "generateLede": "Preview the exact files per target, then download a single zip — everything stays in your browser.",
+    "generatePlaceholder": "Target previews, zip summary, and download button will land here in the next iteration.",
+    "generate": {
+      "zipLabel": "Zip summary",
+      "zipFilename": "wathba-skills.zip",
+      "totalLabel": "Total",
+      "filesLabel": "files",
+      "skillsLabel": "Skills",
+      "targets": {
+        "claude": "Claude Code",
+        "cursor": "Cursor",
+        "codex": "Codex",
+        "generic": "Generic AGENTS.md"
+      },
+      "targetPreviewHeading": "Preview for this target",
+      "targetNotes": {
+        "claude": "Full fidelity — each skill gets its own folder with references and scripts intact.",
+        "cursor": "Single-file rules. Helper scripts become read-only guidance comments.",
+        "codex": "Aggregated into one AGENTS.md at the repo root.",
+        "generic": "A generic AGENTS.md for any agent that reads it."
+      },
+      "previewEmpty": "Select a target agent to preview its output.",
+      "previewFilePlaceholder": "—",
+      "missingTitle": "Missing values before download",
+      "missingLede": "Fill in the variables below on the review step — placeholders will stay unresolved in the generated files until every value is set.",
+      "missingVariableLabel": "Missing",
+      "emptyTitle": "Nothing to generate yet",
+      "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview.",
+      "downloadCta": "Download zip",
+      "downloadWorking": "Packaging…",
+      "downloadReady": "Downloaded",
+      "downloadHint": "Everything is packaged locally in your browser — no content leaves this tab.",
+      "downloadDisabledMissing": "Fill in the missing variables above to enable the download.",
+      "downloadError": "Something went wrong while packaging. Try again."
+    },
+    "eyebrowOf": "Step {step} / {total}",
+    "prev": "Back",
+    "next": "Continue",
+    "downloadCta": "Generate skill pack",
+    "stepPositionLabel": "Step {step} of {total}",
+    "validationBlocked": "Please fix the highlighted fields before continuing.",
+    "startOver": "Start over",
+    "about": {
+      "yes": "Yes",
+      "no": "No",
+      "whyAsk": "Why we ask",
+      "market": {
+        "title": "Which market does the product primarily serve?",
+        "desc": "We use this to decide whether to recommend Saudi-specific compliance skills.",
+        "why": "Saudi compliance skills (ZATCA, PDPL, Nafath) only make sense when you are operating under KSA law. Pick Global if you want to skip those and keep only the universally useful security and architecture guidance.",
+        "options": {
+          "ksa": {
+            "label": "Saudi Arabia",
+            "desc": "Operating under KSA law; customers or invoicing inside the Kingdom."
+          },
+          "gcc": {
+            "label": "Broader GCC",
+            "desc": "Gulf markets — some Saudi rules still apply if you invoice in KSA."
+          },
+          "global": {
+            "label": "Global / Other",
+            "desc": "Skip Saudi-specific rules; keep security and architecture skills."
+          }
+        }
+      },
+      "invoicing": {
+        "title": "Do you issue invoices to customers in Saudi Arabia?",
+        "desc": "Selling anything — physical, digital, or a subscription — counts.",
+        "why": "If you invoice in KSA, ZATCA Phase 2 requires specific XML formatting, cryptographic stamps, and integration with a government portal. The skill walks your agent through what that means for your stack."
+      },
+      "pii": {
+        "title": "Do you store personal data about users?",
+        "desc": "Names, emails, phone numbers, national IDs, location — any of it.",
+        "why": "If yes, PDPL (Saudi) and similar privacy rules shape how you handle storage, retention, consent, and access control. We will add the PDPL basics skill."
+      },
+      "payments": {
+        "title": "Do you accept payments in the product?",
+        "desc": "Credit cards, mada, STC Pay, Apple Pay, bank transfers — any of them.",
+        "why": "Payment flows have specific security and operational rules. mada and STC Pay in particular have local quirks that most generic payment tutorials miss."
+      },
+      "identity": {
+        "title": "Do you verify user identity (KYC)?",
+        "desc": "Onboarding flows, account verification, age-gating, trust signals.",
+        "why": "Nafath and Yakeen are the Saudi government-run identity services. They are gated — you cannot just call an API. The skill tells your agent the hard parts upfront so it does not invent fake endpoints."
+      }
+    },
+    "tech": {
+      "stack": {
+        "title": "What is your main backend stack?",
+        "desc": "Pick the one the agent will be touching most. You can always add more later.",
+        "options": {
+          "nodejs": {
+            "label": "Node.js / TypeScript",
+            "desc": "Express, Next.js, NestJS, Hono."
+          },
+          "python": {
+            "label": "Python",
+            "desc": "Django, FastAPI, Flask."
+          },
+          "php": {
+            "label": "PHP",
+            "desc": "Laravel, Symfony."
+          },
+          "go": {
+            "label": "Go",
+            "desc": "Gin, Echo, net/http."
+          },
+          "other": {
+            "label": "Something else",
+            "desc": "We will keep the guidance stack-agnostic."
+          }
+        }
+      },
+      "agents": {
+        "title": "Which AI agents do you use?",
+        "desc": "Pick all that apply. We will generate a folder for each — the content is the same, just rendered for the agent's format.",
+        "options": {
+          "claude": {
+            "label": "Claude Code",
+            "desc": ".claude/skills/*"
+          },
+          "cursor": {
+            "label": "Cursor",
+            "desc": ".cursor/rules/*.mdc"
+          },
+          "codex": {
+            "label": "Codex / ChatGPT agents",
+            "desc": "AGENTS.md in the repo root"
+          },
+          "generic": {
+            "label": "Generic AGENTS.md",
+            "desc": "Any other agent that reads AGENTS.md"
+          }
+        }
+      },
+      "ci": {
+        "title": "Does your repo run CI on pull requests?",
+        "desc": "Lint, typecheck, tests — some or all of them.",
+        "why": "If not, we will add the CI hygiene skill so the agent learns to add checks as it changes code."
+      },
+      "secrets": {
+        "title": "How do you handle secrets today?",
+        "desc": "Be honest — the generator isn't judging. This just tailors the advice.",
+        "options": {
+          "manager": {
+            "label": "Secret manager",
+            "desc": "Vault, Doppler, AWS Secrets Manager, Infisical."
+          },
+          "env": {
+            "label": ".env files, git-ignored",
+            "desc": "Common; works until someone commits by accident."
+          },
+          "dotenv": {
+            "label": "A mix / not sure",
+            "desc": "We will add the secrets baseline skill to get you consistent."
+          },
+          "none": {
+            "label": "Honestly? They're in the repo.",
+            "desc": "We will make fixing this the agent's first priority."
+          }
+        }
+      }
+    },
+    "errors": {
+      "market": "Pick the market this product primarily serves before continuing.",
+      "pii": "Tell us whether the product stores personal data before continuing.",
+      "invoicing": "Tell us whether you issue invoices in Saudi Arabia before continuing.",
+      "payments": "Tell us whether the product accepts payments before continuing.",
+      "identity": "Tell us whether the product verifies user identity before continuing.",
+      "stack": "Pick a primary backend stack before continuing.",
+      "agents": "Pick at least one AI agent before continuing.",
+      "ci": "Tell us whether CI runs on pull requests before continuing.",
+      "secrets": "Pick how secrets are handled today before continuing."
+    }
+  },
   "Skills": {
     "title": "Skill library",
     "description": "Browse the canonical skills emitted from `skills/**/skill.yaml` and preview each skill body before adapter-specific rendering is added.",
-    "viewSkill": "View skill"
+    "viewSkill": "View skill",
+    "filterCategoryLegend": "Category",
+    "filterCategoryAll": "All skills",
+    "filterCategorySaudi": "Saudi compliance",
+    "filterCategorySecurity": "Security",
+    "filterCategoryArchitecture": "Architecture",
+    "filterStatusLegend": "Status",
+    "filterStatusAll": "All statuses",
+    "filterStatusReviewed": "Reviewed",
+    "filterStatusCommunity": "Community",
+    "filterStatusDraft": "Draft",
+    "empty": "No skills match these filters yet. Try widening the category or status.",
+    "cardCategoryCompliance": "Compliance",
+    "cardVersionPrefix": "v",
+    "cardVerifiedPrefix": "Verified",
+    "cardDisclaimerLabel": "Disclaimer",
+    "cardDisclaimerTitle": "Engineering guidance, not legal advice"
   },
   "SkillDetail": {
     "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",
     "version": "Version",
     "verified": "Last verified",
+    "versionPrefix": "v",
+    "verifiedLabel": "Verified",
     "targets": "Targets",
     "variables": "Variables",
     "sources": "Sources",
     "assets": "Assets",
-    "references": "references",
-    "scripts": "scripts",
+    "references": "References",
+    "scripts": "Scripts",
     "back": "Back to skill library",
-    "preview": "Markdown preview"
+    "preview": "Skill preview",
+    "previewFilename": "SKILL.md",
+    "previewCaption": "Canonical skill body. Adapters will render this into Claude, Cursor, Codex, or generic AGENTS.md output.",
+    "whatThisCovers": "What this skill covers",
+    "categoryCompliance": "Compliance",
+    "categorySecurity": "Security",
+    "categoryArchitecture": "Architecture",
+    "categorySaudi": "Saudi compliance",
+    "statusReviewed": "Reviewed",
+    "statusCommunity": "Community",
+    "statusDraft": "Draft",
+    "disclaimerTitle": "Disclaimer",
+    "disclaimerBody": "This skill is engineering guidance — not legal, financial, or regulatory advice. Always check the official sources linked below and consult a qualified specialist before shipping compliance-sensitive features.",
+    "summaryFallback": "Engineering guidance for AI coding agents.",
+    "filesLabel": "files",
+    "scriptsLabel": "scripts",
+    "noReferences": "No reference files",
+    "noScripts": "No helper scripts",
+    "noVariables": "No variables declared",
+    "sourceAccessed": "Accessed",
+    "maintainedBy": "Maintained by",
+    "versionLabel": "Version"
   }
 }
 

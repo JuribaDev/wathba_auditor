@@ -108,7 +108,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story aligns the repo foundation with the prototype-derived product direction and gives Ralph a stable root workflow."
     },
     {
@@ -124,7 +124,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Maps the prototype's single-page shell into the planned monorepo web application."
     },
     {
@@ -140,7 +140,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Static export is a hard product constraint, not an optimization."
     },
     {
@@ -156,7 +156,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype proved bilingual parity in one runtime shell; the implementation must preserve it across real routes."
     },
     {
@@ -172,7 +172,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Reflect the prototype's editorial shell rather than a generic dashboard wrapper."
     },
     {
@@ -188,7 +188,7 @@
       ],
       "type": "state",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Prototype persistence should use Wathba Skills keys such as wathbaSkills.route and wathbaSkills.answers unless a different stable naming scheme is chosen."
     },
     {
@@ -204,7 +204,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story brings the prototype's document-level toggles into the production app."
     },
     {
@@ -220,7 +220,7 @@
       ],
       "type": "design-system",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Keep the Wathba Skills look distinct from default shadcn styling."
     },
     {
@@ -236,7 +236,7 @@
       ],
       "type": "design-system",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Typography is part of the product identity; it should not fall back to generic defaults."
     },
     {
@@ -252,7 +252,7 @@
       ],
       "type": "design-system",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype exposes these in edit mode; the production app should preserve the capability."
     },
     {
@@ -268,7 +268,7 @@
       ],
       "type": "design-system",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story should mirror the prototype's interaction vocabulary instead of introducing unrelated controls."
     },
     {
@@ -284,7 +284,7 @@
       ],
       "type": "data",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Even though the prototype stores catalog data inline, the production system needs a reusable canonical schema."
     },
     {
@@ -300,7 +300,7 @@
       ],
       "type": "generator",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story bridges the static site architecture with the content-first skill library."
     },
     {
@@ -316,7 +316,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story captures the durable content architecture that the prototype hinted at through inline data."
     },
     {
@@ -332,7 +332,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The catalog should reflect the prototype's actual product scope, not just one demo skill."
     },
     {
@@ -348,7 +348,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This turns prototype metadata into a formal quality bar."
     },
     {
@@ -364,7 +364,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This is the product's front door and should mirror the prototype closely."
     },
     {
@@ -380,7 +380,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This section is important for first-time users unfamiliar with agent skills."
     },
     {
@@ -396,7 +396,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Prototype features are specific; the implementation should preserve their meaning."
     },
     {
@@ -412,7 +412,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story ties product discovery directly into the content moat."
     },
     {
@@ -428,7 +428,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The filter taxonomy should match the prototype's actual catalog behavior."
     },
     {
@@ -444,7 +444,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Mini cards are a key reusable unit in the Wathba Skills system."
     },
     {
@@ -460,7 +460,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Compliance metadata must be impossible to miss."
     },
     {
@@ -476,7 +476,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story turns the prototype detail layout into a production-grade browsing view."
     },
     {
@@ -496,7 +496,7 @@
       ],
       "type": "logic",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This logic is explicitly present in the prototype and should be preserved as the initial rules engine."
     },
     {
@@ -512,7 +512,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The questionnaire should feel like the prototype, not a generic long form."
     },
     {
@@ -528,7 +528,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This step captures the most important domain branching in the product."
     },
     {
@@ -544,7 +544,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The available options should mirror the prototype's stack and agent taxonomy unless intentionally extended."
     },
     {
@@ -560,7 +560,7 @@
       ],
       "type": "logic",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Validation must respect branching rather than treating all fields as globally required."
     },
     {
@@ -576,7 +576,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story captures the prototype's conversion moment where recommendations become editable choices."
     },
     {
@@ -592,7 +592,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This is present in the prototype and important for expert users."
     },
     {
@@ -608,7 +608,7 @@
       ],
       "type": "state",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype uses selected[id] = { on, source }; the production app should keep an equivalent model."
     },
     {
@@ -624,7 +624,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story turns the prototype's varVals behavior into a real input layer for generation."
     },
     {
@@ -640,7 +640,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This is a core trust-building surface from the prototype."
     },
     {
@@ -656,7 +656,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype proves the UX; the production system must back it with real renderers."
     },
     {
@@ -672,7 +672,7 @@
       ],
       "type": "generator",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story turns the prototype's sample previews into real content generation."
     },
     {
@@ -688,7 +688,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Claude is the highest-fidelity target in the prototype and should stay that way."
     },
     {
@@ -704,7 +704,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype already promises Cursor output, so the PRD must make it explicit."
     },
     {
@@ -720,7 +720,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype treats Codex as an AGENTS.md target; the implementation should formalize that behavior."
     },
     {
@@ -736,7 +736,7 @@
       ],
       "type": "adapter",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story keeps the product useful beyond branded agents."
     },
     {
@@ -752,7 +752,7 @@
       ],
       "type": "generator",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype fakes download state; this story makes it real."
     },
     {
@@ -768,7 +768,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This is a concrete system-design element from the prototype and should remain part of the product workflow."
     },
     {
@@ -800,7 +800,7 @@
       ],
       "type": "i18n",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype already contains near-complete bilingual copy and should be treated as the baseline."
     },
     {
@@ -816,7 +816,7 @@
       ],
       "type": "quality",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Accessibility is a core product requirement, not a later polish pass."
     },
     {
@@ -832,7 +832,7 @@
       ],
       "type": "quality",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story operationalizes the prototype's compare route as a quality discipline."
     },
     {
@@ -848,7 +848,7 @@
       ],
       "type": "quality",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype logic is simple enough to test exhaustively; the production system should do so."
     },
     {
@@ -864,7 +864,7 @@
       ],
       "type": "quality",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The acceptance flow in the prototype should become the first real E2E path."
     },
     {
@@ -880,7 +880,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story turns local discipline into enforced repository policy."
     },
     {
@@ -896,7 +896,7 @@
       ],
       "type": "docs",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Open-source trust is part of the product, especially for compliance-oriented content."
     }
   ]

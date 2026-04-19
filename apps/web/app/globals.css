@@ -2,127 +2,272 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Wathba Skills — warm editorial token system.
+ *
+ * Source of truth: `wathba auditor/styles.css` in this repository.
+ * Taxonomy:
+ *   Surfaces       --background, --surface, --surface-variant, --surface-sunken
+ *   Text           --foreground, --muted-foreground, --soft-foreground
+ *   Borders        --border, --border-strong
+ *   Primary        --primary, --primary-hover, --primary-soft, --primary-foreground
+ *   Secondary      --secondary, --secondary-foreground
+ *   Semantic state --destructive, --success, --warning, --info
+ *   Typography     --font-body, --font-display, --font-mono-stack (semantic roles)
+ *                  --font-latin-sans (IBM Plex Sans), --font-latin-serif (Source Serif 4),
+ *                  --font-latin-mono (IBM Plex Mono), --font-arabic-sans (IBM Plex Sans Arabic),
+ *                  --font-arabic-display (Amiri) — face variables loaded via next/font
+ *   Elevation      --shadow-sm, --shadow-md, --shadow-lg
+ *   Radii          --radius, --radius-sm, --radius-md, --radius-lg, --radius-xl
+ *
+ * Rules for contributors:
+ *   - Components must consume semantic tokens (surface/foreground/border…) rather
+ *     than hard-coded hex values or Tailwind palette classes.
+ *   - Dark mode is a deliberate warm counterpart, not an inversion. Keep each
+ *     dark value within the same warm family as its light sibling.
+ *   - Extend by adding a new semantic token here and, if needed, a matching
+ *     Tailwind alias in `@theme inline`. Never redefine a token inside a page
+ *     or component.
+ *   - Legacy shadcn names (--card, --muted, --accent, --popover, --input, --ring,
+ *     --sidebar-*) are derived from the semantic tokens above so shadcn primitives
+ *     stay in the system without duplicating palette values.
+ *
+ * Primary swatches (ink / olive / slate) are intentionally left to US-010 and
+ * will layer on top of the `[data-primary="…"]` selector without changing the
+ * semantic token names defined here.
+ */
+
+@custom-variant dark (&:is(.dark *, [data-theme="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-variant: var(--surface-variant);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-soft-foreground: var(--soft-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-body);
   --font-mono: var(--font-mono-stack);
   --font-heading: var(--font-display);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --font-body: var(--font-latin);
-  --font-display: var(--font-latin);
-  --font-mono-stack: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /*
+   * Typography stacks. Face variables are injected by the locale layout via
+   * next/font and mapped here to semantic roles:
+   *   --font-body     Latin body (IBM Plex Sans) / Arabic body (IBM Plex Sans Arabic) under dir=rtl
+   *   --font-display  Latin display (Source Serif 4) / Arabic display (Amiri) under dir=rtl
+   *   --font-mono-stack  IBM Plex Mono with system mono fallbacks
+   */
+  --font-body: var(--font-latin-sans), "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-display: var(--font-latin-serif), Georgia, "Times New Roman", serif;
+  --font-mono-stack: var(--font-latin-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* ---------- Warm editorial light theme ---------- */
   --background: #f7f2ea;
-  --foreground: #1f1a16;
-  --card: #fffdf8;
-  --card-foreground: #1f1a16;
-  --popover: #fffdf8;
-  --popover-foreground: #1f1a16;
-  --primary: #8f4b24;
-  --primary-foreground: #fff8f0;
+  --surface: #fffdf8;
+  --surface-variant: #efe7dc;
+  --surface-sunken: #efe7dc;
   --secondary: #eadfd1;
   --secondary-foreground: #2e251d;
-  --muted: #efe7dc;
+  --border: #dccfb8;
+  --border-strong: #c9b99a;
+  --foreground: #1f1a16;
   --muted-foreground: #6f6257;
+  --soft-foreground: #8e8070;
+
+  /* Primary: warm terracotta. Other swatches (ink/olive/slate) live in US-010. */
+  --primary: #8f4b24;
+  --primary-hover: #7a3f1d;
+  --primary-soft: #e8d6c4;
+  --primary-foreground: #fffdf8;
+
+  /* Semantic state */
+  --destructive: #c24d36;
+  --success: #4f7a52;
+  --warning: #a56a2a;
+  --info: #4a6b85;
+
+  /* Shadcn-compatible aliases derived from semantic tokens */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --muted: var(--surface-variant);
   --accent: #e4d5c4;
   --accent-foreground: #2e251d;
-  --destructive: #c24d36;
-  --border: #d8cbbf;
-  --input: #d8cbbf;
+  --input: var(--border);
   --ring: #ab5a2a;
-  --chart-1: #8f4b24;
+
+  --chart-1: var(--primary);
   --chart-2: #b57854;
   --chart-3: #d4b69a;
-  --chart-4: #6f6257;
+  --chart-4: var(--muted-foreground);
   --chart-5: #2e251d;
-  --radius: 0.625rem;
+
   --sidebar: #fff9f2;
-  --sidebar-foreground: #1f1a16;
-  --sidebar-primary: #8f4b24;
-  --sidebar-primary-foreground: #fff8f0;
-  --sidebar-accent: #efe7dc;
-  --sidebar-accent-foreground: #1f1a16;
-  --sidebar-border: #d8cbbf;
-  --sidebar-ring: #ab5a2a;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--surface-variant);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Elevation & radii */
+  --shadow-sm: 0 1px 2px rgba(25, 18, 12, 0.04);
+  --shadow-md: 0 6px 24px rgba(25, 18, 12, 0.06);
+  --shadow-lg: 0 12px 40px rgba(25, 18, 12, 0.1);
+  --radius: 0.625rem;
+
+  /* Motion — consumed by UI primitives in US-011 */
+  --motion-step: 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 html[dir="rtl"] {
-  --font-body: var(--font-arabic);
-  --font-display: var(--font-arabic);
+  --font-body: var(--font-arabic-sans), "Segoe UI", Tahoma, sans-serif;
+  --font-display: var(--font-arabic-display), "Amiri", "Times New Roman", serif;
 }
 
-.dark {
-  --background: #181410;
-  --foreground: #f6efe7;
-  --card: #211a15;
-  --card-foreground: #f6efe7;
-  --popover: #211a15;
-  --popover-foreground: #f6efe7;
-  --primary: #c78658;
-  --primary-foreground: #1c1510;
-  --secondary: #30251e;
-  --secondary-foreground: #f6efe7;
-  --muted: #2a2019;
-  --muted-foreground: #baa38f;
-  --accent: #35281f;
-  --accent-foreground: #f6efe7;
+/* ---------- Primary swatch variants (light) ---------- */
+[data-primary="ink"] {
+  --primary: #2e4a6b;
+  --primary-hover: #243b57;
+  --primary-soft: #d4dde7;
+  --ring: #3d5f89;
+}
+
+[data-primary="olive"] {
+  --primary: #5c6a36;
+  --primary-hover: #4a562b;
+  --primary-soft: #dfe3ce;
+  --ring: #6e7e42;
+}
+
+[data-primary="slate"] {
+  --primary: #3a3a3a;
+  --primary-hover: #2a2a2a;
+  --primary-soft: #d9d5ce;
+  --ring: #525252;
+}
+
+/* ---------- Primary swatch variants (dark) ---------- */
+[data-theme="dark"][data-primary="ink"] {
+  --primary: #6b8aa8;
+  --primary-hover: #7c9ab8;
+  --primary-soft: #1f2f42;
+  --ring: #89a4bf;
+}
+
+[data-theme="dark"][data-primary="olive"] {
+  --primary: #a0b06a;
+  --primary-hover: #b0c07a;
+  --primary-soft: #2a3120;
+  --ring: #b8c488;
+}
+
+[data-theme="dark"][data-primary="slate"] {
+  --primary: #b8b4ac;
+  --primary-hover: #c8c4bc;
+  --primary-soft: #2a2a2a;
+  --ring: #cfccc5;
+}
+
+.dark,
+[data-theme="dark"] {
+  /* ---------- Deliberate warm dark counterpart ---------- */
+  --background: #1a1410;
+  --surface: #221b15;
+  --surface-variant: #2b221b;
+  --surface-sunken: #15100c;
+  --secondary: #2f261e;
+  --secondary-foreground: #f3eadb;
+  --border: #3a2f24;
+  --border-strong: #554432;
+  --foreground: #f3eadb;
+  --muted-foreground: #b5a691;
+  --soft-foreground: #8e8070;
+
+  --primary: #d68a5d;
+  --primary-hover: #e09968;
+  --primary-soft: #3a281c;
+  --primary-foreground: #1a1410;
+
   --destructive: #eb7c61;
-  --border: #3d3027;
-  --input: #3d3027;
+  --success: #7fa683;
+  --warning: #d49960;
+  --info: #7897b2;
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --muted: var(--surface-variant);
+  --accent: #35281f;
+  --accent-foreground: var(--foreground);
+  --input: var(--border);
   --ring: #d5986d;
-  --chart-1: #c78658;
+
+  --chart-1: var(--primary);
   --chart-2: #ebc6a4;
-  --chart-3: #baa38f;
+  --chart-3: var(--muted-foreground);
   --chart-4: #7b6655;
-  --chart-5: #f6efe7;
-  --sidebar: #211a15;
-  --sidebar-foreground: #f6efe7;
-  --sidebar-primary: #c78658;
-  --sidebar-primary-foreground: #1c1510;
-  --sidebar-accent: #30251e;
-  --sidebar-accent-foreground: #f6efe7;
-  --sidebar-border: #3d3027;
-  --sidebar-ring: #d5986d;
+  --chart-5: var(--foreground);
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--surface-variant);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 @layer base {
@@ -136,20 +281,40 @@ html[dir="rtl"] {
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-body), sans-serif;
+    font-family: var(--font-body);
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4 {
+    letter-spacing: 0;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono-stack);
   }
 
   a {
     @apply transition-colors;
+  }
+
+  ::selection {
+    background: var(--primary-soft);
+    color: var(--foreground);
   }
 }
 
@@ -160,5 +325,24 @@ html[dir="rtl"] {
 
   .subtle-rule {
     @apply border-t border-border/80;
+  }
+
+  .wathba-surface {
+    background-color: var(--surface);
+    color: var(--foreground);
+  }
+
+  .wathba-surface-variant {
+    background-color: var(--surface-variant);
+    color: var(--foreground);
+  }
+
+  .wathba-surface-sunken {
+    background-color: var(--surface-sunken);
+    color: var(--foreground);
+  }
+
+  .wathba-elevated {
+    box-shadow: var(--shadow-md);
   }
 }

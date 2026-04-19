@@ -1,0 +1,27 @@
+id: architecture-ci-hygiene
+name:
+  en: CI Hygiene
+  ar: نظافة CI
+summary:
+  en: If the repo has no CI the agent adds one. If it does the agent keeps it honest — lint, typecheck, tests, and migration hygiene as rules the agent can actually enforce.
+  ar: إذا لم يكن للمستودع CI يُضيفه الوكيل. وإذا وُجد يُبقيه نظيفًا — Lint وفحص الأنواع والاختبارات ونظافة الترحيلات كقواعد يستطيع الوكيل فرضها فعليًا.
+slug: ci-hygiene
+version: 0.5.0
+category: architecture
+region: null
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: maintainer-reviewed
+last_verified: "2026-03-22"
+maintainers:
+  - github: "@core"
+sources:
+  - title: The Twelve-Factor App
+    url: https://12factor.net/
+    accessed: "2026-03-22"
+disclaimer: false
+variables: []
+triggers: []

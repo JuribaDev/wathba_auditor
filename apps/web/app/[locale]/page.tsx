@@ -1,14 +1,50 @@
-import { ArrowRight, Languages, ShieldCheck } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
-import { Badge } from "@/components/ui/badge";
+import { SkillMiniCard } from "@/components/skill-mini-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isLocale, type AppLocale } from "@/lib/i18n";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { isLocale } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
 import { generatedSkills } from "@/lib/skills/generated";
+
+const SAMPLE_SKILL_BODY = `---
+name: zatca-phase2
+description: ZATCA Phase 2 e-invoicing rules for Saudi Arabia
+version: 0.4.2
+status: reviewed
+last_verified: 2026-03-18
+---
+
+# ZATCA Phase 2
+
+> This is engineering guidance, not legal advice. Verify every
+> rule against the official ZATCA documentation linked in /sources.
+
+## When this applies
+
+You are working on a product that issues invoices to Saudi customers
+and is using **Node.js** as the backend stack.
+
+## Non-negotiables
+
+- Every B2B invoice must be cleared with ZATCA **before** being
+  delivered to the buyer.
+- Every B2C invoice must be reported within **24 hours** of issuance.
+- Every invoice XML must include a cryptographic stamp derived from
+  the taxpayer's CSID certificate.
+
+## Your stack specifics
+
+\`\`\`ts
+// Use the UBL builder — don't hand-roll the XML.
+import { buildInvoiceXML, stamp } from "@zatca/ubl";
+\`\`\`
+
+See references/invoice-b2c.xml for a full sample.
+`;
 
 type LandingProps = {
   params: Promise<{ locale: string }>;
@@ -22,110 +58,168 @@ export default async function LandingPage({ params }: LandingProps) {
   }
 
   const t = await getTranslator(locale, "Landing");
-  const features = getFeatureCopy(locale);
-  const seedSkill = generatedSkills[0];
+  const tSkills = await getTranslator(locale, "Skills");
+
+  const previewSkills = generatedSkills.slice(0, 6);
+  const cardLabels = {
+    category: {
+      categorySaudi: tSkills("filterCategorySaudi"),
+      categoryCompliance: tSkills("cardCategoryCompliance"),
+      categorySecurity: tSkills("filterCategorySecurity"),
+      categoryArchitecture: tSkills("filterCategoryArchitecture"),
+    },
+    status: {
+      statusReviewed: tSkills("filterStatusReviewed"),
+      statusCommunity: tSkills("filterStatusCommunity"),
+      statusDraft: tSkills("filterStatusDraft"),
+    },
+    disclaimer: tSkills("cardDisclaimerLabel"),
+    disclaimerTitle: tSkills("cardDisclaimerTitle"),
+    versionPrefix: tSkills("cardVersionPrefix"),
+    verifiedPrefix: tSkills("cardVerifiedPrefix"),
+    viewSkill: tSkills("viewSkill"),
+  };
 
   return (
-    <AppShell
-      locale={locale}
-      section="home"
-      title={t("title")}
-      description={t("description")}
-      actions={
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild>
-            <Link href={`/${locale}/generate`}>
-              {t("primaryAction")}
+    <AppShell locale={locale} section="home">
+      <section
+        aria-labelledby="landing-hero-heading"
+        className="grid items-center gap-12 py-6 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:py-12"
+      >
+        <div className="flex flex-col gap-6">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary ltr:tracking-[0.18em] rtl:tracking-normal rtl:normal-case">
+            {t("eyebrow")}
+          </p>
+          <h1
+            id="landing-hero-heading"
+            className="font-heading text-[clamp(2.25rem,5.2vw,4rem)] font-semibold leading-[1.04] tracking-tight text-foreground"
+          >
+            {t("headline")}
+          </h1>
+          <p className="max-w-[56ch] text-base leading-[1.65] text-muted-foreground sm:text-lg">
+            {t("lede")}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button asChild size="lg">
+              <Link href={`/${locale}/generate`}>
+                {t("primaryAction")}
+                <ArrowRight data-icon="inline-end" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="ghost">
+              <Link href={`/${locale}/skills`}>{t("secondaryAction")}</Link>
+            </Button>
+          </div>
+          <p className="text-sm text-soft-foreground">{t("microcopy")}</p>
+        </div>
+
+        <figure
+          aria-label={t("samplePreviewLabel")}
+          className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 shadow-[var(--shadow-md)] sm:p-7"
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-50 [background:radial-gradient(ellipse_at_top_right,var(--primary-soft)_0%,transparent_55%)]"
+          />
+          <div className="relative flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <FileText aria-hidden="true" className="size-3.5" />
+                <span className="font-mono text-xs">{t("sampleFilename")}</span>
+              </div>
+              <StatusBadge status="reviewed">{t("sampleHeaderBadge")}</StatusBadge>
+            </div>
+            <pre
+              dir="ltr"
+              className="max-h-[340px] overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-sunken p-5 text-left font-mono text-[12.5px] leading-[1.7] text-foreground"
+            >
+              {SAMPLE_SKILL_BODY}
+            </pre>
+          </div>
+        </figure>
+      </section>
+
+      <section
+        aria-labelledby="landing-what-is-heading"
+        className="py-8 lg:py-12"
+      >
+        <div className="mx-auto max-w-[820px] rounded-[20px] border border-border bg-surface px-8 py-10 shadow-[var(--shadow-sm)] sm:px-10 sm:py-12">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary rtl:tracking-normal rtl:normal-case">
+            {t("whatIsEyebrow")}
+          </p>
+          <h2
+            id="landing-what-is-heading"
+            className="mb-4 font-heading text-[clamp(1.75rem,3.2vw,2.5rem)] font-semibold leading-[1.12] tracking-tight text-foreground"
+          >
+            {t("whatIsTitle")}
+          </h2>
+          <p className="max-w-[65ch] text-base leading-[1.65] text-muted-foreground sm:text-[17px]">
+            {t("whatIsBody")}
+          </p>
+        </div>
+      </section>
+
+      <section
+        aria-label={t("featuresAriaLabel")}
+        className="grid gap-8 py-10 sm:gap-6 md:grid-cols-3 lg:py-14"
+      >
+        {(["1", "2", "3"] as const).map((n) => (
+          <article key={n} className="flex flex-col gap-2">
+            <div
+              aria-hidden="true"
+              className="font-heading text-5xl italic leading-none text-primary"
+            >
+              {t(`feature${n}Marker`)}
+            </div>
+            <h3 className="font-heading text-xl font-semibold leading-snug text-foreground">
+              {t(`feature${n}Title`)}
+            </h3>
+            <p className="text-[15px] leading-[1.6] text-muted-foreground">
+              {t(`feature${n}Body`)}
+            </p>
+          </article>
+        ))}
+      </section>
+
+      <section
+        aria-labelledby="landing-library-preview-heading"
+        aria-label={t("libraryAriaLabel")}
+        className="py-10 lg:py-14"
+      >
+        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary rtl:tracking-normal rtl:normal-case">
+              {t("libraryEyebrow")}
+            </p>
+            <h2
+              id="landing-library-preview-heading"
+              className="font-heading text-[clamp(1.75rem,3.2vw,2.5rem)] font-semibold leading-[1.12] tracking-tight text-foreground"
+            >
+              {t("libraryHeading")}
+            </h2>
+            <p className="max-w-[65ch] text-base leading-[1.65] text-muted-foreground sm:text-[17px]">
+              {t("libraryLede")}
+            </p>
+          </div>
+          <Button asChild variant="secondary">
+            <Link href={`/${locale}/skills`}>
+              {t("libraryViewAll")}
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link href={`/${locale}/skills`}>{t("secondaryAction")}</Link>
-          </Button>
         </div>
-      }
-    >
-      <section className="grid gap-5 lg:grid-cols-[1.4fr_minmax(0,0.8fr)]">
-        <Card>
-          <CardHeader className="gap-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{t("statusBadge")}</Badge>
-              <Badge variant="outline">{t("rtlBadge")}</Badge>
-            </div>
-            <CardTitle className="max-w-2xl text-3xl leading-tight sm:text-4xl">
-              {t("headline")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-5 text-sm leading-7 text-muted-foreground sm:grid-cols-3">
-            {features.map((feature) => (
-              <div className="flex flex-col gap-2" key={feature.title}>
-                <strong className="text-sm text-foreground">{feature.title}</strong>
-                <p>{feature.body}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {seedSkill ? (
-          <Card className="border-primary/15 bg-secondary/40">
-            <CardHeader className="gap-4">
-              <Badge variant="outline">{t("seedSkillBadge")}</Badge>
-              <CardTitle className="text-2xl leading-snug">
-                {seedSkill.name[locale as AppLocale]}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4 text-sm leading-7 text-muted-foreground">
-              <div className="flex items-center gap-2 text-foreground">
-                <ShieldCheck className="size-4" />
-                <span>{t("seedSkillStatus")}</span>
-              </div>
-              <p>{t("seedSkillDescription")}</p>
-              <div className="flex items-center gap-2 text-foreground">
-                <Languages className="size-4" />
-                <span>{t("seedSkillLocale")}</span>
-              </div>
-              <Button asChild variant="outline">
-                <Link href={`/${locale}/skills/${seedSkill.id}`}>{t("seedSkillAction")}</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ) : null}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {previewSkills.map((skill) => (
+            <SkillMiniCard
+              key={skill.id}
+              locale={locale}
+              skill={skill}
+              href={`/${locale}/skills/${skill.id}`}
+              labels={cardLabels}
+            />
+          ))}
+        </div>
       </section>
     </AppShell>
   );
 }
-
-function getFeatureCopy(locale: AppLocale) {
-  if (locale === "ar") {
-    return [
-      {
-        title: "مكتبة مهارات قابلة للمراجعة",
-        body: "القيمة الأساسية تعيش في `skills/` وليس داخل الواجهة، حتى يتمكن المساهمون من تطوير المحتوى الإقليمي بشكل مستقل.",
-      },
-      {
-        title: "امتثال وأمن وبنية",
-        body: "الاقتراحات موجهة للأنظمة السعودية، وإدارة الأسرار، وحدود المصادقة، وأنماط البنية القابلة للصيانة.",
-      },
-      {
-        title: "حزم قابلة للتنزيل",
-        body: "الواجهة تنتج ملفات جاهزة للوكلاء المستهدفين بدون خادم أو حسابات أو تخزين سحابي.",
-      },
-    ];
-  }
-
-  return [
-    {
-      title: "Auditable skill library",
-      body: "The durable value lives in `skills/`, not inside the UI, so contributors can ship regional expertise without touching the app.",
-    },
-    {
-      title: "Compliance, security, architecture",
-      body: "Recommendations are shaped for Saudi regulations, secret handling, auth boundaries, and maintainable delivery habits.",
-    },
-    {
-      title: "Downloadable agent packs",
-      body: "The frontend produces ready-to-drop files for multiple agent targets without introducing a backend or user accounts.",
-    },
-  ];
-}
-

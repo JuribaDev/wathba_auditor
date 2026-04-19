@@ -1,0 +1,38 @@
+id: security-secrets-baseline
+name:
+  en: Secrets Baseline
+  ar: الأساس الآمن للأسرار
+summary:
+  en: Keep secrets out of the repository and the commit history. Stack-agnostic rules on env file hygiene, manager integration, and rotating committed secrets.
+  ar: إبقاء الأسرار خارج المستودع وخارج سجل الكوميتات. قواعد مستقلة عن المنصة لنظافة ملفات env والتكامل مع مدراء الأسرار وتدوير الأسرار المسرّبة.
+slug: secrets-baseline
+version: 1.0.0
+category: security
+region: null
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: maintainer-reviewed
+last_verified: "2026-03-02"
+maintainers:
+  - github: "@core"
+sources:
+  - title: OWASP Secrets Management Cheat Sheet
+    url: https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html
+    accessed: "2026-03-02"
+disclaimer: false
+variables:
+  - name: manager
+    label:
+      en: Preferred secret manager
+      ar: مدير الأسرار المفضّل
+    type: select
+    options:
+      - vault
+      - doppler
+      - aws
+      - infisical
+      - none
+triggers: []

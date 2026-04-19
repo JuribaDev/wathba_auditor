@@ -1,35 +1,83 @@
 import type { Metadata } from "next";
-import { Manrope, Noto_Sans_Arabic } from "next/font/google";
+import {
+  Amiri,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  IBM_Plex_Sans_Arabic,
+  Source_Serif_4,
+} from "next/font/google";
 import { notFound } from "next/navigation";
 
 import "../globals.css";
 
+import { DocumentStateProvider } from "@/components/document-state-provider";
+import {
+  buildDocumentStateInitScript,
+  DEFAULT_PRIMARY,
+  DEFAULT_THEME,
+} from "@/lib/document-state";
 import { getDirection, isLocale, locales } from "@/lib/i18n";
+import { getTranslator } from "@/lib/messages";
 
-const manrope = Manrope({
-  variable: "--font-latin",
+const latinSans = IBM_Plex_Sans({
+  variable: "--font-latin-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-arabic",
+const latinSerif = Source_Serif_4({
+  variable: "--font-latin-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const latinMono = IBM_Plex_Mono({
+  variable: "--font-latin-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const arabicSans = IBM_Plex_Sans_Arabic({
+  variable: "--font-arabic-sans",
   subsets: ["arabic"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Agent Skills",
-    template: "%s | Agent Skills",
-  },
-  description:
-    "Open-source skill pack generator for Saudi compliance, security, and architecture guidance.",
-};
+const arabicDisplay = Amiri({
+  variable: "--font-arabic-display",
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) {
+    return {};
+  }
+  const t = await getTranslator(locale, "Meta");
+  return {
+    title: { default: t("title"), template: t("titleTemplate") },
+    description: t("description"),
+  };
+}
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
+
+const fontVariables = [
+  latinSans.variable,
+  latinSerif.variable,
+  latinMono.variable,
+  arabicSans.variable,
+  arabicDisplay.variable,
+].join(" ");
 
 export default async function LocaleLayout({
   children,
@@ -44,13 +92,23 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  const initScript = buildDocumentStateInitScript();
+
   return (
     <html
       lang={locale}
       dir={getDirection(locale)}
-      className={`${manrope.variable} ${notoSansArabic.variable} h-full antialiased`}
+      data-theme={DEFAULT_THEME}
+      data-primary={DEFAULT_PRIMARY}
+      className={`${fontVariables} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full bg-background text-foreground">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: initScript }} />
+      </head>
+      <body className="min-h-full bg-background text-foreground">
+        <DocumentStateProvider>{children}</DocumentStateProvider>
+      </body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 export type GeneratedSkill = {
   id: string;
   name: { en: string; ar: string };
+  summary?: { en: string; ar: string };
   slug: string;
   version: string;
   category: "compliance" | "security" | "architecture";
@@ -22,16 +23,292 @@ export type GeneratedSkill = {
   triggers: Array<{ when: Record<string, string | number | boolean | null> }>;
   body: string;
   directory: string;
-  references: Array<{ path: string }>;
-  scripts: Array<{ path: string }>;
+  references: Array<{ path: string; content: string }>;
+  scripts: Array<{ path: string; content: string }>;
 };
 
 export const generatedSkills: GeneratedSkill[] = [
+  {
+    "id": "architecture-ci-hygiene",
+    "name": {
+      "en": "CI Hygiene",
+      "ar": "نظافة CI"
+    },
+    "summary": {
+      "en": "If the repo has no CI the agent adds one. If it does the agent keeps it honest — lint, typecheck, tests, and migration hygiene as rules the agent can actually enforce.",
+      "ar": "إذا لم يكن للمستودع CI يُضيفه الوكيل. وإذا وُجد يُبقيه نظيفًا — Lint وفحص الأنواع والاختبارات ونظافة الترحيلات كقواعد يستطيع الوكيل فرضها فعليًا."
+    },
+    "slug": "ci-hygiene",
+    "version": "0.5.0",
+    "category": "architecture",
+    "region": null,
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "maintainer-reviewed",
+    "lastVerified": "2026-03-22",
+    "maintainers": [
+      {
+        "github": "@core"
+      }
+    ],
+    "sources": [
+      {
+        "title": "The Twelve-Factor App",
+        "url": "https://12factor.net/",
+        "accessed": "2026-03-22"
+      }
+    ],
+    "disclaimer": false,
+    "variables": [],
+    "triggers": [],
+    "body": "# CI Hygiene\n\n## When this skill activates\n\nUse this skill whenever the work touches the build pipeline, test runners, dependency installation, deploy workflows, or any change that can pass locally but break CI for the team.\n\n## Baseline rules\n\n1. CI runs the same checks a reviewer expects locally — linting, typechecking, tests, and build. None of them are optional.\n2. Skipping a failing test to land a change is a regression, not a merge strategy.\n3. Flaky tests are fixed or quarantined explicitly. Silent retries are not a fix.\n4. Migrations run in CI against a disposable database before they run against production.\n\n## If the repository has no CI\n\nAdd a minimal pipeline that runs on every pull request:\n\n1. Install dependencies deterministically using the project's lockfile.\n2. Run the linter, the typechecker, and the test suite in sequence.\n3. Build the production artifact.\n4. Fail the job on any non-zero exit.\n\nDo not skip a step because \"the repo doesn't have one yet\" — add it in the same change.\n\n## If the repository has CI\n\n- Confirm the agent's change does not disable a check to make the build green.\n- Confirm new behavior has a corresponding test running under the existing matrix.\n- Confirm the build is reproducible — no `latest` tags, no unpinned actions, no mystery caches.\n\n## Migration hygiene\n\n- Schema migrations and data migrations are separate. Do not hide a data rewrite inside a schema migration.\n- Every migration has a tested rollback plan, even if the plan is \"restore from backup\" with a documented threshold.\n- Long-running migrations run out-of-band, not during the deploy window.\n\n## Dependency hygiene\n\n- Lockfiles are committed and enforced. CI installs from the lockfile, not the manifest.\n- Security-sensitive dependency bumps land in their own change, not bundled with a feature.\n- Do not add a dependency without naming the single responsibility it takes on in the code.\n\n## References\n\n- Run `scripts/ci-smoke.mjs` locally before pushing a change that modifies the pipeline or the build configuration.\n",
+    "directory": "architecture/ci-hygiene",
+    "references": [],
+    "scripts": [
+      {
+        "path": "ci-smoke.mjs",
+        "content": "#!/usr/bin/env node\n\nimport { readFile } from \"node:fs/promises\";\nimport { existsSync } from \"node:fs\";\nimport path from \"node:path\";\n\nconst root = process.cwd();\nconst problems = [];\n\nfunction require(file, message) {\n  if (!existsSync(path.join(root, file))) {\n    problems.push(`${file}: ${message}`);\n  }\n}\n\nrequire(\"package.json\", \"Missing package.json at repository root.\");\n\nconst ciPaths = [\n  \".github/workflows\",\n  \".gitlab-ci.yml\",\n  \".circleci/config.yml\",\n  \"azure-pipelines.yml\",\n  \"bitbucket-pipelines.yml\",\n];\nconst hasAnyCi = ciPaths.some((candidate) =>\n  existsSync(path.join(root, candidate)),\n);\nif (!hasAnyCi) {\n  problems.push(\n    \"No CI configuration found. Add a pipeline that lints, typechecks, tests, and builds on pull requests.\",\n  );\n}\n\nconst packageJsonPath = path.join(root, \"package.json\");\nif (existsSync(packageJsonPath)) {\n  const manifest = JSON.parse(await readFile(packageJsonPath, \"utf8\"));\n  const scripts = manifest.scripts ?? {};\n  for (const required of [\"lint\", \"test\", \"build\"]) {\n    if (!(required in scripts)) {\n      problems.push(`package.json: missing \"${required}\" script.`);\n    }\n  }\n}\n\nif (problems.length === 0) {\n  console.log(\"CI smoke check passed. This is a structural check, not a guarantee.\");\n  process.exit(0);\n}\n\nconsole.error(\"CI smoke check found issues:\");\nfor (const issue of problems) {\n  console.error(`- ${issue}`);\n}\nprocess.exit(1);\n"
+      }
+    ]
+  },
+  {
+    "id": "architecture-testability-check",
+    "name": {
+      "en": "Testability Check",
+      "ar": "فحص قابلية الاختبار"
+    },
+    "summary": {
+      "en": "Keep generated code writable-to-test. Clean seams, isolated side effects, no hidden singletons — so the test suite remains a first-class artifact as the codebase grows.",
+      "ar": "أبقِ الكود المُنشأ قابلاً لكتابة اختبارات له. فواصل نظيفة وآثار جانبية معزولة ولا singletons مخفية — حتى تبقى مجموعة الاختبارات أصلاً من الدرجة الأولى مع نمو الكود."
+    },
+    "slug": "testability-check",
+    "version": "0.4.0",
+    "category": "architecture",
+    "region": null,
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "community-maintained",
+    "lastVerified": "2026-03-10",
+    "maintainers": [
+      {
+        "github": "@core"
+      }
+    ],
+    "sources": [
+      {
+        "title": "Martin Fowler on test doubles and seams",
+        "url": "https://martinfowler.com/bliki/TestDouble.html",
+        "accessed": "2026-03-10"
+      }
+    ],
+    "disclaimer": false,
+    "variables": [],
+    "triggers": [],
+    "body": "# Testability Check\n\n## When this skill activates\n\nUse this skill whenever the work introduces new modules, refactors existing ones, or adds non-trivial behavior that the agent intends to \"test later.\" Apply the check before the code is merged, not at the end of the sprint.\n\n## Baseline rules\n\n1. A new behavior is not done until a test exercising it can be written without restructuring the code.\n2. Side effects (network, filesystem, time, randomness) enter the module through an injected seam, not through a direct import.\n3. Shared state is explicit. No module-level mutable singletons that the test suite has to reset by incantation.\n4. If the agent finds itself writing a mock of a mock, the underlying design is wrong — restructure first.\n\n## Seams to build\n\n### Time\n\n- Prefer a `now()` function injected into the module over `new Date()` scattered across calls.\n- Tests control the clock; production wires the real clock at startup.\n\n### Randomness and ids\n\n- Inject id generation through a factory, not a global `randomUUID()` call.\n- Tests can assert deterministic sequences; production passes the real generator.\n\n### Network and filesystem\n\n- Keep the HTTP or filesystem client behind a narrow interface.\n- Production wires the concrete implementation once at boot. Tests wire a fake without monkey-patching.\n\n### Configuration\n\n- Configuration is data passed in, not globals read from process env inside domain code.\n- A module that needs a flag receives it through its constructor or factory, not through a lookup.\n\n## Shape indicators\n\n- Public functions accept the data they need and return the data they produce.\n- Side effects are orchestrated at the outer layer, not the inner one.\n- Test files mirror source files so a reviewer can find coverage quickly.\n\n## Anti-patterns the agent should refuse\n\n- `jest.mock(\"module\")` or equivalents as the primary isolation strategy. Prefer architectural seams.\n- Tests that depend on a specific order, a shared fixture, or a stateful bootstrap script.\n- Integration tests used as a workaround because unit tests are \"too hard to write\" — that is a signal the design needs a seam.\n",
+    "directory": "architecture/testability-check",
+    "references": [],
+    "scripts": []
+  },
+  {
+    "id": "saudi-mada-stcpay-basics",
+    "name": {
+      "en": "mada and STC Pay Payment Basics",
+      "ar": "أساسيات مدفوعات مدى وSTC Pay"
+    },
+    "summary": {
+      "en": "Practical integration notes for Saudi-local payment rails — BIN handling, 3DS quirks, settlement expectations, and common pitfalls generic payment tutorials miss.",
+      "ar": "ملاحظات تكامل عملية لقنوات الدفع المحلية في السعودية — التعامل مع BIN وخصائص 3DS وتوقعات التسوية والفخاخ التي تفوتها الأدلة العامة."
+    },
+    "slug": "mada-stcpay-basics",
+    "version": "0.2.1",
+    "category": "compliance",
+    "region": "saudi-arabia",
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "community-maintained",
+    "lastVerified": "2026-02-28",
+    "maintainers": [
+      {
+        "github": "@noor.a"
+      }
+    ],
+    "sources": [
+      {
+        "title": "Saudi Central Bank payments oversight",
+        "url": "https://www.sama.gov.sa/en-US/Pages/default.aspx",
+        "accessed": "2026-02-28"
+      }
+    ],
+    "disclaimer": true,
+    "variables": [
+      {
+        "name": "stack",
+        "label": {
+          "en": "Backend stack",
+          "ar": "التقنية الخلفية"
+        },
+        "type": "select",
+        "options": [
+          "nodejs",
+          "dotnet",
+          "python",
+          "php",
+          "java",
+          "go"
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "when": {
+          "handles_payments": true,
+          "target_market": "saudi_arabia"
+        }
+      }
+    ],
+    "body": "# mada and STC Pay Payment Basics ({{stack}})\n\n## When this skill activates\n\nUse this skill whenever the work touches card acceptance, wallet acceptance, refunds, settlement reconciliation, or chargeback handling for users paying from Saudi Arabia.\n\n## Compliance baseline\n\n1. mada is the Saudi national debit scheme. A card that is technically accepted by Visa or Mastercard acquiring is not automatically a mada-accepted card.\n2. Flows built only against international test cards will miss real-world mada behavior. Plan for mada BIN ranges in test fixtures.\n3. STC Pay is a wallet, not a card rail. Treat it as a separate payment method with its own status lifecycle.\n4. Currency is always SAR for domestic flows. Do not assume USD fallbacks work for Saudi-local transactions.\n\n## Operational warning\n\nThis skill is engineering guidance, not legal or scheme compliance advice. Card scheme rules, PCI DSS obligations, and central bank oversight still apply; do not treat this skill as a substitute for the acquirer's own integration contract.\n\n## Stack guidance\n\n### Node.js\n\n- Model the payment method (`mada`, `visa`, `mastercard`, `stc_pay`) as an explicit field alongside the PSP's own method label.\n- Keep 3DS step-up handling idempotent so a browser refresh mid-challenge cannot double-charge.\n- Normalize PSP webhook payloads into a local payment state machine before persisting.\n\n### .NET\n\n- Treat settlement reconciliation as a separate worker. Do not mix it with the checkout request path.\n- Use typed enums for payment status (`pending`, `authorized`, `captured`, `refunded`, `failed`) to avoid divergent spellings across services.\n- Log the PSP's transaction id and the internal payment id together so failed reconciliations are traceable.\n\n### Python\n\n- Wrap the PSP SDK in a repository adapter so retry, idempotency, and signature verification live in one place.\n- Capture the intended amount, currency, and method at authorization time. Later status changes should be validated against this stored intent.\n- For refunds, always resolve the authorization reference from internal state rather than trusting the client input.\n\n### PHP\n\n- Prefer HTTP client abstractions that surface both status code and response body so PSP-specific error codes are not lost in generic exceptions.\n- Keep webhook endpoints lean. Defer business side-effects to a queue so a webhook retry storm does not rewrite user-visible state.\n- Use server-stored correlation ids on every payment — not client-provided ids.\n\n### Java\n\n- Treat the PSP SDK as infrastructure behind a port. Application logic should depend on the port, not on the vendor type.\n- Use a dedicated ledger table for payment events. The checkout endpoint should write events, not mutate balances directly.\n- Keep transaction amounts in the smallest currency unit and avoid floating-point arithmetic.\n\n### Go\n\n- Model the payment flow with explicit state transitions. A reviewer should be able to read the state machine in one file.\n- Validate webhook signatures with constant-time comparison.\n- Keep HTTP handler code free of PSP-specific branching; feed a single domain command into your application layer.\n\n## Common pitfalls\n\n- Assuming 3DS behavior is identical for international cards and mada BINs.\n- Treating STC Pay confirmation latency as a bug instead of an expected async completion.\n- Relying on wall-clock time for reconciliation windows across environments.\n\n## Variables\n\n- `stack={{stack}}`\n",
+    "directory": "saudi/mada-stcpay-basics",
+    "references": [
+      {
+        "path": "mada-stcpay-integration-notes.md",
+        "content": "# mada and STC Pay Integration Notes\n\n## BIN handling\n\n- Maintain a table of active mada BIN ranges rather than regex-matching a static prefix.\n- Recognize co-badged cards: a single card can be routed through mada domestically and through Visa or Mastercard internationally.\n\n## 3DS and authentication\n\n- mada flows frequently require 3DS on lower amounts than some international merchants expect. Do not hardcode a 3DS threshold based on non-Saudi guidance.\n- Treat a 3DS challenge timeout as a non-final state. The user may complete the challenge asynchronously.\n\n## Settlement and reconciliation\n\n- Settlement files from Saudi acquirers are typically delivered daily. Build reconciliation workers that tolerate late files rather than missing them.\n- Keep a dedicated reconciliation state machine so mismatches are visible to operations without manual spreadsheets.\n\n## Refunds and chargebacks\n\n- Partial refunds must reference the original authorization. Orphan refunds are a red flag.\n- Chargeback responses have strict evidence windows. Surface upcoming deadlines in internal dashboards rather than depending on email reminders.\n"
+      }
+    ],
+    "scripts": []
+  },
+  {
+    "id": "saudi-nafath-yakeen-basics",
+    "name": {
+      "en": "Nafath and Yakeen Identity Onboarding",
+      "ar": "نفاذ ويقين — التحقق من الهوية"
+    },
+    "summary": {
+      "en": "Keep the agent from inventing fake Nafath or Yakeen endpoints. Explains the approval path, the integration model, and which behaviors you cannot ship without a credential.",
+      "ar": "يمنع الوكيل من اختراع نقاط نهاية وهمية لنفاذ أو يقين. يشرح مسار الموافقة ونمط التكامل والسلوكيات التي لا يمكن نشرها دون اعتماد."
+    },
+    "slug": "nafath-yakeen-basics",
+    "version": "0.1.1",
+    "category": "compliance",
+    "region": "saudi-arabia",
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "draft",
+    "lastVerified": "2026-01-22",
+    "maintainers": [
+      {
+        "github": "@mohammed.t"
+      }
+    ],
+    "sources": [
+      {
+        "title": "Nafath service catalog",
+        "url": "https://www.my.gov.sa/wps/portal/snp/eParticipation/nafath",
+        "accessed": "2026-01-22"
+      }
+    ],
+    "disclaimer": true,
+    "variables": [],
+    "triggers": [
+      {
+        "when": {
+          "handles_identity": true,
+          "target_market": "saudi_arabia"
+        }
+      }
+    ],
+    "body": "# Nafath and Yakeen Identity Onboarding\n\n## When this skill activates\n\nUse this skill whenever the work proposes verifying a Saudi citizen or resident identity, issuing a government-backed trust decision, or linking an account to a national ID.\n\n## Operational warning\n\nDo not generate client code against imagined Nafath or Yakeen endpoints. Neither service offers open self-service API keys. Integration requires an approval workflow, sponsor-bound credentials, and sandbox onboarding. Treat any unreferenced URL or token as a fabrication until a human confirms it.\n\n## Compliance baseline\n\n1. Identity verification is an onboarding concern that must be planned before coding — not a library to drop in.\n2. Nafath provides authentication signals; it does not provide arbitrary citizen data.\n3. Yakeen provides attribute verification through authorized service providers — treat it as a data lookup gated by contractual scope, not an open directory.\n4. National IDs and Iqama numbers are personal data. PDPL rules from `pdpl-basics` apply in addition to this skill.\n\n## Engineering guidance\n\n### Before writing code\n\n- Confirm the business has, or is actively obtaining, a Nafath or Yakeen engagement. If not, stop and route the team to apply before sprinting on code.\n- Name the authorized service provider or government channel being used. Generic \"call Nafath\" stories are a red flag.\n- Specify which attributes are actually required. Most flows need a verified identity signal, not a full profile.\n\n### While integrating\n\n- Keep credentials out of the repository. Reuse the guidance in `secrets-baseline` for handling and rotation.\n- Isolate the identity provider client behind a thin adapter so test fixtures, error handling, and retries do not leak into feature code.\n- Never cache raw identity attributes longer than the flow that needs them. Store the verification outcome, not the source attributes, whenever possible.\n\n### Error and fallback handling\n\n- Treat a failed identity verification as a hard stop for the privileged flow. Do not silently fall back to an unverified path.\n- Provide a clear user-facing message in both Arabic and English explaining that verification is pending or rejected.\n- Log identity decisions with enough context to audit, but without embedding the raw national ID in application logs.\n\n## References\n\n- Read `references/nafath-yakeen-approval-steps.md` for the approval and onboarding sequence.\n- Read `references/nafath-yakeen-do-not.md` for common hallucinations to flag in generated code.\n",
+    "directory": "saudi/nafath-yakeen-basics",
+    "references": [
+      {
+        "path": "nafath-yakeen-approval-steps.md",
+        "content": "# Nafath and Yakeen Approval Steps\n\nThis is a rough roadmap, not a legal filing. Confirm the current steps with the relevant authority before committing to a timeline.\n\n## 1. Identify the channel\n\n- Nafath integrations are typically routed through an authorized government portal or through the entity's own sponsor agreement.\n- Yakeen integrations are routed through authorized service providers.\n\n## 2. Submit a formal request\n\n- Describe the use case, the attributes required, and the user impact if verification fails.\n- Provide a security and privacy overview covering how credentials, tokens, and returned attributes will be stored.\n\n## 3. Sandbox onboarding\n\n- Receive sandbox credentials and test against documented mocked flows.\n- Do not treat sandbox responses as production-shaped unless the provider confirms parity.\n\n## 4. Production clearance\n\n- Production credentials are bound to the sponsor and are not portable across environments without explicit approval.\n- Credential rotation must be planned up front; do not assume long-lived keys.\n\n## 5. Ongoing obligations\n\n- Monitor for service announcements — endpoints and scopes can be adjusted by the authority.\n- Keep a contact person on the business side who owns the relationship, not just the engineer who integrated.\n"
+      },
+      {
+        "path": "nafath-yakeen-do-not.md",
+        "content": "# Common Hallucinations to Flag\n\nIf generated code contains any of the following, pause and ask the human for the real integration contract before proceeding.\n\n- A hardcoded \"Nafath API\" base URL that was not referenced from a trusted document.\n- A function signature that accepts a national ID and returns a full citizen profile — Nafath does not work that way.\n- A \"Yakeen key\" treated as a static API token in an `.env.example` file.\n- A fallback branch that silently treats a verification timeout as a successful verification.\n- A mock implementation that returns \"verified: true\" without being clearly labelled as a development stub.\n- A retry loop on an authentication call that keeps calling until success — real flows rate-limit and expect backoff.\n"
+      }
+    ],
+    "scripts": []
+  },
+  {
+    "id": "saudi-pdpl-basics",
+    "name": {
+      "en": "PDPL Basics for Engineers",
+      "ar": "أساسيات نظام حماية البيانات الشخصية للمهندسين"
+    },
+    "summary": {
+      "en": "Engineering-level guardrails for Saudi Arabia's Personal Data Protection Law — consent, retention, minimization, and data export patterns your agent can actually enforce in code.",
+      "ar": "ضوابط هندسية لنظام حماية البيانات الشخصية في السعودية — الموافقة والاحتفاظ والتقليل والتصدير كقواعد يستطيع الوكيل فرضها فعليًا في الكود."
+    },
+    "slug": "pdpl-basics",
+    "version": "0.2.0",
+    "category": "compliance",
+    "region": "saudi-arabia",
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "community-maintained",
+    "lastVerified": "2026-02-04",
+    "maintainers": [
+      {
+        "github": "@layla.s"
+      }
+    ],
+    "sources": [
+      {
+        "title": "SDAIA Personal Data Protection Law",
+        "url": "https://sdaia.gov.sa/en/SDAIA/about/Pages/PersonalDataProtection.aspx",
+        "accessed": "2026-02-04"
+      }
+    ],
+    "disclaimer": true,
+    "variables": [],
+    "triggers": [
+      {
+        "when": {
+          "handles_pii": true,
+          "target_market": "saudi_arabia"
+        }
+      }
+    ],
+    "body": "# PDPL Basics for Engineers\n\n## When this skill activates\n\nUse this skill whenever the work touches storage, logging, export, deletion, or sharing of personal data belonging to users in Saudi Arabia.\n\n## Compliance baseline\n\n1. Treat any identifier that ties a record to a real person as personal data — names, emails, phone numbers, national IDs, device identifiers, and precise location all qualify.\n2. Collect only the personal data the current feature genuinely needs. If a field is not used downstream, it should not be captured or persisted.\n3. Record a clear purpose and a retention duration for every personal data field stored by the system.\n4. Make deletion and export of a user's personal data a first-class capability, not a manual database query.\n\n## Operational warning\n\nThis skill is engineering guidance, not legal advice. Treat it as a checklist the agent applies while writing code, and route statutory questions to a qualified lawyer.\n\n## Engineering guidance\n\n### Consent and purpose\n\n- Record the lawful basis and purpose beside the personal data, not in a separate document the code cannot see.\n- Do not silently widen the use of personal data collected for one purpose to cover a new one.\n- When a feature depends on consent, treat missing consent as a disabled feature rather than a default-on behavior.\n\n### Retention and minimization\n\n- Prefer structured retention fields (`expires_at`, `delete_after`) over ad hoc cron jobs and manual cleanup.\n- Avoid logging full personal data payloads; log identifiers and shape only.\n- Separate operational telemetry from identity-bearing records so analytics do not accumulate long-term personal data by accident.\n\n### Export and deletion\n\n- Expose a single internal path that produces a user's full export. Downstream duplicates should read from that path.\n- When deleting, distinguish soft deletion (tombstone for audit) from hard deletion (PDPL obligation). Document which one a given code path performs.\n- Verify that backups, search indexes, analytics warehouses, and caches honor deletion requests, not just the primary database.\n\n## References\n\n- Read `references/pdpl-engineering-checklist.md` for a one-page checklist the agent can walk through before merging a change that touches personal data.\n",
+    "directory": "saudi/pdpl-basics",
+    "references": [
+      {
+        "path": "pdpl-engineering-checklist.md",
+        "content": "# PDPL Engineering Checklist\n\nUse this checklist before merging a change that reads, writes, exports, or deletes personal data.\n\n## Collection\n\n- [ ] Every new personal data field has a recorded purpose and retention period.\n- [ ] The change does not capture identifiers the feature does not use.\n- [ ] Consent state is read from a single source of truth, not inferred.\n\n## Storage\n\n- [ ] Personal data is segregated from operational telemetry.\n- [ ] Backups and replicas are inside the same trust boundary as the primary store.\n- [ ] Retention fields are respected by a scheduled cleanup job that is monitored.\n\n## Access\n\n- [ ] Access to personal data is logged with actor, purpose, and timestamp.\n- [ ] Admin tooling does not expose raw personal data unless the role requires it.\n- [ ] Third-party processors of personal data are covered by a data processing agreement.\n\n## Rights\n\n- [ ] A user can request an export of their personal data through an internal path.\n- [ ] A user can request deletion, and the deletion reaches backups, indexes, caches, and downstream warehouses.\n- [ ] A user can correct stale personal data through a first-class code path.\n"
+      }
+    ],
+    "scripts": []
+  },
   {
     "id": "saudi-zatca-phase2",
     "name": {
       "en": "Saudi ZATCA Phase 2 E-Invoicing",
       "ar": "الفوترة الإلكترونية زاتكا المرحلة الثانية"
+    },
+    "summary": {
+      "en": "Engineering guardrails for ZATCA Phase 2 invoicing — XML structure, signing flow, and onboarding steps an AI agent should respect before it writes code.",
+      "ar": "ضوابط هندسية لفوترة زاتكا المرحلة الثانية — بنية XML ومسار التوقيع وخطوات التسجيل التي يجب على وكيل البرمجة مراعاتها قبل كتابة الكود."
     },
     "slug": "zatca-phase2",
     "version": "0.1.0",
@@ -114,12 +391,124 @@ export const generatedSkills: GeneratedSkill[] = [
     "directory": "saudi/zatca-phase2",
     "references": [
       {
-        "path": "zatca-xml-sample.xml"
+        "path": "zatca-xml-sample.xml",
+        "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Invoice xmlns=\"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2\">\n  <cbc:ID xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">INV-1001</cbc:ID>\n  <cbc:IssueDate xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\">2026-04-15</cbc:IssueDate>\n</Invoice>\n\n"
       }
     ],
     "scripts": [
       {
-        "path": "validate-zatca-xml.mjs"
+        "path": "validate-zatca-xml.mjs",
+        "content": "#!/usr/bin/env node\n\nimport { readFile } from \"node:fs/promises\";\n\nconst file = process.argv[2];\n\nif (!file) {\n  console.error(\"Usage: validate-zatca-xml.mjs <file>\");\n  process.exit(1);\n}\n\nconst contents = await readFile(file, \"utf8\");\n\nif (!contents.includes(\"<Invoice\")) {\n  console.error(\"Missing <Invoice root element.\");\n  process.exit(1);\n}\n\nif (!contents.includes(\"<cbc:ID\")) {\n  console.error(\"Missing invoice identifier.\");\n  process.exit(1);\n}\n\nconsole.log(\"Basic XML checks passed.\");\n"
+      }
+    ]
+  },
+  {
+    "id": "security-auth-isolation",
+    "name": {
+      "en": "Auth Boundary Isolation",
+      "ar": "عزل حدود المصادقة"
+    },
+    "summary": {
+      "en": "Separate admin code from user code and keep session contexts from bleeding. Cuts out a whole class of privilege-escalation leaks in agent-generated code.",
+      "ar": "افصل كود المشرف عن كود المستخدم ولا تخلط سياقات الجلسات. يُزيل صنفًا كاملاً من ثغرات تصعيد الصلاحيات في الكود المُنشأ بالوكيل."
+    },
+    "slug": "auth-isolation",
+    "version": "0.3.0",
+    "category": "security",
+    "region": null,
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "community-maintained",
+    "lastVerified": "2026-02-14",
+    "maintainers": [
+      {
+        "github": "@core"
+      }
+    ],
+    "sources": [
+      {
+        "title": "OWASP Access Control",
+        "url": "https://owasp.org/www-community/Access_Control",
+        "accessed": "2026-02-14"
+      }
+    ],
+    "disclaimer": false,
+    "variables": [],
+    "triggers": [],
+    "body": "# Auth Boundary Isolation\n\n## When this skill activates\n\nUse this skill whenever the work introduces privileged actions, admin dashboards, role-aware endpoints, background jobs that impersonate users, or any code path that must not be reachable by an unauthenticated caller.\n\n## Baseline rules\n\n1. Privileged code lives behind a single explicit boundary. Any code reachable on a user request path is treated as user code.\n2. A request that authenticates a user never silently elevates to admin scope later in the same handler.\n3. Background workers that act \"as\" a user declare the impersonation explicitly and log it.\n4. Session identifiers, API tokens, and admin credentials are never interchangeable in middleware.\n\n## Design patterns\n\n### Dedicated admin surface\n\n- Route admin endpoints through a distinct router mounted under a clearly named prefix.\n- Give the admin surface its own middleware stack — not a flag on the user middleware.\n- Deny by default. An endpoint that is not explicitly admin-allowed is not reachable through the admin surface.\n\n### Context objects\n\n- Build an explicit request context that carries the authenticated principal, the allowed scopes, and the session id.\n- Pass the context object to business code. Do not read session globals from inside domain logic.\n- Treat the context as immutable per request. Re-issuing a context means restarting the request.\n\n### Privilege escalation\n\n- Escalation is a discrete action with its own audit record — not an `if (admin)` branch buried in a handler.\n- Require fresh authentication for destructive admin actions even inside an already-authenticated session.\n- Rate-limit admin actions separately from user actions.\n\n## Failure modes to flag\n\n- A user endpoint that reads an admin token header \"if present.\" That is not isolation.\n- A shared middleware that uses `req.user.isAdmin` to toggle behavior on the same endpoint for different actors.\n- Background jobs that fabricate a user object without referencing a real identity.\n- Admin APIs proxied through user-facing CORS rules.\n\n## References\n\n- Read `references/auth-isolation-checklist.md` before merging a change that introduces an admin or privileged code path.\n",
+    "directory": "security/auth-isolation",
+    "references": [
+      {
+        "path": "auth-isolation-checklist.md",
+        "content": "# Auth Isolation Checklist\n\nUse before merging a change that introduces, moves, or modifies a privileged code path.\n\n## Routing\n\n- [ ] Admin endpoints are on a distinct router, not mixed with user endpoints.\n- [ ] The admin router has its own authentication middleware.\n- [ ] No user endpoint reads an admin-only header as a soft escalation path.\n\n## Context\n\n- [ ] Authenticated principal is available through a single explicit accessor.\n- [ ] Domain code does not read session globals.\n- [ ] Impersonation (acting on behalf of a user) is recorded with actor and reason.\n\n## Auditing\n\n- [ ] Privileged actions write an audit event with actor, target, and outcome.\n- [ ] Audit log is not writable from user-accessible code paths.\n- [ ] Failed privileged attempts are logged, not silently swallowed.\n\n## Negative tests\n\n- [ ] A test asserts that a user session cannot reach an admin endpoint.\n- [ ] A test asserts that an expired or revoked admin token is rejected.\n- [ ] A test asserts that background-worker impersonation cannot be triggered over HTTP.\n"
+      }
+    ],
+    "scripts": []
+  },
+  {
+    "id": "security-secrets-baseline",
+    "name": {
+      "en": "Secrets Baseline",
+      "ar": "الأساس الآمن للأسرار"
+    },
+    "summary": {
+      "en": "Keep secrets out of the repository and the commit history. Stack-agnostic rules on env file hygiene, manager integration, and rotating committed secrets.",
+      "ar": "إبقاء الأسرار خارج المستودع وخارج سجل الكوميتات. قواعد مستقلة عن المنصة لنظافة ملفات env والتكامل مع مدراء الأسرار وتدوير الأسرار المسرّبة."
+    },
+    "slug": "secrets-baseline",
+    "version": "1.0.0",
+    "category": "security",
+    "region": null,
+    "targets": [
+      "claude-code",
+      "cursor",
+      "codex",
+      "agents-md"
+    ],
+    "status": "maintainer-reviewed",
+    "lastVerified": "2026-03-02",
+    "maintainers": [
+      {
+        "github": "@core"
+      }
+    ],
+    "sources": [
+      {
+        "title": "OWASP Secrets Management Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html",
+        "accessed": "2026-03-02"
+      }
+    ],
+    "disclaimer": false,
+    "variables": [
+      {
+        "name": "manager",
+        "label": {
+          "en": "Preferred secret manager",
+          "ar": "مدير الأسرار المفضّل"
+        },
+        "type": "select",
+        "options": [
+          "vault",
+          "doppler",
+          "aws",
+          "infisical",
+          "none"
+        ]
+      }
+    ],
+    "triggers": [],
+    "body": "# Secrets Baseline ({{manager}})\n\n## When this skill activates\n\nUse this skill whenever the work introduces credentials, API tokens, signing keys, database passwords, or webhook secrets — and whenever a reviewer notices raw secrets drifting into code, tests, or CI configuration.\n\n## Baseline rules\n\n1. Secrets never enter the repository in plaintext, not even \"temporarily.\"\n2. Secrets never enter commit messages, issue comments, or pull request descriptions.\n3. Secrets never enter logs. Redact at the logger, not the log viewer.\n4. A leaked secret is assumed compromised and rotated, not re-committed with `.gitignore`.\n\n## Environment files\n\n- Keep a checked-in `.env.example` that lists every required key with a placeholder value.\n- Keep the real `.env` out of the repository and out of container images.\n- Do not parse `.env` in production code paths — production runtime should receive environment variables from the orchestrator or secret manager.\n\n## Secret manager integration ({{manager}})\n\n- Retrieve secrets at process start, not on every request.\n- Cache secrets in memory within the process; never write them to disk or shared volumes.\n- When the manager rotates a secret, fail fast rather than silently using a stale value.\n\n## If a secret has been committed\n\n1. Rotate the secret at the issuer immediately. Removing it from the repo is not rotation.\n2. Revoke any tokens the secret could have minted.\n3. Scrub the secret from git history only after rotation. History rewrites are a hygiene step, not a remediation.\n4. Add a detection rule so the same kind of leak is caught before merge next time.\n\n## Developer workflow\n\n- Run a local secret scanner on staged changes. Treat findings as blocking, not advisory.\n- Never ask an AI agent to paste a real secret for debugging — use a redacted example.\n- Treat `.env.local`, `.env.development`, and other dotfile variants with the same seriousness as `.env`.\n\n## Variables\n\n- `manager={{manager}}`\n\n## References\n\n- Run `scripts/scan-for-secrets.mjs` before committing a change that touches configuration, deployment, or auth code.\n",
+    "directory": "security/secrets-baseline",
+    "references": [],
+    "scripts": [
+      {
+        "path": "scan-for-secrets.mjs",
+        "content": "#!/usr/bin/env node\n\nimport { readFile } from \"node:fs/promises\";\n\nconst files = process.argv.slice(2);\n\nif (files.length === 0) {\n  console.error(\"Usage: scan-for-secrets.mjs <file> [<file> ...]\");\n  process.exit(1);\n}\n\nconst patterns = [\n  { name: \"AWS access key\", regex: /AKIA[0-9A-Z]{16}/ },\n  { name: \"Private key header\", regex: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/ },\n  { name: \"Generic bearer token\", regex: /\\b[Bb]earer\\s+[A-Za-z0-9-_\\.=]{20,}/ },\n  { name: \"Slack webhook\", regex: /https:\\/\\/hooks\\.slack\\.com\\/services\\/[A-Z0-9\\/]+/ },\n  { name: \"Generic long hex token\", regex: /\\b[a-f0-9]{40,}\\b/ },\n];\n\nlet found = false;\n\nfor (const file of files) {\n  const contents = await readFile(file, \"utf8\");\n  for (const pattern of patterns) {\n    if (pattern.regex.test(contents)) {\n      console.error(`Possible ${pattern.name} found in ${file}`);\n      found = true;\n    }\n  }\n}\n\nif (found) {\n  console.error(\n    \"Resolve findings before committing. Rotate any value that was already pushed.\",\n  );\n  process.exit(1);\n}\n\nconsole.log(\"No obvious secrets found. This scan is a safety net, not a guarantee.\");\n"
       }
     ]
   }
