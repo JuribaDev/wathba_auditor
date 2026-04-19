@@ -3,11 +3,14 @@
 import * as React from "react";
 import { Folder, FileText } from "lucide-react";
 
+import { Notice } from "@/components/ui/notice";
 import type { FilePlan, TargetFilePlan } from "@/lib/generate/file-plan";
+import type { MissingVariables } from "@/lib/generate/resolve-markdown";
 import {
   SAMPLE_PREVIEW_BODIES,
   resolveActiveTarget,
 } from "@/lib/generate/sample-previews";
+import type { AppLocale } from "@/lib/i18n";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 import { cn } from "@/lib/utils";
 
@@ -28,12 +31,17 @@ export type GenerateStepLabels = {
   targetNoteGeneric: string;
   previewEmpty: string;
   previewFilePlaceholder: string;
+  missingTitle: string;
+  missingLede: string;
+  missingVariableLabel: string;
   emptyTitle: string;
   emptyBody: string;
 };
 
 type StepGenerateProps = {
+  locale: AppLocale;
   plan: FilePlan;
+  missing: readonly MissingVariables[];
   labels: GenerateStepLabels;
 };
 
@@ -51,7 +59,12 @@ const TARGET_NOTE_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
   "agents-md": "targetNoteGeneric",
 };
 
-export function StepGenerate({ plan, labels }: StepGenerateProps) {
+export function StepGenerate({
+  locale,
+  plan,
+  missing,
+  labels,
+}: StepGenerateProps) {
   const hasContent = plan.totalFiles > 0 && plan.skillCount > 0;
 
   const availableTargets = React.useMemo(
@@ -83,6 +96,13 @@ export function StepGenerate({ plan, labels }: StepGenerateProps) {
 
   return (
     <div className="flex flex-col gap-6" data-slot="step-generate">
+      {missing.length > 0 ? (
+        <MissingVariablesNotice
+          locale={locale}
+          missing={missing}
+          labels={labels}
+        />
+      ) : null}
       <section
         aria-label={labels.zipLabel}
         className={cn(
@@ -189,6 +209,48 @@ function TargetTree({
         ))}
       </div>
     </div>
+  );
+}
+
+type MissingVariablesNoticeProps = {
+  locale: AppLocale;
+  missing: readonly MissingVariables[];
+  labels: GenerateStepLabels;
+};
+
+function MissingVariablesNotice({
+  locale,
+  missing,
+  labels,
+}: MissingVariablesNoticeProps) {
+  return (
+    <Notice
+      variant="warning"
+      title={labels.missingTitle}
+      className="text-sm"
+    >
+      <p className="leading-6">{labels.missingLede}</p>
+      <ul
+        data-slot="missing-variables-list"
+        className="mt-2 flex flex-col gap-1"
+      >
+        {missing.map((entry) => (
+          <li key={entry.skillId} className="leading-6">
+            <strong className="font-medium text-foreground">
+              {entry.name[locale]}
+            </strong>
+            <span className="text-muted-foreground">
+              {" — "}
+              {labels.missingVariableLabel}
+              {": "}
+            </span>
+            <span className="font-mono text-[12.5px] text-foreground">
+              {entry.variables.join(", ")}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Notice>
   );
 }
 

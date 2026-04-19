@@ -157,6 +157,9 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     targetNoteGeneric: t("generate.targetNotes.generic"),
     previewEmpty: t("generate.previewEmpty"),
     previewFilePlaceholder: t("generate.previewFilePlaceholder"),
+    missingTitle: t("generate.missingTitle"),
+    missingLede: t("generate.missingLede"),
+    missingVariableLabel: t("generate.missingVariableLabel"),
     emptyTitle: t("generate.emptyTitle"),
     emptyBody: t("generate.emptyBody"),
   };

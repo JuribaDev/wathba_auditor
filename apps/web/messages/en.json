@@ -94,6 +94,9 @@
       },
       "previewEmpty": "Select a target agent to preview its output.",
       "previewFilePlaceholder": "—",
+      "missingTitle": "Missing values before download",
+      "missingLede": "Fill in the variables below on the review step — placeholders will stay unresolved in the generated files until every value is set.",
+      "missingVariableLabel": "Missing",
       "emptyTitle": "Nothing to generate yet",
       "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview."
     },

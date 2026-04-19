@@ -29,6 +29,7 @@ import {
   type VariablesStepLabels,
 } from "@/components/questionnaire/step-variables";
 import { buildFilePlan, getActiveSkills } from "@/lib/generate/file-plan";
+import { resolveSelectedSkills } from "@/lib/generate/resolve-markdown";
 import type { AppLocale } from "@/lib/i18n";
 import type { QuestionnaireStepId } from "@/lib/questionnaire/steps";
 import {
@@ -158,6 +159,11 @@ export function Questionnaire({
     [answers.agents, activeSkills],
   );
 
+  const resolvedCatalog = React.useMemo(
+    () => resolveSelectedSkills(activeSkills, variableValues, answers),
+    [activeSkills, variableValues, answers],
+  );
+
   const handleBeforeNext = React.useCallback(
     (step: QuestionnaireStepId): boolean => {
       if (step === "about" || step === "tech") {
@@ -229,7 +235,14 @@ export function Questionnaire({
           />
         </>
       }
-      generateSlot={<StepGenerate plan={filePlan} labels={generateLabels} />}
+      generateSlot={
+        <StepGenerate
+          locale={locale}
+          plan={filePlan}
+          missing={resolvedCatalog.skillsWithMissing}
+          labels={generateLabels}
+        />
+      }
     />
   );
 }
