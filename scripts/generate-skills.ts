@@ -1,90 +1,18 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import yaml from "js-yaml";
 
 import {
-  parseCanonicalSkill,
+  loadSkillsFromDirectory,
+  SkillLoaderError,
   SkillValidationError,
-  type GeneratedSkill,
-} from "../packages/skill-schema/src/index";
+} from "./lib/skill-loader";
 
 const repoRoot = process.cwd();
 const skillsRoot = path.join(repoRoot, "skills");
 const outputFile = path.join(repoRoot, "apps/web/lib/skills/generated.ts");
 
-async function walk(currentDir: string, matches: string[] = []): Promise<string[]> {
-  const entries = await fs.readdir(currentDir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const entryPath = path.join(currentDir, entry.name);
-    if (entry.isDirectory()) {
-      await walk(entryPath, matches);
-      continue;
-    }
-
-    if (entry.name === "skill.yaml") {
-      matches.push(entryPath);
-    }
-  }
-
-  return matches;
-}
-
-async function listRelativeFiles(
-  directory: string,
-): Promise<Array<{ path: string; content: string }>> {
-  try {
-    const entries = await fs.readdir(directory, { withFileTypes: true });
-    const files = entries.filter((entry) => entry.isFile());
-    const loaded = await Promise.all(
-      files.map(async (entry) => ({
-        path: entry.name,
-        content: await fs.readFile(path.join(directory, entry.name), "utf8"),
-      })),
-    );
-    return loaded.sort((left, right) => left.path.localeCompare(right.path));
-  } catch {
-    return [];
-  }
-}
-
-async function loadSkill(skillYamlPath: string): Promise<GeneratedSkill> {
-  const directory = path.dirname(skillYamlPath);
-  const rawYaml = await fs.readFile(skillYamlPath, "utf8");
-  const parsed = parseCanonicalSkill(yaml.load(rawYaml), {
-    source: path.relative(repoRoot, skillYamlPath),
-  });
-  const body = await fs.readFile(path.join(directory, "SKILL.md"), "utf8");
-  const references = await listRelativeFiles(path.join(directory, "references"));
-  const scripts = await listRelativeFiles(path.join(directory, "scripts"));
-
-  return {
-    id: parsed.id,
-    name: parsed.name,
-    summary: parsed.summary,
-    slug: parsed.slug,
-    version: parsed.version,
-    category: parsed.category,
-    region: parsed.region,
-    targets: parsed.targets,
-    status: parsed.status,
-    lastVerified: parsed.last_verified,
-    maintainers: parsed.maintainers,
-    sources: parsed.sources,
-    disclaimer: parsed.disclaimer,
-    variables: parsed.variables,
-    triggers: parsed.triggers,
-    body,
-    directory: path.relative(skillsRoot, directory),
-    references,
-    scripts,
-  };
-}
-
 async function main() {
-  const skillYamlFiles = await walk(skillsRoot);
-  const skills = await Promise.all(skillYamlFiles.map(loadSkill));
-  skills.sort((left, right) => left.id.localeCompare(right.id));
+  const skills = await loadSkillsFromDirectory({ skillsRoot, repoRoot });
 
   const typeDefinition = `export type GeneratedSkill = {
   id: string;
@@ -129,7 +57,7 @@ export const generatedSkillsById = Object.fromEntries(
 }
 
 main().catch((error) => {
-  if (error instanceof SkillValidationError) {
+  if (error instanceof SkillValidationError || error instanceof SkillLoaderError) {
     console.error(error.message);
   } else {
     console.error(error);
