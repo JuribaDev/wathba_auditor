@@ -150,6 +150,13 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     targetCursor: t("generate.targets.cursor"),
     targetCodex: t("generate.targets.codex"),
     targetGeneric: t("generate.targets.generic"),
+    targetPreviewHeading: t("generate.targetPreviewHeading"),
+    targetNoteClaude: t("generate.targetNotes.claude"),
+    targetNoteCursor: t("generate.targetNotes.cursor"),
+    targetNoteCodex: t("generate.targetNotes.codex"),
+    targetNoteGeneric: t("generate.targetNotes.generic"),
+    previewEmpty: t("generate.previewEmpty"),
+    previewFilePlaceholder: t("generate.previewFilePlaceholder"),
     emptyTitle: t("generate.emptyTitle"),
     emptyBody: t("generate.emptyBody"),
   };

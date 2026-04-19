@@ -85,6 +85,15 @@
         "codex": "Codex",
         "generic": "Generic AGENTS.md"
       },
+      "targetPreviewHeading": "Preview for this target",
+      "targetNotes": {
+        "claude": "Full fidelity — each skill gets its own folder with references and scripts intact.",
+        "cursor": "Single-file rules. Helper scripts become read-only guidance comments.",
+        "codex": "Aggregated into one AGENTS.md at the repo root.",
+        "generic": "A generic AGENTS.md for any agent that reads it."
+      },
+      "previewEmpty": "Select a target agent to preview its output.",
+      "previewFilePlaceholder": "—",
       "emptyTitle": "Nothing to generate yet",
       "emptyBody": "Pick at least one agent on the Tech & agents step and keep at least one skill selected to see the zip preview."
     },

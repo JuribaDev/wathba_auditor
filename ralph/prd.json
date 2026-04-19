@@ -656,7 +656,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype proves the UX; the production system must back it with real renderers."
     },
     {

@@ -4,6 +4,10 @@ import * as React from "react";
 import { Folder, FileText } from "lucide-react";
 
 import type { FilePlan, TargetFilePlan } from "@/lib/generate/file-plan";
+import {
+  SAMPLE_PREVIEW_BODIES,
+  resolveActiveTarget,
+} from "@/lib/generate/sample-previews";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +21,13 @@ export type GenerateStepLabels = {
   targetCursor: string;
   targetCodex: string;
   targetGeneric: string;
+  targetPreviewHeading: string;
+  targetNoteClaude: string;
+  targetNoteCursor: string;
+  targetNoteCodex: string;
+  targetNoteGeneric: string;
+  previewEmpty: string;
+  previewFilePlaceholder: string;
   emptyTitle: string;
   emptyBody: string;
 };
@@ -33,8 +44,23 @@ const TARGET_LABEL_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
   "agents-md": "targetGeneric",
 };
 
+const TARGET_NOTE_KEY: Record<TargetAgent, keyof GenerateStepLabels> = {
+  "claude-code": "targetNoteClaude",
+  cursor: "targetNoteCursor",
+  codex: "targetNoteCodex",
+  "agents-md": "targetNoteGeneric",
+};
+
 export function StepGenerate({ plan, labels }: StepGenerateProps) {
   const hasContent = plan.totalFiles > 0 && plan.skillCount > 0;
+
+  const availableTargets = React.useMemo(
+    () => plan.targets.map((target) => target.target),
+    [plan.targets],
+  );
+
+  const [userTarget, setUserTarget] = React.useState<TargetAgent | null>(null);
+  const activeTarget = resolveActiveTarget(availableTargets, userTarget);
 
   if (!hasContent) {
     return (
@@ -92,6 +118,13 @@ export function StepGenerate({ plan, labels }: StepGenerateProps) {
           </div>
         </div>
       </section>
+
+      <TargetPreview
+        targets={plan.targets}
+        activeTarget={activeTarget}
+        onSelect={setUserTarget}
+        labels={labels}
+      />
     </div>
   );
 }
@@ -156,5 +189,164 @@ function TargetTree({
         ))}
       </div>
     </div>
+  );
+}
+
+type TargetPreviewProps = {
+  targets: readonly TargetFilePlan[];
+  activeTarget: TargetAgent | null;
+  onSelect: (target: TargetAgent) => void;
+  labels: GenerateStepLabels;
+};
+
+function TargetPreview({
+  targets,
+  activeTarget,
+  onSelect,
+  labels,
+}: TargetPreviewProps) {
+  const tabRefs = React.useRef<Map<TargetAgent, HTMLButtonElement | null>>(
+    new Map(),
+  );
+
+  const registerTabRef = React.useCallback(
+    (agent: TargetAgent) => (node: HTMLButtonElement | null) => {
+      tabRefs.current.set(agent, node);
+    },
+    [],
+  );
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>, agent: TargetAgent) => {
+      if (
+        event.key !== "ArrowRight" &&
+        event.key !== "ArrowLeft" &&
+        event.key !== "Home" &&
+        event.key !== "End"
+      ) {
+        return;
+      }
+      event.preventDefault();
+      const order = targets.map((target) => target.target);
+      if (order.length === 0) return;
+      const currentIndex = order.indexOf(agent);
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowRight") {
+        nextIndex = (currentIndex + 1) % order.length;
+      } else if (event.key === "ArrowLeft") {
+        nextIndex = (currentIndex - 1 + order.length) % order.length;
+      } else if (event.key === "Home") {
+        nextIndex = 0;
+      } else if (event.key === "End") {
+        nextIndex = order.length - 1;
+      }
+      const nextAgent = order[nextIndex];
+      onSelect(nextAgent);
+      tabRefs.current.get(nextAgent)?.focus();
+    },
+    [targets, onSelect],
+  );
+
+  const activePlan = React.useMemo(
+    () => targets.find((target) => target.target === activeTarget) ?? null,
+    [targets, activeTarget],
+  );
+
+  const activeBody = activeTarget ? SAMPLE_PREVIEW_BODIES[activeTarget] : "";
+  const activeNote = activeTarget
+    ? labels[TARGET_NOTE_KEY[activeTarget]]
+    : labels.previewEmpty;
+  const activeFile = activePlan?.files[0] ?? labels.previewFilePlaceholder;
+
+  return (
+    <section
+      aria-label={labels.targetPreviewHeading}
+      className={cn(
+        "rounded-2xl border border-border bg-surface shadow-sm",
+        "overflow-hidden",
+      )}
+      data-slot="target-preview"
+    >
+      <div className="border-b border-border px-5 pt-5 sm:px-6">
+        <p
+          className={cn(
+            "text-xs font-medium uppercase tracking-[0.18em] text-primary",
+            "rtl:tracking-normal rtl:normal-case",
+          )}
+        >
+          {labels.targetPreviewHeading}
+        </p>
+        <div
+          role="tablist"
+          aria-label={labels.targetPreviewHeading}
+          className="mt-4 flex flex-wrap gap-1 border-b-0"
+        >
+          {targets.map((target) => {
+            const isActive = target.target === activeTarget;
+            const tabId = `target-tab-${target.target}`;
+            const panelId = `target-panel-${target.target}`;
+            return (
+              <button
+                key={target.target}
+                ref={registerTabRef(target.target)}
+                id={tabId}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={panelId}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => onSelect(target.target)}
+                onKeyDown={(event) => handleKeyDown(event, target.target)}
+                className={cn(
+                  "relative -mb-px rounded-t-md px-3 py-2 text-sm font-medium",
+                  "border border-transparent border-b-0",
+                  "transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2",
+                  "focus-visible:ring-primary focus-visible:ring-offset-2",
+                  "focus-visible:ring-offset-surface",
+                  isActive
+                    ? "bg-surface text-foreground border-border"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                data-state={isActive ? "active" : "inactive"}
+              >
+                {labels[TARGET_LABEL_KEY[target.target]]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {activeTarget ? (
+        <div
+          key={activeTarget}
+          id={`target-panel-${activeTarget}`}
+          role="tabpanel"
+          aria-labelledby={`target-tab-${activeTarget}`}
+          className="px-5 py-5 sm:px-6 sm:py-6"
+        >
+          <p className="text-sm leading-6 text-muted-foreground">
+            {activeNote}
+          </p>
+          <div className="mt-3 flex items-center gap-2 font-mono text-xs text-soft-foreground">
+            <FileText aria-hidden="true" className="size-3" />
+            <span className="break-all">{activeFile}</span>
+          </div>
+          <pre
+            className={cn(
+              "mt-3 max-h-[460px] overflow-auto rounded-md border border-border",
+              "bg-surface-sunken px-4 py-3 font-mono text-[12.5px] leading-6",
+              "text-foreground",
+            )}
+            dir="ltr"
+          >
+            {activeBody}
+          </pre>
+        </div>
+      ) : (
+        <div className="px-5 py-6 text-sm text-muted-foreground sm:px-6">
+          {labels.previewEmpty}
+        </div>
+      )}
+    </section>
   );
 }
