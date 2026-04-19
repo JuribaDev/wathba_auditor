@@ -244,6 +244,7 @@ function DownloadPanel({
     >
       <p
         className="text-sm leading-6 text-muted-foreground"
+        role="status"
         aria-live="polite"
         data-status={status}
       >
@@ -255,6 +256,8 @@ function DownloadPanel({
         size="lg"
         onClick={handleDownload}
         disabled={disabled}
+        aria-busy={status === "working"}
+        aria-label={buttonLabel}
         data-state={status}
       >
         {status === "working" ? (

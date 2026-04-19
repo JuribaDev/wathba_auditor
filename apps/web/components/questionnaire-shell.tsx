@@ -42,6 +42,7 @@ export type QuestionnaireLabels = {
   next: string;
   downloadCta: string;
   stepPositionLabel: string;
+  validationBlocked: string;
 };
 
 const HEADING_KEY: Record<QuestionnaireStepId, keyof QuestionnaireLabels> = {
@@ -93,6 +94,7 @@ export function QuestionnaireShell({
   const [index, setIndex] = React.useState<number>(() => indexForStep(initialStep));
   const activeStep = stepForIndex(index);
   const liveRegionRef = React.useRef<HTMLParagraphElement | null>(null);
+  const [blockedAt, setBlockedAt] = React.useState<number>(0);
 
   const slotByStep: Record<QuestionnaireStepId, React.ReactNode | undefined> = {
     about: aboutSlot,
@@ -116,6 +118,7 @@ export function QuestionnaireShell({
     setIndex((current) => {
       const currentStep = stepForIndex(current);
       if (onBeforeNext && onBeforeNext(currentStep) === false) {
+        setBlockedAt(Date.now());
         return current;
       }
       return nextStepIndex(current);
@@ -168,6 +171,14 @@ export function QuestionnaireShell({
 
       <p ref={liveRegionRef} className="sr-only" aria-live="polite" role="status">
         {stepPosition}
+      </p>
+      <p
+        className="sr-only"
+        aria-live="assertive"
+        role="alert"
+        data-blocked-at={blockedAt || undefined}
+      >
+        {blockedAt ? labels.validationBlocked : ""}
       </p>
 
       <section aria-labelledby={headingId} className="flex flex-col gap-6">

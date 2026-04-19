@@ -24,7 +24,11 @@
     "footerContributing": "Contributing",
     "footerRepo": "Repository",
     "menuOpen": "Open menu",
-    "menuClose": "Close menu"
+    "menuClose": "Close menu",
+    "skipToContent": "Skip to main content",
+    "localeSwitchLabel": "Select language",
+    "localeEnglish": "English",
+    "localeArabic": "Arabic"
   },
   "Compare": {
     "title": "Bilingual parity canvas",
@@ -129,6 +133,7 @@
     "next": "Continue",
     "downloadCta": "Generate skill pack",
     "stepPositionLabel": "Step {step} of {total}",
+    "validationBlocked": "Please fix the highlighted fields before continuing.",
     "about": {
       "yes": "Yes",
       "no": "No",

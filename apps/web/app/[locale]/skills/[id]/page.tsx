@@ -251,9 +251,9 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
 function Panel({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="grid gap-3 rounded-2xl border border-border bg-surface p-5">
-      <span className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-muted-foreground rtl:tracking-normal rtl:normal-case">
+      <h3 className="text-[0.7rem] font-medium uppercase tracking-[0.16em] text-muted-foreground rtl:tracking-normal rtl:normal-case">
         {label}
-      </span>
+      </h3>
       {children}
     </div>
   );

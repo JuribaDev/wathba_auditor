@@ -54,6 +54,12 @@ export async function AppShell({
 
   return (
     <div className="flex min-h-screen flex-col">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:start-3 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+      >
+        {t("skipToContent")}
+      </a>
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="app-grid gap-4 py-4">
           <div className="flex flex-wrap items-center gap-4">
@@ -97,7 +103,14 @@ export async function AppShell({
                   <GithubIcon />
                 </a>
               </Button>
-              <LocaleSwitch locale={locale} />
+              <LocaleSwitch
+                locale={locale}
+                labels={{
+                  groupLabel: t("localeSwitchLabel"),
+                  en: t("localeEnglish"),
+                  ar: t("localeArabic"),
+                }}
+              />
               <Button asChild size="sm" className="hidden sm:inline-flex">
                 <Link href={`/${locale}/generate`}>
                   {t("cta")}
@@ -129,7 +142,13 @@ export async function AppShell({
         </div>
       </header>
 
-      <main className="app-grid flex-1 pt-8">{children}</main>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="app-grid flex-1 pt-8 focus:outline-none"
+      >
+        {children}
+      </main>
 
       <footer className="mt-10 border-t border-border/80">
         <div className="app-grid gap-3 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">

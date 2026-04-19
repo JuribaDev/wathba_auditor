@@ -24,7 +24,11 @@
     "footerContributing": "المساهمة",
     "footerRepo": "المستودع",
     "menuOpen": "فتح القائمة",
-    "menuClose": "إغلاق القائمة"
+    "menuClose": "إغلاق القائمة",
+    "skipToContent": "الانتقال إلى المحتوى الرئيسي",
+    "localeSwitchLabel": "اختيار اللغة",
+    "localeEnglish": "الإنجليزية",
+    "localeArabic": "العربية"
   },
   "Compare": {
     "title": "لوحة مقارنة ثنائية اللغة",
@@ -129,6 +133,7 @@
     "next": "التالي",
     "downloadCta": "أنشئ حزمة المهارات",
     "stepPositionLabel": "الخطوة {step} من {total}",
+    "validationBlocked": "يرجى تصحيح الحقول المميزة قبل المتابعة.",
     "about": {
       "yes": "نعم",
       "no": "لا",

@@ -816,7 +816,7 @@
       ],
       "type": "quality",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Accessibility is a core product requirement, not a later polish pass."
     },
     {
