@@ -77,7 +77,12 @@ export const canonicalSkillSchema = z.object({
   id: z.string().min(1),
   name: localizedLabelSchema,
   summary: localizedLabelSchema.optional(),
-  slug: z.string().min(1),
+  slug: z
+    .string()
+    .regex(
+      /^[a-z0-9]+(-[a-z0-9]+)*$/,
+      "slug must be kebab-case (lowercase letters and digits separated by single hyphens)",
+    ),
   version: z.string().min(1),
   category: skillCategorySchema,
   region: z.string().nullable(),

@@ -23,16 +23,17 @@ afterEach(async () => {
 async function writeSkill(
   repoRoot: string,
   relativeDir: string,
-  overrides: { yaml?: string; markdown?: string | null; references?: Record<string, string>; scripts?: Record<string, string> } = {},
+  overrides: { yaml?: string; markdown?: string | null; references?: Record<string, string>; scripts?: Record<string, string>; extraFiles?: Record<string, string>; extraDirs?: string[] } = {},
 ) {
   const directory = path.join(repoRoot, "skills", relativeDir);
   await fs.mkdir(directory, { recursive: true });
+  const leaf = relativeDir.split("/").filter(Boolean).at(-1) ?? "sample";
 
   const defaultYaml = `id: saudi-sample
 name:
   en: Sample Skill
   ar: عينة مهارة
-slug: sample-skill
+slug: ${leaf}
 version: 0.1.0
 category: compliance
 region: saudi_arabia
@@ -77,6 +78,18 @@ triggers: []
     }
   }
 
+  if (overrides.extraFiles) {
+    for (const [name, content] of Object.entries(overrides.extraFiles)) {
+      await fs.writeFile(path.join(directory, name), content, "utf8");
+    }
+  }
+
+  if (overrides.extraDirs) {
+    for (const name of overrides.extraDirs) {
+      await fs.mkdir(path.join(directory, name), { recursive: true });
+    }
+  }
+
   return directory;
 }
 
@@ -95,6 +108,7 @@ describe("loadSkillsFromDirectory", () => {
     expect(skills).toHaveLength(1);
     const skill = skills[0];
     expect(skill.id).toBe("saudi-sample");
+    expect(skill.slug).toBe("sample");
     expect(skill.lastVerified).toBe("2026-04-19");
     expect(skill.directory).toBe(path.join("saudi", "sample"));
     expect(skill.references).toEqual([{ path: "guide.md", content: "# Guide" }]);
@@ -203,6 +217,140 @@ triggers: []
     await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
     await expect(call).rejects.toMatchObject({
       message: expect.stringMatching(/Duplicate skill id "saudi-sample"/),
+    });
+  });
+
+  it("rejects skills nested at the wrong depth (skills/<slug>/skill.yaml)", async () => {
+    await writeSkill(workspace, "topflat");
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/Invalid skill folder depth/),
+    });
+  });
+
+  it("rejects skills nested too deep (skills/a/b/c/skill.yaml)", async () => {
+    await writeSkill(workspace, "saudi/group/sample");
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/Invalid skill folder depth/),
+    });
+  });
+
+  it("rejects a group folder that is not kebab-case", async () => {
+    await writeSkill(workspace, "Saudi/sample");
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/Invalid group folder "Saudi"/),
+    });
+  });
+
+  it("rejects when leaf folder name does not match the skill slug", async () => {
+    await writeSkill(workspace, "saudi/leaf-name", {
+      yaml: `id: saudi-other
+name: { en: Other, ar: آخر }
+slug: a-different-slug
+version: 0.1.0
+category: compliance
+region: null
+targets: [claude-code]
+status: draft
+last_verified: "2026-04-19"
+maintainers: [{ github: ex }]
+sources: [{ title: s, url: "https://example.com", accessed: "2026-04-19" }]
+disclaimer: false
+variables: []
+triggers: []
+`,
+    });
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/does not match skill slug "a-different-slug"/),
+    });
+  });
+
+  it("rejects unexpected files inside a skill folder", async () => {
+    await writeSkill(workspace, "saudi/sample", {
+      extraFiles: { "notes.txt": "stray" },
+    });
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/Unexpected file "notes.txt"/),
+    });
+  });
+
+  it("rejects unexpected directories inside a skill folder", async () => {
+    await writeSkill(workspace, "saudi/sample", {
+      extraDirs: ["assets"],
+    });
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillLoaderError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringMatching(/Unexpected directory "assets\/"/),
+    });
+  });
+
+  it("rejects a slug that is not kebab-case at the schema layer", async () => {
+    await writeSkill(workspace, "saudi/Bad_Slug", {
+      yaml: `id: saudi-bad
+name: { en: Bad, ar: سيء }
+slug: Bad_Slug
+version: 0.1.0
+category: compliance
+region: null
+targets: [claude-code]
+status: draft
+last_verified: "2026-04-19"
+maintainers: [{ github: ex }]
+sources: [{ title: s, url: "https://example.com", accessed: "2026-04-19" }]
+disclaimer: false
+variables: []
+triggers: []
+`,
+    });
+
+    const call = loadSkillsFromDirectory({
+      skillsRoot: path.join(workspace, "skills"),
+      repoRoot: workspace,
+    });
+
+    await expect(call).rejects.toBeInstanceOf(SkillValidationError);
+    await expect(call).rejects.toMatchObject({
+      message: expect.stringContaining("slug must be kebab-case"),
     });
   });
 

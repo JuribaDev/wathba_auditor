@@ -316,7 +316,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "This story captures the durable content architecture that the prototype hinted at through inline data."
     },
     {

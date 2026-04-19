@@ -16,6 +16,60 @@ export class SkillLoaderError extends Error {
   }
 }
 
+const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const ALLOWED_SKILL_FILES = new Set(["skill.yaml", "SKILL.md"]);
+const ALLOWED_SKILL_DIRS = new Set(["references", "scripts"]);
+
+async function assertSkillFolderStructure(options: {
+  skillYamlPath: string;
+  skillsRoot: string;
+  sourceLabel: string;
+  slug: string;
+}): Promise<void> {
+  const { skillYamlPath, skillsRoot, sourceLabel, slug } = options;
+  const directory = path.dirname(skillYamlPath);
+  const relativeDir = path.relative(skillsRoot, directory);
+  const segments = relativeDir.split(path.sep).filter(Boolean);
+
+  if (segments.length !== 2) {
+    throw new SkillLoaderError(
+      `Invalid skill folder depth at ${sourceLabel}. Skills must live at skills/<category-or-region>/<slug>/, but found "${relativeDir}".`,
+    );
+  }
+
+  const [group, leaf] = segments;
+  if (!KEBAB_CASE.test(group)) {
+    throw new SkillLoaderError(
+      `Invalid group folder "${group}" at ${sourceLabel}. The skills/<group>/ folder name must be kebab-case (lowercase letters and digits separated by single hyphens).`,
+    );
+  }
+
+  if (leaf !== slug) {
+    throw new SkillLoaderError(
+      `Folder name "${leaf}" does not match skill slug "${slug}" at ${sourceLabel}. The leaf folder under skills/${group}/ must equal the skill's slug field.`,
+    );
+  }
+
+  const entries = await fs.readdir(directory, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      if (!ALLOWED_SKILL_DIRS.has(entry.name)) {
+        throw new SkillLoaderError(
+          `Unexpected directory "${entry.name}/" inside skill folder ${sourceLabel}. Only references/ and scripts/ subfolders are allowed.`,
+        );
+      }
+      continue;
+    }
+    if (entry.isFile()) {
+      if (!ALLOWED_SKILL_FILES.has(entry.name)) {
+        throw new SkillLoaderError(
+          `Unexpected file "${entry.name}" inside skill folder ${sourceLabel}. Only skill.yaml and SKILL.md are allowed at the root of a skill folder.`,
+        );
+      }
+    }
+  }
+}
+
 async function walk(currentDir: string, matches: string[] = []): Promise<string[]> {
   const entries = await fs.readdir(currentDir, { withFileTypes: true });
 
@@ -76,6 +130,12 @@ export async function loadSkill(
 
   const rawYaml = await fs.readFile(skillYamlPath, "utf8");
   const parsed = parseCanonicalSkill(yaml.load(rawYaml), { source: sourceLabel });
+  await assertSkillFolderStructure({
+    skillYamlPath,
+    skillsRoot,
+    sourceLabel,
+    slug: parsed.slug,
+  });
   const body = await readSkillBody(directory, sourceLabel);
   const references = await listRelativeFiles(path.join(directory, "references"));
   const scripts = await listRelativeFiles(path.join(directory, "scripts"));
