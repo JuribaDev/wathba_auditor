@@ -1,0 +1,30 @@
+id: saudi-pdpl-basics
+name:
+  en: PDPL Basics for Engineers
+  ar: أساسيات نظام حماية البيانات الشخصية للمهندسين
+summary:
+  en: Engineering-level guardrails for Saudi Arabia's Personal Data Protection Law — consent, retention, minimization, and data export patterns your agent can actually enforce in code.
+  ar: ضوابط هندسية لنظام حماية البيانات الشخصية في السعودية — الموافقة والاحتفاظ والتقليل والتصدير كقواعد يستطيع الوكيل فرضها فعليًا في الكود.
+slug: pdpl-basics
+version: 0.2.0
+category: compliance
+region: saudi-arabia
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: community-maintained
+last_verified: "2026-02-04"
+maintainers:
+  - github: "@layla.s"
+sources:
+  - title: SDAIA Personal Data Protection Law
+    url: https://sdaia.gov.sa/en/SDAIA/about/Pages/PersonalDataProtection.aspx
+    accessed: "2026-02-04"
+disclaimer: true
+variables: []
+triggers:
+  - when:
+      handles_pii: true
+      target_market: saudi_arabia

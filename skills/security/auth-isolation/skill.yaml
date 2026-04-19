@@ -1,0 +1,27 @@
+id: security-auth-isolation
+name:
+  en: Auth Boundary Isolation
+  ar: عزل حدود المصادقة
+summary:
+  en: Separate admin code from user code and keep session contexts from bleeding. Cuts out a whole class of privilege-escalation leaks in agent-generated code.
+  ar: افصل كود المشرف عن كود المستخدم ولا تخلط سياقات الجلسات. يُزيل صنفًا كاملاً من ثغرات تصعيد الصلاحيات في الكود المُنشأ بالوكيل.
+slug: auth-isolation
+version: 0.3.0
+category: security
+region: null
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: community-maintained
+last_verified: "2026-02-14"
+maintainers:
+  - github: "@core"
+sources:
+  - title: OWASP Access Control
+    url: https://owasp.org/www-community/Access_Control
+    accessed: "2026-02-14"
+disclaimer: false
+variables: []
+triggers: []

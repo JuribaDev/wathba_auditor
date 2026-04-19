@@ -1,0 +1,42 @@
+id: saudi-mada-stcpay-basics
+name:
+  en: mada and STC Pay Payment Basics
+  ar: أساسيات مدفوعات مدى وSTC Pay
+summary:
+  en: Practical integration notes for Saudi-local payment rails — BIN handling, 3DS quirks, settlement expectations, and common pitfalls generic payment tutorials miss.
+  ar: ملاحظات تكامل عملية لقنوات الدفع المحلية في السعودية — التعامل مع BIN وخصائص 3DS وتوقعات التسوية والفخاخ التي تفوتها الأدلة العامة.
+slug: mada-stcpay-basics
+version: 0.2.1
+category: compliance
+region: saudi-arabia
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: community-maintained
+last_verified: "2026-02-28"
+maintainers:
+  - github: "@noor.a"
+sources:
+  - title: Saudi Central Bank payments oversight
+    url: https://www.sama.gov.sa/en-US/Pages/default.aspx
+    accessed: "2026-02-28"
+disclaimer: true
+variables:
+  - name: stack
+    label:
+      en: Backend stack
+      ar: التقنية الخلفية
+    type: select
+    options:
+      - nodejs
+      - dotnet
+      - python
+      - php
+      - java
+      - go
+triggers:
+  - when:
+      handles_payments: true
+      target_market: saudi_arabia

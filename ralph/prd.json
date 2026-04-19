@@ -332,7 +332,7 @@
       ],
       "type": "content",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The catalog should reflect the prototype's actual product scope, not just one demo skill."
     },
     {

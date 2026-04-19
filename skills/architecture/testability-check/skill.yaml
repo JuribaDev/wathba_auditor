@@ -1,0 +1,27 @@
+id: architecture-testability-check
+name:
+  en: Testability Check
+  ar: فحص قابلية الاختبار
+summary:
+  en: Keep generated code writable-to-test. Clean seams, isolated side effects, no hidden singletons — so the test suite remains a first-class artifact as the codebase grows.
+  ar: أبقِ الكود المُنشأ قابلاً لكتابة اختبارات له. فواصل نظيفة وآثار جانبية معزولة ولا singletons مخفية — حتى تبقى مجموعة الاختبارات أصلاً من الدرجة الأولى مع نمو الكود.
+slug: testability-check
+version: 0.4.0
+category: architecture
+region: null
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: community-maintained
+last_verified: "2026-03-10"
+maintainers:
+  - github: "@core"
+sources:
+  - title: Martin Fowler on test doubles and seams
+    url: https://martinfowler.com/bliki/TestDouble.html
+    accessed: "2026-03-10"
+disclaimer: false
+variables: []
+triggers: []

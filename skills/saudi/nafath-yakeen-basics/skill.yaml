@@ -1,0 +1,30 @@
+id: saudi-nafath-yakeen-basics
+name:
+  en: Nafath and Yakeen Identity Onboarding
+  ar: نفاذ ويقين — التحقق من الهوية
+summary:
+  en: Keep the agent from inventing fake Nafath or Yakeen endpoints. Explains the approval path, the integration model, and which behaviors you cannot ship without a credential.
+  ar: يمنع الوكيل من اختراع نقاط نهاية وهمية لنفاذ أو يقين. يشرح مسار الموافقة ونمط التكامل والسلوكيات التي لا يمكن نشرها دون اعتماد.
+slug: nafath-yakeen-basics
+version: 0.1.1
+category: compliance
+region: saudi-arabia
+targets:
+  - claude-code
+  - cursor
+  - codex
+  - agents-md
+status: draft
+last_verified: "2026-01-22"
+maintainers:
+  - github: "@mohammed.t"
+sources:
+  - title: Nafath service catalog
+    url: https://www.my.gov.sa/wps/portal/snp/eParticipation/nafath
+    accessed: "2026-01-22"
+disclaimer: true
+variables: []
+triggers:
+  - when:
+      handles_identity: true
+      target_market: saudi_arabia
