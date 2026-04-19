@@ -720,7 +720,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype treats Codex as an AGENTS.md target; the implementation should formalize that behavior."
     },
     {
