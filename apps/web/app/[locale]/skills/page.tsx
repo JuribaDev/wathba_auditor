@@ -28,7 +28,6 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
           categoryLegend: t("filterCategoryLegend"),
           statusLegend: t("filterStatusLegend"),
           empty: t("empty"),
-          viewSkill: t("viewSkill"),
           category: {
             all: t("filterCategoryAll"),
             saudi: t("filterCategorySaudi"),
@@ -57,6 +56,7 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
             disclaimerTitle: t("cardDisclaimerTitle"),
             versionPrefix: t("cardVersionPrefix"),
             verifiedPrefix: t("cardVerifiedPrefix"),
+            viewSkill: t("viewSkill"),
           },
         }}
       />

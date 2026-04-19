@@ -444,7 +444,7 @@
       ],
       "type": "frontend",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Mini cards are a key reusable unit in the Wathba Skills system."
     },
     {

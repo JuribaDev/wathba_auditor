@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { SkillCard, type SkillCardMetaLabels } from "@/components/skill-card";
+import { SkillMiniCard, type SkillMiniCardLabels } from "@/components/skill-mini-card";
 import { cn } from "@/lib/utils";
 import type { AppLocale } from "@/lib/i18n";
 import type { GeneratedSkill } from "@/lib/skills/generated";
@@ -24,10 +23,9 @@ type SkillLibraryLabels = {
   categoryLegend: string;
   statusLegend: string;
   empty: string;
-  viewSkill: string;
   category: Record<CategoryFilter, string>;
   status: Record<StatusFilter, string>;
-  cardMeta: SkillCardMetaLabels;
+  cardMeta: SkillMiniCardLabels;
 };
 
 type SkillLibraryProps = {
@@ -81,9 +79,13 @@ export function SkillLibrary({ locale, skills, labels }: SkillLibraryProps) {
           className="grid gap-4 md:grid-cols-2"
         >
           {filtered.map((skill) => (
-            <SkillCard key={skill.id} locale={locale} skill={skill} labels={labels.cardMeta}>
-              <Link href={`/${locale}/skills/${skill.id}`}>{labels.viewSkill}</Link>
-            </SkillCard>
+            <SkillMiniCard
+              key={skill.id}
+              locale={locale}
+              skill={skill}
+              href={`/${locale}/skills/${skill.id}`}
+              labels={labels.cardMeta}
+            />
           ))}
         </section>
       )}

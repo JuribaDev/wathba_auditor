@@ -387,3 +387,22 @@
 - Checks run: pnpm verify — skill generation OK, ESLint 0 warnings, schema + web typecheck clean, 26 test files / 213 tests green, production build emits 27 static pages including /en and /ar landing.
 - Notes for future work: The prototype's next landing section is the library preview grid (US-020) with `§ 02` eyebrow. When that lands, sequence will be: hero → §01 explainer card → feature grid → §02 library preview. Current feature grid does not carry a `§` eyebrow because the prototype doesn't either — numeric markers per block do the sectioning instead. If US-020 adds `§ 02` to the library preview, renumber `whatIsEyebrow` from `§ 01` to keep the rhythm consistent; the feature grid stays unnumbered. Feature messages are flat Landing.feature{1,2,3}{Marker,Title,Body} keys rather than an array because `getTranslator` returns a string-keyed callable — if a future locale file adds a fourth feature, add `feature4*` keys and update the `["1","2","3"]` tuple in `page.tsx:138`.
 ---
+
+## 2026-04-19 17:15 UTC - US-022
+- Implemented: Reusable `SkillMiniCard` component (`components/skill-mini-card.tsx`) with a single whole-card `<Link>` (pointer + keyboard accessible via native anchor semantics), category/status/disclaimer badges, serif title, 3-line clamped summary, and version/last-verified meta row. Directional `ArrowRight` affordance flips for RTL via `rtl:-scale-x-100`. Editorial hover treatment (border-strong + shadow-md + 1px lift) matches the prototype's `.card-hover` pattern. Swapped the full `SkillCard` out of `SkillLibrary` for the mini variant, deleted the now-unused `skill-card.tsx`, and moved the `viewSkill` label into `cardMeta` so it doubles as the anchor's `aria-label`. Extracted `resolveSkillSummary` into `lib/skills/summary.ts` (summary → first non-heading body line → empty) and covered it with unit tests.
+- Files changed:
+  - apps/web/components/skill-mini-card.tsx (new)
+  - apps/web/components/skill-library.tsx (SkillCard → SkillMiniCard, removed children-based CTA)
+  - apps/web/components/skill-card.tsx (deleted)
+  - apps/web/lib/skills/summary.ts (new helper)
+  - apps/web/app/[locale]/skills/page.tsx (viewSkill label moved into cardMeta, removed top-level viewSkill prop)
+  - apps/web/tests/unit/skill-summary.test.ts (new)
+  - ralph/prd.json (US-022 → passes: true)
+- Checks run: `pnpm verify` (skill generation, lint, schema typecheck, app typecheck, 27 test files / 217 tests, Next.js production build — all pass, 17 skill detail pages statically exported).
+- Notes for future work:
+  - Library grid is now `md:grid-cols-2`. For US-020's landing preview, consider `sm:grid-cols-2 lg:grid-cols-3` so a 6-card slice breathes; the mini card itself is width-agnostic (h-full, flex-col, `mt-auto` on the meta row) so it drops into either grid without layout changes.
+  - The card is a native `<a>` wrapping everything. Do NOT nest additional interactive elements (buttons, nested links) inside it — use the outer link for navigation and put any secondary action outside the card.
+  - `viewSkill` is now consumed only as the anchor's `aria-label` prefix (`${viewSkill}: ${title}`). If a future story wants a visible CTA inside the card, add a new label key rather than repurposing `viewSkill`.
+  - `resolveSkillSummary` is deliberately pure (no React). Adapters and any future landing-hero preview can reuse it without pulling in component code.
+  - No visual regression test yet — the e2e suite covers routes/RTL parity but does not snapshot the library grid. If future stories introduce a 3-column breakpoint or card-density variant, add a Playwright screenshot for both `en` and `ar` to guard against RTL drift.
+---
