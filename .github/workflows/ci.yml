@@ -22,9 +22,26 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
+      - name: Generate skills
+        run: pnpm generate:skills
+
+      - name: Lint
+        run: pnpm --filter @agent-skills/web lint
+
+      - name: React rules doctor
+        run: pnpm --filter @agent-skills/web doctor:react
+
+      - name: Typecheck schema
+        run: pnpm --filter @agent-skills/skill-schema typecheck
+
+      - name: Typecheck web
+        run: pnpm --filter @agent-skills/web typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @agent-skills/web test
+
+      - name: Build
+        run: pnpm --filter @agent-skills/web build
