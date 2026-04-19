@@ -252,7 +252,7 @@
       ],
       "type": "design-system",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype exposes these in edit mode; the production app should preserve the capability."
     },
     {

@@ -10,6 +10,14 @@ describe("accessibility-critical message keys", () => {
     "localeSwitchLabel",
     "localeEnglish",
     "localeArabic",
+    "themeGroupLabel",
+    "themeLight",
+    "themeDark",
+    "primaryGroupLabel",
+    "primaryDefault",
+    "primaryInk",
+    "primaryOlive",
+    "primarySlate",
   ] as const;
 
   it.each(Object.entries(locales))(

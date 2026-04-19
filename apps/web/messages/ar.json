@@ -28,7 +28,15 @@
     "skipToContent": "الانتقال إلى المحتوى الرئيسي",
     "localeSwitchLabel": "اختيار اللغة",
     "localeEnglish": "الإنجليزية",
-    "localeArabic": "العربية"
+    "localeArabic": "العربية",
+    "themeGroupLabel": "اختيار السمة",
+    "themeLight": "السمة الفاتحة",
+    "themeDark": "السمة الداكنة",
+    "primaryGroupLabel": "اختيار اللون الأساسي",
+    "primaryDefault": "طيني",
+    "primaryInk": "حبري",
+    "primaryOlive": "زيتوني",
+    "primarySlate": "رمادي"
   },
   "Compare": {
     "title": "لوحة مقارنة ثنائية اللغة",

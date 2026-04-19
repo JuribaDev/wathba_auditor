@@ -28,7 +28,15 @@
     "skipToContent": "Skip to main content",
     "localeSwitchLabel": "Select language",
     "localeEnglish": "English",
-    "localeArabic": "Arabic"
+    "localeArabic": "Arabic",
+    "themeGroupLabel": "Select theme",
+    "themeLight": "Light theme",
+    "themeDark": "Dark theme",
+    "primaryGroupLabel": "Select primary color",
+    "primaryDefault": "Terracotta",
+    "primaryInk": "Ink",
+    "primaryOlive": "Olive",
+    "primarySlate": "Slate"
   },
   "Compare": {
     "title": "Bilingual parity canvas",

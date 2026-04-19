@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LocaleSwitch } from "@/components/locale-switch";
+import { ThemeControls } from "@/components/theme-controls";
 import { cn } from "@/lib/utils";
 import { getTranslator } from "@/lib/messages";
 import type { AppLocale } from "@/lib/i18n";
@@ -103,6 +104,19 @@ export async function AppShell({
                   <GithubIcon />
                 </a>
               </Button>
+              <ThemeControls
+                className="hidden sm:flex"
+                labels={{
+                  themeGroupLabel: t("themeGroupLabel"),
+                  themeLight: t("themeLight"),
+                  themeDark: t("themeDark"),
+                  primaryGroupLabel: t("primaryGroupLabel"),
+                  primaryDefault: t("primaryDefault"),
+                  primaryInk: t("primaryInk"),
+                  primaryOlive: t("primaryOlive"),
+                  primarySlate: t("primarySlate"),
+                }}
+              />
               <LocaleSwitch
                 locale={locale}
                 labels={{
