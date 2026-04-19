@@ -864,7 +864,7 @@
       ],
       "type": "quality",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "The acceptance flow in the prototype should become the first real E2E path."
     },
     {

@@ -10,7 +10,7 @@
     "doctor:react": "eslint . --max-warnings=0",
     "typecheck": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true})\" && tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "next build && playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
