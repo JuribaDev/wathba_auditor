@@ -428,7 +428,7 @@
       ],
       "type": "frontend",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The filter taxonomy should match the prototype's actual catalog behavior."
     },
     {

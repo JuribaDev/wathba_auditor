@@ -38,7 +38,18 @@
   "Skills": {
     "title": "Skill library",
     "description": "Browse the canonical skills emitted from `skills/**/skill.yaml` and preview each skill body before adapter-specific rendering is added.",
-    "viewSkill": "View skill"
+    "viewSkill": "View skill",
+    "filterCategoryLegend": "Category",
+    "filterCategoryAll": "All skills",
+    "filterCategorySaudi": "Saudi compliance",
+    "filterCategorySecurity": "Security",
+    "filterCategoryArchitecture": "Architecture",
+    "filterStatusLegend": "Status",
+    "filterStatusAll": "All statuses",
+    "filterStatusReviewed": "Reviewed",
+    "filterStatusCommunity": "Community",
+    "filterStatusDraft": "Draft",
+    "empty": "No skills match these filters yet. Try widening the category or status."
   },
   "SkillDetail": {
     "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",

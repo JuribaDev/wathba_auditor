@@ -38,7 +38,18 @@
   "Skills": {
     "title": "مكتبة المهارات",
     "description": "تصفح المهارات المولدة من `skills/**/skill.yaml` واعرض محتوى كل مهارة قبل إضافة محولات الأهداف المختلفة.",
-    "viewSkill": "عرض المهارة"
+    "viewSkill": "عرض المهارة",
+    "filterCategoryLegend": "التصنيف",
+    "filterCategoryAll": "كل المهارات",
+    "filterCategorySaudi": "الامتثال السعودي",
+    "filterCategorySecurity": "الأمن",
+    "filterCategoryArchitecture": "الهيكلة",
+    "filterStatusLegend": "الحالة",
+    "filterStatusAll": "كل الحالات",
+    "filterStatusReviewed": "مُراجَع",
+    "filterStatusCommunity": "مجتمعي",
+    "filterStatusDraft": "مسودّة",
+    "empty": "لا توجد مهارات تطابق هذه المرشّحات حالياً. جرّب توسيع التصنيف أو الحالة."
   },
   "SkillDetail": {
     "description": "بيانات المهارة الأساسية وملفاتها ومعاينة الماركداون الخام.",

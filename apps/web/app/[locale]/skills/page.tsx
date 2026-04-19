@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
-import { SkillCard } from "@/components/skill-card";
+import { SkillLibrary } from "@/components/skill-library";
 import { isLocale } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
 import { generatedSkills } from "@/lib/skills/generated";
@@ -22,14 +21,28 @@ export default async function SkillsPage({ params }: SkillsPageProps) {
 
   return (
     <AppShell locale={locale} section="skills" title={t("title")} description={t("description")}>
-      <section className="grid gap-4 md:grid-cols-2">
-        {generatedSkills.map((skill) => (
-          <SkillCard key={skill.id} locale={locale} skill={skill}>
-            <Link href={`/${locale}/skills/${skill.id}`}>{t("viewSkill")}</Link>
-          </SkillCard>
-        ))}
-      </section>
+      <SkillLibrary
+        locale={locale}
+        skills={generatedSkills}
+        labels={{
+          categoryLegend: t("filterCategoryLegend"),
+          statusLegend: t("filterStatusLegend"),
+          empty: t("empty"),
+          viewSkill: t("viewSkill"),
+          category: {
+            all: t("filterCategoryAll"),
+            saudi: t("filterCategorySaudi"),
+            security: t("filterCategorySecurity"),
+            architecture: t("filterCategoryArchitecture"),
+          },
+          status: {
+            all: t("filterStatusAll"),
+            reviewed: t("filterStatusReviewed"),
+            community: t("filterStatusCommunity"),
+            draft: t("filterStatusDraft"),
+          },
+        }}
+      />
     </AppShell>
   );
 }
-
