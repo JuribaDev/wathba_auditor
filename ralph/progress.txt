@@ -1,0 +1,6 @@
+## 2026-04-19 - US-001
+- Implemented: Verified pnpm workspace foundation is in place with root scripts (dev, build, lint, typecheck, test, generate:skills, verify, verify:full), shared tsconfig.base.json, and .gitignore covering Next.js/node_modules/dist/.turbo/coverage/playwright/test-results. No code changes required.
+- Files changed: ralph/prd.json (marked passes=true), ralph/progress.txt
+- Checks run: pnpm verify (skill generation, eslint doctor:react, schema typecheck, web typecheck, vitest unit tests, next build with static export output) — all green.
+- Notes for future work: Root package.json still uses name "agent-skills"; not required by acceptance criteria but could be aligned with "Wathba Skills" branding later. Next priorities: US-002 (scaffold apps/web) — partly done; US-003 (static export) — next.js config already has output: export per generated pages in build log; confirm on next story. US-004/005/008/009/011/015/017/021/023/024/025/026/027/028/029/030/033/034/035/036/037/038/039/041/044/045/046/049/050 all still priority 1.
+---

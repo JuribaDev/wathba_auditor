@@ -108,7 +108,7 @@
       ],
       "type": "foundation",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "This story aligns the repo foundation with the prototype-derived product direction and gives Ralph a stable root workflow."
     },
     {
