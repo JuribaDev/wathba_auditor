@@ -1,5 +1,6 @@
 import type { ReviewSelections } from "@/components/questionnaire/step-review";
 import { renderClaudeCodePaths } from "@/lib/generate/adapters/claude-code";
+import { renderCursorPaths } from "@/lib/generate/adapters/cursor";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 
@@ -51,7 +52,7 @@ export function buildFilesForTarget(
     case "claude-code":
       return renderClaudeCodePaths(skills);
     case "cursor":
-      return skills.map((skill) => `.cursor/rules/${skill.slug}.mdc`);
+      return renderCursorPaths(skills);
     case "codex":
     case "agents-md":
       return ["AGENTS.md"];

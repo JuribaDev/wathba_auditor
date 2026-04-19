@@ -704,7 +704,7 @@
       ],
       "type": "adapter",
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "The prototype already promises Cursor output, so the PRD must make it explicit."
     },
     {

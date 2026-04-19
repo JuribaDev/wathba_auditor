@@ -30,6 +30,7 @@ import {
   type VariablesStepLabels,
 } from "@/components/questionnaire/step-variables";
 import { renderClaudeCodeFiles } from "@/lib/generate/adapters/claude-code";
+import { renderCursorFiles } from "@/lib/generate/adapters/cursor";
 import { buildFilePlan, getActiveSkills } from "@/lib/generate/file-plan";
 import { resolveSelectedSkills } from "@/lib/generate/resolve-markdown";
 import type { AppLocale } from "@/lib/i18n";
@@ -175,6 +176,15 @@ export function Questionnaire({
     if (claudeFiles.length > 0) {
       contents["claude-code"] = new Map(
         claudeFiles.map((file) => [file.path, file.content]),
+      );
+    }
+    const cursorFiles = renderCursorFiles(
+      activeSkills,
+      resolvedCatalog.resolutions,
+    );
+    if (cursorFiles.length > 0) {
+      contents["cursor"] = new Map(
+        cursorFiles.map((file) => [file.path, file.content]),
       );
     }
     return contents;
