@@ -6,6 +6,7 @@ export type SkillFile = { path: string; content: string };
 export type SkillSnapshotInput = {
   id: string;
   slug: string;
+  previousIds: readonly string[];
   version: string;
   category: string;
   region: string | null;

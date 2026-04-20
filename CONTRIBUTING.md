@@ -48,6 +48,20 @@ Every skill carries a SemVer `version`. The required bump is derived automatical
 - Removing, renaming, or retyping a variable
 - Removing or narrowing variable options
 
+### Declaring identity migrations
+
+When a PR both `id` and `slug` change (and the `SKILL.md` body is substantially rewritten in the same commit), governance cannot structurally distinguish the rename from a genuine delete+add. Declare the migration explicitly by adding a `previous_id` list to the new skill's `skill.yaml`:
+
+```yaml
+id: ksa-pdpl-basics-v2
+slug: pdpl-basics-v2
+previous_id:
+  - saudi-pdpl-basics
+version: 1.0.0
+```
+
+`verify:skills:versions` then pairs the new skill with the named old skill, enforces the major-bump requirement, and removes the "unresolved migration" failure. If a PR contains a new skill and a removed skill that are **not** a rename, split them into separate PRs.
+
 ### Generated output contract
 
 `apps/web/lib/skills/generated.ts` is produced by `pnpm generate:skills`. You MUST commit any regenerated output that your changes produced. CI fails if `apps/web/lib/skills/generated.ts` is stale — with a diff excerpt and a precise fix command. Never hand-edit it.

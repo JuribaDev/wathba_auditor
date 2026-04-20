@@ -105,9 +105,15 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background text-foreground">
-        <Script id="document-state-init" strategy="beforeInteractive">
-          {initScript}
-        </Script>
+        {/* The init script is a static function of server constants (no user
+            input), so the inline payload is safe. Emitted via next/script's
+            dangerouslySetInnerHTML prop so React 19 does not warn the way it
+            does for child <script> elements. */}
+        <Script
+          id="document-state-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: initScript }}
+        />
         <DocumentStateProvider>{children}</DocumentStateProvider>
       </body>
     </html>

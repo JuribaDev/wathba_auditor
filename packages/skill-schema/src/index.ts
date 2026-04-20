@@ -103,6 +103,7 @@ const canonicalSkillObjectSchema = z.object({
       /^[a-z0-9]+(-[a-z0-9]+)*$/,
       "slug must be kebab-case (lowercase letters and digits separated by single hyphens)",
     ),
+  previous_id: z.array(z.string().min(1)).optional(),
   version: semverSchema,
   category: skillCategorySchema,
   region: z.string().nullable(),
@@ -132,9 +133,10 @@ export const canonicalSkillSchema = canonicalSkillObjectSchema.superRefine(
 );
 
 export const generatedSkillSchema = canonicalSkillObjectSchema
-  .omit({ last_verified: true })
+  .omit({ last_verified: true, previous_id: true })
   .extend({
     lastVerified: isoDateSchema,
+    previousIds: z.array(z.string().min(1)).default([]),
     body: z.string(),
     directory: z.string().min(1),
     references: z.array(skillReferenceSchema),

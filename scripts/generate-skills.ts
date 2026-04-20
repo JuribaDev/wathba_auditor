@@ -19,6 +19,7 @@ async function main() {
   name: { en: string; ar: string };
   summary?: { en: string; ar: string };
   slug: string;
+  previousIds: string[];
   version: string;
   category: "compliance" | "security" | "architecture";
   region: string | null;

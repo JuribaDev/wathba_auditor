@@ -145,6 +145,7 @@ export async function loadSkill(
     name: parsed.name,
     summary: parsed.summary,
     slug: parsed.slug,
+    previousIds: parsed.previous_id ?? [],
     version: parsed.version,
     category: parsed.category,
     region: parsed.region,

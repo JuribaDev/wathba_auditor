@@ -5,6 +5,7 @@ export type GeneratedSkill = {
   name: { en: string; ar: string };
   summary?: { en: string; ar: string };
   slug: string;
+  previousIds: string[];
   version: string;
   category: "compliance" | "security" | "architecture";
   region: string | null;
@@ -39,6 +40,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "إذا لم يكن للمستودع CI يُضيفه الوكيل. وإذا وُجد يُبقيه نظيفًا — Lint وفحص الأنواع والاختبارات ونظافة الترحيلات كقواعد يستطيع الوكيل فرضها فعليًا."
     },
     "slug": "ci-hygiene",
+    "previousIds": [],
     "version": "0.5.0",
     "category": "architecture",
     "region": null,
@@ -86,6 +88,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "أبقِ الكود المُنشأ قابلاً لكتابة اختبارات له. فواصل نظيفة وآثار جانبية معزولة ولا singletons مخفية — حتى تبقى مجموعة الاختبارات أصلاً من الدرجة الأولى مع نمو الكود."
     },
     "slug": "testability-check",
+    "previousIds": [],
     "version": "0.4.0",
     "category": "architecture",
     "region": null,
@@ -128,6 +131,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "ملاحظات تكامل عملية لقنوات الدفع المحلية في السعودية — التعامل مع BIN وخصائص 3DS وتوقعات التسوية والفخاخ التي تفوتها الأدلة العامة."
     },
     "slug": "mada-stcpay-basics",
+    "previousIds": [],
     "version": "0.2.1",
     "category": "compliance",
     "region": "saudi-arabia",
@@ -199,6 +203,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "يمنع الوكيل من اختراع نقاط نهاية وهمية لنفاذ أو يقين. يشرح مسار الموافقة ونمط التكامل والسلوكيات التي لا يمكن نشرها دون اعتماد."
     },
     "slug": "nafath-yakeen-basics",
+    "previousIds": [],
     "version": "0.1.1",
     "category": "compliance",
     "region": "saudi-arabia",
@@ -257,6 +262,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "ضوابط هندسية لنظام حماية البيانات الشخصية في السعودية — الموافقة والاحتفاظ والتقليل والتصدير كقواعد يستطيع الوكيل فرضها فعليًا في الكود."
     },
     "slug": "pdpl-basics",
+    "previousIds": [],
     "version": "0.2.0",
     "category": "compliance",
     "region": "saudi-arabia",
@@ -311,6 +317,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "ضوابط هندسية لفوترة زاتكا المرحلة الثانية — بنية XML ومسار التوقيع وخطوات التسجيل التي يجب على وكيل البرمجة مراعاتها قبل كتابة الكود."
     },
     "slug": "zatca-phase2",
+    "previousIds": [],
     "version": "0.1.1",
     "category": "compliance",
     "region": "saudi-arabia",
@@ -413,6 +420,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "افصل كود المشرف عن كود المستخدم ولا تخلط سياقات الجلسات. يُزيل صنفًا كاملاً من ثغرات تصعيد الصلاحيات في الكود المُنشأ بالوكيل."
     },
     "slug": "auth-isolation",
+    "previousIds": [],
     "version": "0.3.0",
     "category": "security",
     "region": null,
@@ -460,6 +468,7 @@ export const generatedSkills: GeneratedSkill[] = [
       "ar": "إبقاء الأسرار خارج المستودع وخارج سجل الكوميتات. قواعد مستقلة عن المنصة لنظافة ملفات env والتكامل مع مدراء الأسرار وتدوير الأسرار المسرّبة."
     },
     "slug": "secrets-baseline",
+    "previousIds": [],
     "version": "1.0.0",
     "category": "security",
     "region": null,

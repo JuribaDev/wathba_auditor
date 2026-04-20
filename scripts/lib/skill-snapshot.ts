@@ -25,6 +25,7 @@ export function toSnapshot(input: SkillSnapshotBuildInput): SkillSnapshotInput {
   return {
     id: canonical.id,
     slug: canonical.slug,
+    previousIds: canonical.previous_id ?? [],
     version: canonical.version,
     category: canonical.category,
     region: canonical.region,
@@ -115,9 +116,34 @@ export type WorkingTreeSkill = {
   snapshot: SkillSnapshotInput;
 };
 
+export type SkillIndexEntry = {
+  directory: string;
+  snapshot: SkillSnapshotInput;
+};
+
+export function listSkillYamlPathsAtRef(loader: GitSnapshotLoader): string[] {
+  const entries = listTreeAtRef(loader.cwd, loader.ref, "skills/");
+  return entries.filter((entry) => entry.endsWith("/skill.yaml"));
+}
+
+export function indexSkillsAtRef(
+  loader: GitSnapshotLoader,
+): Map<string, SkillIndexEntry> {
+  const index = new Map<string, SkillIndexEntry>();
+  const paths = listSkillYamlPathsAtRef(loader);
+  for (const yamlPath of paths) {
+    const directory = yamlPath.slice(0, yamlPath.lastIndexOf("/"));
+    const snapshot = loadSkillSnapshotAtRef(loader, directory);
+    if (!snapshot) continue;
+    index.set(snapshot.id, { directory, snapshot });
+  }
+  return index;
+}
+
 export function loadSkillSnapshotFromLoadedSkill(loaded: {
   id: string;
   slug: string;
+  previousIds?: readonly string[];
   version: string;
   category: string;
   region: string | null;
@@ -144,6 +170,7 @@ export function loadSkillSnapshotFromLoadedSkill(loaded: {
   return {
     id: loaded.id,
     slug: loaded.slug,
+    previousIds: loaded.previousIds ?? [],
     version: loaded.version,
     category: loaded.category,
     region: loaded.region,

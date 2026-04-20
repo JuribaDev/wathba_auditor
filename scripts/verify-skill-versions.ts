@@ -8,11 +8,13 @@ import {
 } from "./lib/git-utils";
 import { loadSkillsFromDirectory } from "./lib/skill-loader";
 import {
-  loadSkillSnapshotAtRef,
+  indexSkillsAtRef,
   loadSkillSnapshotFromLoadedSkill,
 } from "./lib/skill-snapshot";
 import { classifyActualBump, rankBump } from "./lib/skill-bump";
 import { classifySkillDiff } from "./lib/skill-diff";
+import { findUnresolvedMigrations, pairSkills } from "./lib/skill-pairing";
+import type { SkillSnapshotInput } from "./lib/skill-diff";
 
 const REPO_ROOT = repoRootFromCwd(process.cwd());
 const SKILLS_ROOT = path.join(REPO_ROOT, "skills");
@@ -78,41 +80,103 @@ async function main() {
     skillsRoot: SKILLS_ROOT,
     repoRoot: REPO_ROOT,
   });
-  const loadedByDirectory = new Map<string, (typeof loadedSkills)[number]>();
+
+  const currentByDirectory = new Map<string, SkillSnapshotInput>();
+  const currentById = new Map<string, SkillSnapshotInput>();
   for (const skill of loadedSkills) {
-    loadedByDirectory.set(`skills/${skill.directory}`.replaceAll("\\", "/"), skill);
+    const dir = `skills/${skill.directory}`.replaceAll("\\", "/");
+    const snapshot = loadSkillSnapshotFromLoadedSkill({
+      ...skill,
+      targets: skill.targets,
+    });
+    currentByDirectory.set(dir, snapshot);
+    currentById.set(snapshot.id, snapshot);
   }
+
+  // Index every skill that existed at baseRef by its stable id AND by its
+  // original directory. The pairing layer uses both so it can detect
+  // (a) in-place edits (same directory), (b) id changes at a stable
+  // directory, (c) slug/folder renames, and (d) deletions.
+  const oldIndexById = indexSkillsAtRef({
+    cwd: REPO_ROOT,
+    ref: baseRef.ref,
+  });
+  const oldByDirectory = new Map<string, SkillSnapshotInput>();
+  const oldById = new Map<string, SkillSnapshotInput>();
+  for (const [, entry] of oldIndexById) {
+    oldByDirectory.set(entry.directory, entry.snapshot);
+    oldById.set(entry.snapshot.id, entry.snapshot);
+  }
+
+  const filesByDirectory = new Map<string, string[]>(
+    changedSkills.map((entry) => [entry.directory, entry.files]),
+  );
+
+  const pairs = pairSkills({
+    changedDirectories: changedSkills.map((entry) => entry.directory),
+    currentByDirectory,
+    currentById,
+    oldByDirectory,
+    oldById,
+  });
 
   const failures: string[] = [];
   const summary: string[] = [];
 
-  for (const changedSkill of changedSkills) {
-    const current = loadedByDirectory.get(changedSkill.directory);
-    if (!current) {
-      summary.push(
-        `· ${changedSkill.directory} — removed or relocated (no version check needed).`,
-      );
-      continue;
-    }
-
-    const newSnapshot = loadSkillSnapshotFromLoadedSkill({
-      ...current,
-      targets: current.targets,
-    });
-
-    const oldSnapshot = loadSkillSnapshotAtRef(
-      { cwd: REPO_ROOT, ref: baseRef.ref },
-      changedSkill.directory,
+  const unresolved = findUnresolvedMigrations(pairs);
+  if (unresolved) {
+    const addedLines = unresolved.added.map(
+      (entry) => `    + ${entry.id} (new)`,
     );
+    const removedLines = unresolved.removed.map(
+      (entry) => `    - ${entry.id} (removed)`,
+    );
+    failures.push(
+      [
+        `✖ Unresolved skill migration(s) — cannot verify version-bump policy.`,
+        `  New skills in this PR:`,
+        ...addedLines,
+        `  Removed skills in this PR:`,
+        ...removedLines,
+        `  Governance cannot tell whether these are identity migrations`,
+        `  (id + slug + body rewritten in one PR) or two independent changes.`,
+        `  Resolve with ONE of:`,
+        `    (a) For each new skill that replaces a removed one, add a`,
+        `        "previous_id: [\"<old-id>\"]" field to the new skill's`,
+        `        skill.yaml. Governance will then pair them and enforce`,
+        `        the required major-version bump.`,
+        `    (b) If the new and removed skills are unrelated, split them`,
+        `        into separate PRs (see CONTRIBUTING → "When to split a`,
+        `        pull request").`,
+      ].join("\n"),
+    );
+  }
 
-    if (!oldSnapshot) {
+  for (const pair of pairs) {
+    if (pair.kind === "removed") {
       summary.push(
-        `· ${current.id} — new skill, no version comparison needed (starts at ${current.version}).`,
+        `· ${pair.old.id} — removed from the current tree (no version check needed).`,
+      );
+      continue;
+    }
+    if (pair.kind === "new") {
+      summary.push(
+        `· ${pair.current.id} — new skill, no version comparison needed (starts at ${pair.current.version}).`,
       );
       continue;
     }
 
-    const diff = classifySkillDiff(oldSnapshot, newSnapshot);
+    const { current, old, currentDirectory, oldDirectory, renamed, idChanged } = pair;
+    const renameNote = renamed ? ` (renamed from ${oldDirectory})` : "";
+    const idChangedNote = idChanged ? ` (id changed from ${old.id})` : "";
+    const displayDir = `${currentDirectory}${renameNote}${idChangedNote}`;
+
+    const files = [
+      ...(filesByDirectory.get(currentDirectory) ?? []),
+      ...(renamed ? (filesByDirectory.get(oldDirectory) ?? []) : []),
+    ];
+
+    const diff = classifySkillDiff(old, current);
     if (diff.requiredBump === "none") {
       summary.push(
         `· ${current.id} — changed files tracked, but no schema-visible edits detected.`,
@@ -120,12 +184,12 @@ async function main() {
       continue;
     }
 
-    const actualBump = classifyActualBump(oldSnapshot.version, newSnapshot.version);
+    const actualBump = classifyActualBump(old.version, current.version);
     if (actualBump === "invalid") {
       failures.push(
         [
-          `✖ ${current.id} (${changedSkill.directory})`,
-          `  version "${oldSnapshot.version}" or "${newSnapshot.version}" is not a valid semver core.`,
+          `✖ ${current.id} (${displayDir})`,
+          `  version "${old.version}" or "${current.version}" is not a valid semver.`,
         ].join("\n"),
       );
       continue;
@@ -133,9 +197,9 @@ async function main() {
     if (actualBump === "regressed") {
       failures.push(
         [
-          `✖ ${current.id} (${changedSkill.directory})`,
-          `  version went BACKWARDS: ${oldSnapshot.version} → ${newSnapshot.version}.`,
-          `  Fix: choose a version greater than ${oldSnapshot.version}.`,
+          `✖ ${current.id} (${displayDir})`,
+          `  version went BACKWARDS: ${old.version} → ${current.version}.`,
+          `  Fix: choose a version greater than ${old.version}.`,
         ].join("\n"),
       );
       continue;
@@ -145,24 +209,24 @@ async function main() {
     const changeLines = diff.changes.map(
       (change) => `    - [${change.requires}] ${change.reason}`,
     );
-    const fileLines = changedSkill.files.map((file) => `    - ${file}`);
+    const fileLines = files.map((file) => `    - ${file}`);
 
     if (!satisfied) {
       failures.push(
         [
-          `✖ ${current.id} (${changedSkill.directory})`,
+          `✖ ${current.id} (${displayDir})`,
           `  required bump : ${diff.requiredBump}`,
-          `  actual bump   : ${actualBump}  (${oldSnapshot.version} → ${newSnapshot.version})`,
+          `  actual bump   : ${actualBump}  (${old.version} → ${current.version})`,
           `  changed files :`,
           ...fileLines,
           `  detected changes:`,
           ...changeLines,
-          `  Fix: bump "version" in ${changedSkill.directory}/skill.yaml to at least ${suggestNextVersion(oldSnapshot.version, diff.requiredBump)}.`,
+          `  Fix: bump "version" in ${currentDirectory}/skill.yaml to at least ${suggestNextVersion(old.version, diff.requiredBump)}.`,
         ].join("\n"),
       );
     } else {
       summary.push(
-        `· ${current.id} — ${oldSnapshot.version} → ${newSnapshot.version} (required ${diff.requiredBump}, got ${actualBump}). OK`,
+        `· ${current.id} — ${old.version} → ${current.version} (required ${diff.requiredBump}, got ${actualBump}).${renameNote}${idChangedNote} OK`,
       );
     }
   }
@@ -185,7 +249,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`[verify:skills] ${changedSkills.length} changed skill(s) passed version-bump policy.`);
+  console.log(`[verify:skills] ${pairs.length} changed skill(s) passed version-bump policy.`);
 }
 
 function suggestNextVersion(
