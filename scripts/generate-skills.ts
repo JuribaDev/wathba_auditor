@@ -14,7 +14,15 @@ const outputFile = path.join(repoRoot, "apps/web/lib/skills/generated.ts");
 async function main() {
   const skills = await loadSkillsFromDirectory({ skillsRoot, repoRoot });
 
-  const typeDefinition = `export type GeneratedSkill = {
+  const typeDefinition = `export type SkillFile = {
+  path: string;
+  encoding: "utf-8" | "base64";
+  content: string;
+};
+
+export type SkillLifecycle = "active" | "deprecated" | "archived";
+
+export type GeneratedSkill = {
   id: string;
   name: { en: string; ar: string };
   summary?: { en: string; ar: string };
@@ -25,6 +33,10 @@ async function main() {
   region: string | null;
   targets: Array<"claude-code" | "cursor" | "codex" | "agents-md">;
   status: "maintainer-reviewed" | "community-maintained" | "draft";
+  lifecycle: SkillLifecycle;
+  replacementId: string | null;
+  sunsetDate: string | null;
+  lifecycleNote: { en: string; ar: string } | null;
   lastVerified: string;
   maintainers: Array<{ github: string }>;
   sources: Array<{ title: string; url: string; accessed: string }>;
@@ -38,6 +50,7 @@ async function main() {
   triggers: Array<{ when: Record<string, string | number | boolean | null> }>;
   body: string;
   directory: string;
+  files: SkillFile[];
   references: Array<{ path: string; content: string }>;
   scripts: Array<{ path: string; content: string }>;
 };`;

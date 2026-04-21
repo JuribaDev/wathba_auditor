@@ -28,6 +28,12 @@ const makeSkill = (patch: Partial<GeneratedSkill> = {}): GeneratedSkill => ({
   directory: "s1",
   references: [],
   scripts: [],
+  files: [],
+  previousIds: [],
+  lifecycle: "active",
+  replacementId: null,
+  sunsetDate: null,
+  lifecycleNote: null,
   ...patch,
 });
 

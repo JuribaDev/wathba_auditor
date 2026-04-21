@@ -6,32 +6,27 @@ import {
   AgentPromptCard,
   type AgentPromptCardLabels,
 } from "@/components/agent-prompt-card";
-import type { FilePlan } from "@/lib/generate/file-plan";
 import {
-  buildAgentPrompt,
-  formatByteSize,
-  type AgentPromptBundle,
-  type AgentPromptLocale,
-} from "@/lib/generate/prompt";
-import type { SkillResolution } from "@/lib/generate/resolve-markdown";
-import type { AppLocale } from "@/lib/i18n";
+  buildAuthoringPrompt,
+  formatPromptSize,
+  type AuthoringPromptBundle,
+  type ContributeAction,
+  type ContributorDraft,
+} from "@/lib/contribute/prompt";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 import { cn } from "@/lib/utils";
 
-export type InstallViaAiLabels = {
+export type ContributeViaAiLabels = {
   eyebrow: string;
   heading: string;
   lede: string;
-  filesLabel: string;
-  sizeLabel: string;
+  charsLabel: string;
+  bumpLabel: string;
   copyCta: string;
   copyCopied: string;
   copyFallback: string;
   previewHeading: string;
-  expand: string;
-  collapse: string;
-  fallbackNote: string;
   agentClaudeName: string;
   agentClaudeTagline: string;
   agentCursorName: string;
@@ -40,31 +35,47 @@ export type InstallViaAiLabels = {
   agentCodexTagline: string;
   agentGenericName: string;
   agentGenericTagline: string;
+  bumpPatch: string;
+  bumpMinor: string;
+  bumpMajor: string;
+  fallbackNote: string;
 };
 
-type InstallViaAiProps = {
-  locale: AppLocale;
-  plan: FilePlan;
-  activeSkills: readonly GeneratedSkill[];
-  resolutions: readonly SkillResolution[];
-  labels: InstallViaAiLabels;
+type ContributeViaAiProps = {
+  draft: ContributorDraft;
+  baseline: GeneratedSkill | null;
+  labels: ContributeViaAiLabels;
 };
 
-const NAME_KEY: Record<TargetAgent, keyof InstallViaAiLabels> = {
+const ALL_TARGETS: TargetAgent[] = ["claude-code", "cursor", "codex", "agents-md"];
+
+const NAME_KEY: Record<TargetAgent, keyof ContributeViaAiLabels> = {
   "claude-code": "agentClaudeName",
   cursor: "agentCursorName",
   codex: "agentCodexName",
   "agents-md": "agentGenericName",
 };
 
-const TAGLINE_KEY: Record<TargetAgent, keyof InstallViaAiLabels> = {
+const TAGLINE_KEY: Record<TargetAgent, keyof ContributeViaAiLabels> = {
   "claude-code": "agentClaudeTagline",
   cursor: "agentCursorTagline",
   codex: "agentCodexTagline",
   "agents-md": "agentGenericTagline",
 };
 
-function toCardLabels(labels: InstallViaAiLabels): AgentPromptCardLabels {
+function bumpKey(bump: AuthoringPromptBundle["estimatedBump"]): keyof ContributeViaAiLabels {
+  switch (bump) {
+    case "major":
+      return "bumpMajor";
+    case "minor":
+      return "bumpMinor";
+    case "patch":
+    default:
+      return "bumpPatch";
+  }
+}
+
+function toCardLabels(labels: ContributeViaAiLabels): AgentPromptCardLabels {
   return {
     copyCta: labels.copyCta,
     copyCopied: labels.copyCopied,
@@ -73,35 +84,25 @@ function toCardLabels(labels: InstallViaAiLabels): AgentPromptCardLabels {
   };
 }
 
-export function InstallViaAi({
-  locale,
-  plan,
-  activeSkills,
-  resolutions,
-  labels,
-}: InstallViaAiProps) {
-  const promptLocale: AgentPromptLocale = locale;
-
-  const bundles = React.useMemo<AgentPromptBundle[]>(() => {
-    if (plan.totalFiles === 0) return [];
-    return plan.targets.map((target) =>
-      buildAgentPrompt(target.target, activeSkills, resolutions, promptLocale),
+export function ContributeViaAi({ draft, baseline, labels }: ContributeViaAiProps) {
+  const bundles = React.useMemo<AuthoringPromptBundle[]>(() => {
+    return ALL_TARGETS.map((agent) =>
+      buildAuthoringPrompt({ ...draft, targetAgent: agent }, baseline),
     );
-  }, [plan, activeSkills, resolutions, promptLocale]);
+  }, [draft, baseline]);
 
-  const [expanded, setExpanded] = React.useState<TargetAgent | null>(null);
-
-  if (bundles.length === 0) return null;
+  const [expanded, setExpanded] = React.useState<TargetAgent | null>(() => "claude-code");
 
   const cardLabels = toCardLabels(labels);
 
   return (
     <section
       aria-label={labels.heading}
-      data-slot="install-via-ai"
+      data-slot="contribute-via-ai"
       className={cn(
         "relative overflow-hidden rounded-2xl border border-border bg-surface shadow-sm",
       )}
+      data-action={draft.action satisfies ContributeAction}
     >
       <div
         aria-hidden="true"
@@ -128,31 +129,37 @@ export function InstallViaAi({
       </header>
       <ul
         role="list"
-        data-slot="install-agent-list"
+        data-slot="contribute-agent-list"
         className="mt-5 divide-y divide-border border-t border-border"
       >
         {bundles.map((bundle) => {
-          const size = formatByteSize(bundle.byteSize);
+          const chars = `${bundle.charCount.toLocaleString()} ${labels.charsLabel}`;
+          const size = formatPromptSize(bundle.byteSize);
+          const bump = labels[bumpKey(bundle.estimatedBump)];
           return (
             <AgentPromptCard
-              key={bundle.target}
-              bundle={bundle}
-              expanded={expanded === bundle.target}
+              key={bundle.agent}
+              bundle={{
+                target: bundle.agent,
+                text: bundle.text,
+                byteSize: bundle.byteSize,
+              }}
+              expanded={expanded === bundle.agent}
               onToggle={() =>
                 setExpanded((current) =>
-                  current === bundle.target ? null : bundle.target,
+                  current === bundle.agent ? null : bundle.agent,
                 )
               }
               agent={{
-                name: labels[NAME_KEY[bundle.target]],
-                tagline: labels[TAGLINE_KEY[bundle.target]],
+                name: labels[NAME_KEY[bundle.agent]],
+                tagline: labels[TAGLINE_KEY[bundle.agent]],
               }}
               meta={{
-                primary: `${bundle.fileCount} ${labels.filesLabel}`,
-                secondary: size,
+                primary: `${chars} · ${size}`,
+                secondary: `${labels.bumpLabel}: ${bump}`,
               }}
               labels={cardLabels}
-              testSlot="install"
+              testSlot="contribute"
             />
           );
         })}

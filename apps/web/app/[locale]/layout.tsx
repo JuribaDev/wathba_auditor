@@ -7,7 +7,6 @@ import {
   Source_Serif_4,
 } from "next/font/google";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 
 import "../globals.css";
 
@@ -104,16 +103,20 @@ export default async function LocaleLayout({
       className={`${fontVariables} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-background text-foreground">
-        {/* The init script is a static function of server constants (no user
-            input), so the inline payload is safe. Emitted via next/script's
-            dangerouslySetInnerHTML prop so React 19 does not warn the way it
-            does for child <script> elements. */}
-        <Script
+      <head>
+        {/*
+         * Pre-hydration theme/document-state bootstrap. Encoded as a data
+         * URL so it runs as a normal external script (no inline HTML, no
+         * React 19 "script never executed" warning, no next/script ordering
+         * quirks). The payload is a pure function of server constants so
+         * the base64 encoding is deterministic and safe from user input.
+         */}
+        <script
           id="document-state-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: initScript }}
+          src={`data:text/javascript;base64,${Buffer.from(initScript).toString("base64")}`}
         />
+      </head>
+      <body className="min-h-full bg-background text-foreground">
         <DocumentStateProvider>{children}</DocumentStateProvider>
       </body>
     </html>

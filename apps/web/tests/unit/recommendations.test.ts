@@ -165,6 +165,12 @@ describe("recommendSkills", () => {
       directory: "saudi/zatca-phase2",
       references: [],
       scripts: [],
+      files: [],
+      previousIds: [],
+      lifecycle: "active",
+      replacementId: null,
+      sunsetDate: null,
+      lifecycleNote: null,
     },
     {
       id: "architecture-testability-check",
@@ -185,6 +191,12 @@ describe("recommendSkills", () => {
       directory: "architecture/testability-check",
       references: [],
       scripts: [],
+      files: [],
+      previousIds: [],
+      lifecycle: "active",
+      replacementId: null,
+      sunsetDate: null,
+      lifecycleNote: null,
     },
   ];
 

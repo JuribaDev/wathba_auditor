@@ -23,6 +23,12 @@ function buildSkill(overrides: Partial<GeneratedSkill> = {}): GeneratedSkill {
     directory: "architecture/test",
     references: [],
     scripts: [],
+    files: [],
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
     ...overrides,
   };
 }

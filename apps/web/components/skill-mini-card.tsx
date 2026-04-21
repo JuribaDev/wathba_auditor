@@ -24,6 +24,10 @@ export type SkillMiniCardLabels = {
   versionPrefix: string;
   verifiedPrefix: string;
   viewSkill: string;
+  lifecycleDeprecated: string;
+  lifecycleArchived: string;
+  lifecycleDeprecatedShort: string;
+  lifecycleArchivedShort: string;
 };
 
 type SkillMiniCardProps = {
@@ -47,14 +51,25 @@ export function SkillMiniCard({
   const statusLabel = labels.status[statusLabelKey(status)];
   const title = skill.name[locale];
 
+  const isDeprecated = skill.lifecycle === "deprecated";
+  const isArchived = skill.lifecycle === "archived";
+  const lifecycleHint = isArchived
+    ? labels.lifecycleArchivedShort
+    : isDeprecated
+      ? labels.lifecycleDeprecatedShort
+      : null;
+
   return (
     <Link
       href={href}
       aria-label={`${labels.viewSkill}: ${title}`}
+      data-lifecycle={skill.lifecycle}
       className={cn(
         "group flex h-full flex-col gap-4 rounded-2xl border border-border bg-surface p-6 text-start no-underline shadow-[var(--shadow-sm)] transition-all duration-150",
         "hover:-translate-y-[1px] hover:border-border-strong hover:shadow-[var(--shadow-md)]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        isDeprecated && "opacity-85 [&_h3]:line-through decoration-muted-foreground/40",
+        isArchived && "opacity-70 border-dashed",
         className,
       )}
     >
@@ -67,6 +82,26 @@ export function SkillMiniCard({
             {categoryLabel}
           </Badge>
           <StatusBadge status={status}>{statusLabel}</StatusBadge>
+          {isDeprecated ? (
+            <Badge
+              variant="outline"
+              className="rounded-full border-warning/60 px-3 py-1 text-[0.7rem] uppercase tracking-[0.12em] text-warning rtl:tracking-normal rtl:normal-case"
+              data-slot="lifecycle-badge"
+              data-lifecycle="deprecated"
+            >
+              {labels.lifecycleDeprecated}
+            </Badge>
+          ) : null}
+          {isArchived ? (
+            <Badge
+              variant="outline"
+              className="rounded-full border-muted-foreground/40 px-3 py-1 text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground rtl:tracking-normal rtl:normal-case"
+              data-slot="lifecycle-badge"
+              data-lifecycle="archived"
+            >
+              {labels.lifecycleArchived}
+            </Badge>
+          ) : null}
           {skill.disclaimer ? (
             <Badge
               variant="outline"
@@ -91,6 +126,14 @@ export function SkillMiniCard({
         <p className="line-clamp-3 text-sm leading-[1.6] text-muted-foreground">
           {summary}
         </p>
+        {lifecycleHint ? (
+          <p
+            data-slot="lifecycle-hint"
+            className="text-[11.5px] leading-5 text-muted-foreground"
+          >
+            {lifecycleHint}
+          </p>
+        ) : null}
       </div>
 
       <dl className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-soft-foreground">

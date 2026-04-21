@@ -39,6 +39,7 @@ const validSkill: CanonicalSkill = {
     },
   ],
   triggers: [{ when: { handles_invoicing: true } }],
+  lifecycle: "active",
 };
 
 describe("canonicalSkillSchema", () => {

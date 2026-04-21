@@ -42,6 +42,21 @@ export function collectAllFiles(
   return files;
 }
 
+function base64ToBytes(encoded: string): Uint8Array {
+  if (typeof atob === "function") {
+    const binary = atob(encoded);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+  // Node.js fallback (used in tests + SSR).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { Buffer } = require("node:buffer") as typeof import("node:buffer");
+  return Uint8Array.from(Buffer.from(encoded, "base64"));
+}
+
 export async function buildZipBlob(
   plan: FilePlan,
   skills: readonly GeneratedSkill[],
@@ -50,7 +65,11 @@ export async function buildZipBlob(
   const zip = new JSZip();
   const files = collectAllFiles(plan, skills, resolutions);
   for (const file of files) {
-    zip.file(file.path, file.content);
+    if (file.encoding === "base64") {
+      zip.file(file.path, base64ToBytes(file.content), { binary: true });
+    } else {
+      zip.file(file.path, file.content);
+    }
   }
   return zip.generateAsync({ type: "blob" });
 }

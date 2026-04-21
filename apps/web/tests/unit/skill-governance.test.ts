@@ -189,6 +189,72 @@ describe("classifySkillDiff", () => {
     expect(result.requiredBump).toBe("minor");
   });
 
+  it("treats adding an asset outside references/scripts as minor-required", () => {
+    const before = baseSnapshot({ files: [] });
+    const after = baseSnapshot({
+      files: [{ path: "assets/logo.svg", content: "<svg/>" }],
+    });
+    const result = classifySkillDiff(before, after);
+    expect(result.requiredBump).toBe("minor");
+    expect(result.changes.some((c) => c.kind === "file-added")).toBe(true);
+  });
+
+  it("treats editing a template file as patch-required", () => {
+    const before = baseSnapshot({
+      files: [{ path: "templates/invoice.xml", content: "<v1/>" }],
+    });
+    const after = baseSnapshot({
+      files: [{ path: "templates/invoice.xml", content: "<v2/>" }],
+    });
+    const result = classifySkillDiff(before, after);
+    expect(result.requiredBump).toBe("patch");
+    expect(
+      result.changes.some(
+        (c) => c.kind === "file-edited" && c.reason.includes("templates/invoice.xml"),
+      ),
+    ).toBe(true);
+  });
+
+  it("treats editing agents/openai.yaml as patch-required", () => {
+    const before = baseSnapshot({
+      files: [
+        {
+          path: "agents/openai.yaml",
+          content: "interface:\n  display_name: Old\n",
+        },
+      ],
+    });
+    const after = baseSnapshot({
+      files: [
+        {
+          path: "agents/openai.yaml",
+          content: "interface:\n  display_name: New\n",
+        },
+      ],
+    });
+    const result = classifySkillDiff(before, after);
+    expect(result.requiredBump).toBe("patch");
+  });
+
+  it("does not double-count a references/* entry that also appears in files", () => {
+    // Snapshots built from the new loader carry references/foo.md in BOTH
+    // `references` (as "foo.md") and `files` (as "references/foo.md"). The
+    // diff's extras filter strips references/* and scripts/* out of the
+    // files bucket so we don't emit two changes for one edit.
+    const before = baseSnapshot({
+      references: [{ path: "checklist.md", content: "a" }],
+      files: [{ path: "references/checklist.md", content: "a" }],
+    });
+    const after = baseSnapshot({
+      references: [{ path: "checklist.md", content: "b" }],
+      files: [{ path: "references/checklist.md", content: "b" }],
+    });
+    const result = classifySkillDiff(before, after);
+    const editKinds = result.changes.map((c) => c.kind);
+    expect(editKinds).toContain("references-edited");
+    expect(editKinds).not.toContain("file-edited");
+  });
+
   it("treats editing a reference file content as patch-required", () => {
     const before = baseSnapshot();
     const after = baseSnapshot({

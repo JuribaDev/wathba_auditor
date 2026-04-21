@@ -8,9 +8,11 @@ import type { AppLocale } from "@/lib/i18n";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import {
   CATEGORY_FILTERS,
+  LIFECYCLE_FILTERS,
   STATUS_FILTERS,
   filterSkills,
   type CategoryFilter,
+  type LifecycleFilter,
   type StatusFilter,
 } from "@/lib/skills/filters";
 
@@ -22,9 +24,11 @@ type TabOption<T extends string> = {
 type SkillLibraryLabels = {
   categoryLegend: string;
   statusLegend: string;
+  lifecycleLegend: string;
   empty: string;
   category: Record<CategoryFilter, string>;
   status: Record<StatusFilter, string>;
+  lifecycle: Record<LifecycleFilter, string>;
   cardMeta: SkillMiniCardLabels;
 };
 
@@ -37,6 +41,7 @@ type SkillLibraryProps = {
 export function SkillLibrary({ locale, skills, labels }: SkillLibraryProps) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [lifecycle, setLifecycle] = useState<LifecycleFilter>("default");
 
   const categoryOptions: Array<TabOption<CategoryFilter>> = CATEGORY_FILTERS.map((id) => ({
     id,
@@ -46,8 +51,15 @@ export function SkillLibrary({ locale, skills, labels }: SkillLibraryProps) {
     id,
     label: labels.status[id],
   }));
+  const lifecycleOptions: Array<TabOption<LifecycleFilter>> = LIFECYCLE_FILTERS.map((id) => ({
+    id,
+    label: labels.lifecycle[id],
+  }));
 
-  const filtered = useMemo(() => filterSkills(skills, category, status), [skills, category, status]);
+  const filtered = useMemo(
+    () => filterSkills(skills, category, status, lifecycle),
+    [skills, category, status, lifecycle],
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,6 +75,12 @@ export function SkillLibrary({ locale, skills, labels }: SkillLibraryProps) {
           options={statusOptions}
           value={status}
           onChange={setStatus}
+        />
+        <FilterTabs
+          legend={labels.lifecycleLegend}
+          options={lifecycleOptions}
+          value={lifecycle}
+          onChange={setLifecycle}
         />
       </div>
 

@@ -23,6 +23,12 @@ function makeSkill(overrides: Partial<GeneratedSkill>): GeneratedSkill {
     directory: "seed",
     references: [],
     scripts: [],
+    files: [],
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
     ...overrides,
   };
 }

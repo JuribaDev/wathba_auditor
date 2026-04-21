@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { renderClaudeCodeFiles } from "@/lib/generate/adapters/claude-code";
 import type { SkillResolution } from "@/lib/generate/resolve-markdown";
-import type { GeneratedSkill } from "@/lib/skills/generated";
+import type { GeneratedSkill, SkillFile } from "@/lib/skills/generated";
 
 function makeSkill(
   overrides: Partial<GeneratedSkill> & Pick<GeneratedSkill, "id" | "slug">,
@@ -13,6 +13,11 @@ function makeSkill(
     name: { en: id, ar: id },
     summary: { en: `${id} summary`, ar: `${id} ملخص` },
     slug,
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
     version: "0.1.0",
     category: "architecture",
     region: null,
@@ -26,10 +31,15 @@ function makeSkill(
     triggers: [],
     body: "",
     directory: slug,
+    files: [],
     references: [],
     scripts: [],
     ...rest,
   };
+}
+
+function textFile(filePath: string, content: string): SkillFile {
+  return { path: filePath, encoding: "utf-8", content };
 }
 
 function makeResolution(
@@ -47,7 +57,7 @@ describe("renderClaudeCodeFiles", () => {
     expect(renderClaudeCodeFiles([], [])).toEqual([]);
   });
 
-  it("emits SKILL.md with resolved frontmatter and body", () => {
+  it("emits SKILL.md with native Claude frontmatter and resolved body", () => {
     const skill = makeSkill({
       id: "a",
       slug: "alpha",
@@ -65,16 +75,23 @@ describe("renderClaudeCodeFiles", () => {
     expect(files).toHaveLength(1);
     const [file] = files;
     expect(file.path).toBe(".claude/skills/alpha/SKILL.md");
+    expect(file.encoding).toBe("utf-8");
+    // Docs-native frontmatter: only `name` and `description` are emitted. Governance
+    // lives in the markdown body, never in undocumented frontmatter.
     expect(file.content).toContain("---\nname: alpha\n");
     expect(file.content).toContain("description: Short A description");
-    expect(file.content).toContain("version: 1.2.3");
-    expect(file.content).toContain("status: maintainer-reviewed");
-    expect(file.content).toContain('last_verified: "2026-03-18"');
-    expect(file.content).not.toContain("disclaimer: true");
-    expect(file.content.endsWith("Hello world.\n")).toBe(true);
+    expect(file.content).not.toMatch(/^version:/m);
+    expect(file.content).not.toMatch(/^status:/m);
+    expect(file.content).not.toMatch(/^last_verified:/m);
+    expect(file.content).not.toMatch(/^disclaimer:/m);
+    // Body + governance footer (version/last_verified/status in markdown).
+    expect(file.content).toContain("# Resolved body");
+    expect(file.content).toContain(
+      "_Version: 1.2.3 · Last verified: 2026-03-18 · Status: maintainer-reviewed_",
+    );
   });
 
-  it("includes disclaimer marker when the skill carries a disclaimer", () => {
+  it("renders a disclaimer callout in the body for compliance skills with disclaimer", () => {
     const skill = makeSkill({ id: "a", slug: "alpha", disclaimer: true });
     const resolution = makeResolution({
       skillId: "a",
@@ -82,18 +99,22 @@ describe("renderClaudeCodeFiles", () => {
       body: "body",
     });
     const [file] = renderClaudeCodeFiles([skill], [resolution]);
-    expect(file.content).toContain("disclaimer: true");
+    expect(file.content).toContain(
+      "> Engineering guidance, not legal advice.",
+    );
+    expect(file.content).not.toContain("disclaimer: true");
   });
 
-  it("emits reference and script files verbatim under real filenames", () => {
+  it("emits support files verbatim under the skill directory (nested paths preserved)", () => {
     const skill = makeSkill({
       id: "a",
       slug: "alpha",
-      references: [
-        { path: "sample.xml", content: "<xml/>" },
-        { path: "guide.md", content: "# guide" },
+      files: [
+        textFile("references/sample.xml", "<xml/>"),
+        textFile("references/deep/guide.md", "# guide"),
+        textFile("scripts/validate.mjs", "console.log('ok')"),
+        textFile("assets/README.md", "assets"),
       ],
-      scripts: [{ path: "validate.mjs", content: "console.log('ok')" }],
     });
     const resolution = makeResolution({
       skillId: "a",
@@ -104,12 +125,34 @@ describe("renderClaudeCodeFiles", () => {
     expect(files.map((file) => file.path)).toEqual([
       ".claude/skills/alpha/SKILL.md",
       ".claude/skills/alpha/references/sample.xml",
-      ".claude/skills/alpha/references/guide.md",
+      ".claude/skills/alpha/references/deep/guide.md",
       ".claude/skills/alpha/scripts/validate.mjs",
+      ".claude/skills/alpha/assets/README.md",
     ]);
     expect(files[1].content).toBe("<xml/>");
     expect(files[2].content).toBe("# guide");
     expect(files[3].content).toBe("console.log('ok')");
+    expect(files[4].content).toBe("assets");
+  });
+
+  it("passes binary support files through without encoding changes", () => {
+    const binary: SkillFile = {
+      path: "assets/logo.png",
+      encoding: "base64",
+      content: "iVBORw0KGgoAAAANSUhEUg",
+    };
+    const skill = makeSkill({
+      id: "a",
+      slug: "alpha",
+      files: [binary],
+    });
+    const [, asset] = renderClaudeCodeFiles(
+      [skill],
+      [makeResolution({ skillId: "a", slug: "alpha", body: "body" })],
+    );
+    expect(asset.path).toBe(".claude/skills/alpha/assets/logo.png");
+    expect(asset.encoding).toBe("base64");
+    expect(asset.content).toBe("iVBORw0KGgoAAAANSUhEUg");
   });
 
   it("falls back to the skill's raw body when a resolution is missing", () => {
@@ -127,12 +170,12 @@ describe("renderClaudeCodeFiles", () => {
     const alpha = makeSkill({
       id: "a",
       slug: "alpha",
-      references: [{ path: "a.md", content: "a" }],
+      files: [textFile("references/a.md", "a")],
     });
     const beta = makeSkill({
       id: "b",
       slug: "beta",
-      scripts: [{ path: "b.sh", content: "b" }],
+      files: [textFile("scripts/b.sh", "b")],
     });
     const files = renderClaudeCodeFiles(
       [alpha, beta],
@@ -147,5 +190,37 @@ describe("renderClaudeCodeFiles", () => {
       ".claude/skills/beta/SKILL.md",
       ".claude/skills/beta/scripts/b.sh",
     ]);
+  });
+
+  it("skips the governance footer when the body already contains one", () => {
+    const skill = makeSkill({ id: "a", slug: "alpha" });
+    const resolution = makeResolution({
+      skillId: "a",
+      slug: "alpha",
+      body: "body\n\n_Version: 9.9.9 · Last verified: 2099-01-01_",
+    });
+    const [file] = renderClaudeCodeFiles([skill], [resolution]);
+    const occurrences = (file.content.match(/_Version:/g) ?? []).length;
+    expect(occurrences).toBe(1);
+  });
+
+  it("is deterministic for identical inputs", () => {
+    const skill = makeSkill({
+      id: "a",
+      slug: "alpha",
+      disclaimer: true,
+      sources: [
+        { title: "Docs", url: "https://x.test", accessed: "2026-01-01" },
+      ],
+    });
+    const first = renderClaudeCodeFiles(
+      [skill],
+      [makeResolution({ skillId: "a", slug: "alpha", body: "body" })],
+    );
+    const second = renderClaudeCodeFiles(
+      [skill],
+      [makeResolution({ skillId: "a", slug: "alpha", body: "body" })],
+    );
+    expect(first[0].content).toBe(second[0].content);
   });
 });

@@ -45,7 +45,6 @@ describe("messages catalog parity", () => {
       "Meta",
       "NotFound",
       "Shell",
-      "Compare",
       "Landing",
       "Generate",
       "Questionnaire",

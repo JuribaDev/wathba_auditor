@@ -16,6 +16,8 @@ export type AgentPromptCopy = {
   filesHeading: string;
   fileHeader: string;
   confirmationLine: string;
+  binaryNotice?: string;
+  binaryPlaceholder: string;
 };
 
 export type AgentPromptBundle = {
@@ -23,31 +25,32 @@ export type AgentPromptBundle = {
   text: string;
   fileCount: number;
   byteSize: number;
+  binaryFileCount: number;
 };
 
 const PATH_LABEL: Record<TargetAgent, string> = {
-  "claude-code": ".claude/skills/",
-  cursor: ".cursor/rules/",
-  codex: "AGENTS.md + references/",
-  "agents-md": "AGENTS.md + references/",
+  "claude-code": ".claude/skills/<slug>/",
+  cursor: ".cursor/skills/<slug>/",
+  codex: ".agents/skills/<slug>/",
+  "agents-md": "AGENTS.md",
 };
 
 const REGISTRATION: Record<TargetAgent, Record<AgentPromptLocale, string>> = {
   "claude-code": {
-    en: "Claude Code auto-discovers skills in .claude/skills/. No further registration is required once the files exist.",
-    ar: "سيكتشف Claude Code المهارات تلقائياً من مجلد .claude/skills/. لا يلزم أي إعداد إضافي بعد إنشاء الملفات.",
+    en: "Claude Code auto-discovers skills in .claude/skills/<slug>/. No further registration is required once the files exist.",
+    ar: "سيكتشف Claude Code المهارات تلقائياً من مجلد .claude/skills/<slug>/. لا يلزم أي إعداد إضافي بعد إنشاء الملفات.",
   },
   cursor: {
-    en: "Cursor loads every .mdc file inside .cursor/rules/ at project load. Reload the window if Cursor is already open.",
-    ar: "يحمّل Cursor جميع ملفات .mdc داخل .cursor/rules/ عند فتح المشروع. أعد تشغيل نافذة Cursor إذا كانت مفتوحة.",
+    en: "Cursor auto-discovers skills in .cursor/skills/<slug>/. Reload the window if Cursor is already open.",
+    ar: "يكتشف Cursor المهارات تلقائياً من .cursor/skills/<slug>/. أعد تشغيل نافذة Cursor إذا كانت مفتوحة.",
   },
   codex: {
-    en: "Codex reads AGENTS.md at session start. Append the provided skill references under the existing skills section, or create that section if absent.",
-    ar: "يقرأ Codex ملف AGENTS.md عند بدء الجلسة. أضف المراجع المطلوبة تحت قسم المهارات، أو أنشئ القسم إن لم يكن موجوداً.",
+    en: "Codex auto-discovers skills in .agents/skills/<slug>/ at session start. Each skill is a self-contained directory with a SKILL.md entry point and optional scripts/, references/, assets/, and agents/openai.yaml.",
+    ar: "يكتشف Codex المهارات تلقائياً من .agents/skills/<slug>/ عند بدء الجلسة. كل مهارة هي مجلد مستقل يحتوي SKILL.md ومجلدات اختيارية scripts/ و references/ و assets/ وملف agents/openai.yaml.",
   },
   "agents-md": {
-    en: "Any agent that reads AGENTS.md will see the skill references after you write the files. No registration API is required.",
-    ar: "أي وكيل يقرأ AGENTS.md سيرى المراجع بعد كتابة الملفات. لا حاجة لأي تسجيل إضافي.",
+    en: "Any agent that reads AGENTS.md will see the guidance after you write the file. No registration API is required.",
+    ar: "أي وكيل يقرأ AGENTS.md سيرى الإرشادات بعد كتابة الملف. لا حاجة لأي تسجيل إضافي.",
   },
 };
 
@@ -59,13 +62,14 @@ const AGENT_NAME: Record<TargetAgent, Record<AgentPromptLocale, string>> = {
 };
 
 function mergesIntoExistingAgentsMd(target: TargetAgent): boolean {
-  return target === "codex" || target === "agents-md";
+  return target === "agents-md";
 }
 
 export function buildAgentPromptCopy(
   target: TargetAgent,
   locale: AgentPromptLocale,
   fileCount: number,
+  binaryFileCount: number,
 ): AgentPromptCopy {
   const agentName = AGENT_NAME[target][locale];
   const mergesAgentsMd = mergesIntoExistingAgentsMd(target);
@@ -80,7 +84,7 @@ export function buildAgentPromptCopy(
         "  (d) Leave every non-Wathba section in the existing AGENTS.md untouched.",
         "For any non-AGENTS.md file, create new files and overwrite only if the path already came from a prior Wathba install.",
       ].join("\n")
-    : "If a directory exists, add the file beside existing ones. If a file path collides, overwrite it.";
+    : "If a skill directory already exists, add the new files beside existing ones. If a file path collides, overwrite it.";
 
   const collisionRuleAr = mergesAgentsMd
     ? [
@@ -91,7 +95,22 @@ export function buildAgentPromptCopy(
         "  (د) اترك كل قسم غير تابع لوَثبة في AGENTS.md كما هو.",
         "للمسارات الأخرى، أنشئ الملفات أو استبدلها فقط إن كانت من تثبيت وَثبة سابق.",
       ].join("\n")
-    : "إن وُجد المجلد مسبقاً، أضف الملف دون حذف غيره. إن وُجد نفس المسار، أعد الكتابة.";
+    : "إن وُجد مجلد المهارة مسبقاً، أضف الملفات الجديدة بجانب الملفات الحالية. إن وُجد نفس المسار، أعد الكتابة.";
+
+  const binaryNoticeEn =
+    binaryFileCount > 0
+      ? `This bundle contains ${binaryFileCount} binary ${binaryFileCount === 1 ? "file" : "files"} that cannot be installed reliably through this text prompt. Download the zip from the generate page and copy those files verbatim. Binary files are listed below as placeholders.`
+      : undefined;
+
+  const binaryNoticeAr =
+    binaryFileCount > 0
+      ? `تحتوي هذه الحزمة على ${binaryFileCount} ${binaryFileCount === 1 ? "ملف ثنائي" : "ملفات ثنائية"} لا يمكن تثبيتها بشكل موثوق عبر هذه المطالبة النصية. نزّل الملف المضغوط من صفحة التوليد وانسخ تلك الملفات كما هي. الملفات الثنائية مُدرَجة أدناه كمُنبِّهات.`
+      : undefined;
+
+  const binaryPlaceholderEn =
+    "[binary content — install from the downloaded zip, not from this prompt]";
+  const binaryPlaceholderAr =
+    "[محتوى ثنائي — ثبّت الملف من الحزمة المضغوطة، لا من هذه المطالبة]";
 
   if (locale === "ar") {
     return {
@@ -111,6 +130,8 @@ export function buildAgentPromptCopy(
       filesHeading: "## الملفات",
       fileHeader: "الملف",
       confirmationLine: "أكّد للمستخدم أن جميع الملفات أُنشئت بعد الانتهاء.",
+      binaryNotice: binaryNoticeAr,
+      binaryPlaceholder: binaryPlaceholderAr,
     };
   }
   return {
@@ -130,6 +151,8 @@ export function buildAgentPromptCopy(
     filesHeading: "## Files",
     fileHeader: "File",
     confirmationLine: "Confirm all files were created once finished.",
+    binaryNotice: binaryNoticeEn,
+    binaryPlaceholder: binaryPlaceholderEn,
   };
 }
 
@@ -144,7 +167,6 @@ export function detectLanguage(path: string): string {
   const ext = path.toLowerCase().split(".").pop() ?? "";
   switch (ext) {
     case "md":
-    case "mdc":
     case "markdown":
       return "markdown";
     case "yaml":
@@ -162,6 +184,12 @@ export function detectLanguage(path: string): string {
     case "sh":
     case "bash":
       return "bash";
+    case "xml":
+    case "html":
+    case "svg":
+      return "xml";
+    case "css":
+      return "css";
     default:
       return "text";
   }
@@ -173,18 +201,16 @@ function renderFileBlock(
   total: number,
   copy: AgentPromptCopy,
 ): string {
+  const header = `### ${copy.fileHeader} ${index + 1} / ${total}: \`${file.path}\``;
+  if (file.encoding === "base64") {
+    return [header, "", copy.binaryPlaceholder].join("\n");
+  }
   const fence = chooseFence(file.content);
   const language = detectLanguage(file.path);
   const trimmed = file.content.endsWith("\n")
     ? file.content.slice(0, -1)
     : file.content;
-  return [
-    `### ${copy.fileHeader} ${index + 1} / ${total}: \`${file.path}\``,
-    "",
-    `${fence}${language}`,
-    trimmed,
-    fence,
-  ].join("\n");
+  return [header, "", `${fence}${language}`, trimmed, fence].join("\n");
 }
 
 export function buildAgentPrompt(
@@ -194,7 +220,8 @@ export function buildAgentPrompt(
   locale: AgentPromptLocale = "en",
 ): AgentPromptBundle {
   const files = buildTargetFiles(target, skills, resolutions);
-  const copy = buildAgentPromptCopy(target, locale, files.length);
+  const binaryFileCount = files.filter((file) => file.encoding === "base64").length;
+  const copy = buildAgentPromptCopy(target, locale, files.length, binaryFileCount);
   const pathHint = PATH_LABEL[target];
 
   const head: string[] = [
@@ -206,13 +233,20 @@ export function buildAgentPrompt(
     "",
     ...copy.instructions.map((line, i) => `${i + 1}. ${line}`),
     "",
+  ];
+
+  if (copy.binaryNotice) {
+    head.push(`> ${copy.binaryNotice}`, "");
+  }
+
+  head.push(
     copy.registrationHeading,
     "",
     `- ${locale === "ar" ? "المسار" : "Target path"}: \`${pathHint}\``,
     `- ${copy.registration}`,
     "",
     copy.filesHeading,
-  ];
+  );
 
   const body = files.map((file, index) =>
     renderFileBlock(file, index, files.length, copy),
@@ -230,6 +264,7 @@ export function buildAgentPrompt(
     text,
     fileCount: files.length,
     byteSize,
+    binaryFileCount,
   };
 }
 

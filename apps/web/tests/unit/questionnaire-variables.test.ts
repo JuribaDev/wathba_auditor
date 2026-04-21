@@ -43,6 +43,12 @@ const catalog: GeneratedSkill[] = [
     directory: "a",
     references: [],
     scripts: [],
+    files: [],
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
   },
   {
     id: "skill-no-vars",
@@ -63,6 +69,12 @@ const catalog: GeneratedSkill[] = [
     directory: "b",
     references: [],
     scripts: [],
+    files: [],
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
   },
   {
     id: "skill-unused",
@@ -90,6 +102,12 @@ const catalog: GeneratedSkill[] = [
     directory: "c",
     references: [],
     scripts: [],
+    files: [],
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
   },
 ];
 

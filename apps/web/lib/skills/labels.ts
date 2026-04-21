@@ -12,6 +12,25 @@ export type StatusLabelKey =
   | "statusCommunity"
   | "statusDraft";
 
+export type LifecycleLabelKey =
+  | "lifecycleActive"
+  | "lifecycleDeprecated"
+  | "lifecycleArchived";
+
+export function lifecycleLabelKey(
+  lifecycle: GeneratedSkill["lifecycle"],
+): LifecycleLabelKey {
+  switch (lifecycle) {
+    case "deprecated":
+      return "lifecycleDeprecated";
+    case "archived":
+      return "lifecycleArchived";
+    case "active":
+    default:
+      return "lifecycleActive";
+  }
+}
+
 export function mapStatus(status: GeneratedSkill["status"]): SkillStatus {
   switch (status) {
     case "maintainer-reviewed":

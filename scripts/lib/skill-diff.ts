@@ -28,6 +28,17 @@ export type SkillSnapshotInput = {
   body: string;
   references: readonly SkillFile[];
   scripts: readonly SkillFile[];
+  // Generic support-file list. Entries use skill-root-relative POSIX paths
+  // (e.g. `assets/logo.svg`, `templates/invoice.xml`, `agents/openai.yaml`).
+  // Optional for backward compatibility with older snapshot call-sites; when
+  // absent, the diff falls back to the legacy references/scripts-only view.
+  files?: readonly SkillFile[];
+  // Lifecycle is discovery-side state. Older snapshots that predate lifecycle
+  // fields remain comparable: a missing lifecycle is treated as "active".
+  lifecycle?: string;
+  replacementId?: string | null;
+  sunsetDate?: string | null;
+  lifecycleNote?: { en: string; ar: string } | null;
 };
 
 export type SkillChange = {
@@ -212,6 +223,57 @@ function compareFiles(
   return changes;
 }
 
+// Support files that are neither `references/*` nor `scripts/*` — `assets/`,
+// `templates/`, `agents/openai.yaml`, top-level extras, etc. These are part
+// of the exported skill package and a change to them must still trigger a
+// version bump even though they don't fit the legacy two-bucket model.
+function compareSupportFiles(
+  before: readonly SkillFile[],
+  after: readonly SkillFile[],
+): SkillChange[] {
+  const changes: SkillChange[] = [];
+  const prevMap = filesByPath(before);
+  const nextMap = filesByPath(after);
+
+  for (const [filePath, content] of prevMap) {
+    const nextContent = nextMap.get(filePath);
+    if (nextContent === undefined) {
+      changes.push({
+        kind: "file-removed",
+        requires: "minor",
+        reason: `Support file "${filePath}" was removed.`,
+      });
+      continue;
+    }
+    if (nextContent !== content) {
+      changes.push({
+        kind: "file-edited",
+        requires: "patch",
+        reason: `Support file "${filePath}" content was edited.`,
+      });
+    }
+  }
+  for (const [filePath] of nextMap) {
+    if (!prevMap.has(filePath)) {
+      changes.push({
+        kind: "file-added",
+        requires: "minor",
+        reason: `Support file "${filePath}" was added.`,
+      });
+    }
+  }
+  return changes;
+}
+
+function extrasOnly(files: readonly SkillFile[] | undefined): SkillFile[] {
+  if (!files) return [];
+  return files.filter(
+    (file) =>
+      !file.path.startsWith("references/") &&
+      !file.path.startsWith("scripts/"),
+  );
+}
+
 export function classifySkillDiff(
   before: SkillSnapshotInput,
   after: SkillSnapshotInput,
@@ -251,6 +313,13 @@ export function classifySkillDiff(
   changes.push(...compareVariables(before.variables, after.variables));
   changes.push(...compareFiles("references", before.references, after.references));
   changes.push(...compareFiles("scripts", before.scripts, after.scripts));
+  // Extras (anything outside references/scripts): assets/, templates/,
+  // agents/openai.yaml, root-level support files. The legacy two-bucket diff
+  // missed these entirely, letting silent edits to exported packages slip
+  // through version-bump enforcement.
+  changes.push(
+    ...compareSupportFiles(extrasOnly(before.files), extrasOnly(after.files)),
+  );
 
   if (before.body !== after.body) {
     changes.push({
@@ -322,6 +391,47 @@ export function classifySkillDiff(
         reason: "Trigger payload was edited without changing the trigger count.",
       });
     }
+  }
+
+  // Lifecycle: retiring or archiving a skill reshapes default discovery and
+  // must bump a version so the catalog download picks up the signal. A move
+  // between lifecycle states is treated as minor (observable behavior
+  // change); edits to lifecycle metadata (note, sunset date, replacement
+  // id) are patch unless the replacement id changes what downstream callers
+  // resolve, which we still classify as minor.
+  const beforeLifecycle = before.lifecycle ?? "active";
+  const afterLifecycle = after.lifecycle ?? "active";
+  if (beforeLifecycle !== afterLifecycle) {
+    changes.push({
+      kind: "lifecycle-changed",
+      requires: "minor",
+      reason: `Lifecycle moved from "${beforeLifecycle}" to "${afterLifecycle}". Discovery defaults change for consumers of the catalog.`,
+    });
+  }
+  const beforeReplacement = before.replacementId ?? null;
+  const afterReplacement = after.replacementId ?? null;
+  if (beforeReplacement !== afterReplacement) {
+    changes.push({
+      kind: "replacement-id-changed",
+      requires: "minor",
+      reason: `Replacement id moved from "${String(beforeReplacement)}" to "${String(afterReplacement)}". Agents that resolve deprecated skills will route differently.`,
+    });
+  }
+  const beforeSunset = before.sunsetDate ?? null;
+  const afterSunset = after.sunsetDate ?? null;
+  if (beforeSunset !== afterSunset) {
+    changes.push({
+      kind: "sunset-date-changed",
+      requires: "patch",
+      reason: `Sunset date moved from "${String(beforeSunset)}" to "${String(afterSunset)}".`,
+    });
+  }
+  if (!deepEqual(before.lifecycleNote ?? null, after.lifecycleNote ?? null)) {
+    changes.push({
+      kind: "lifecycle-note-edited",
+      requires: "patch",
+      reason: "Lifecycle note (deprecation or migration guidance) was edited.",
+    });
   }
 
   const requiredBump = changes.reduce<BumpLevel>(

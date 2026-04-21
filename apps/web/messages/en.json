@@ -15,7 +15,6 @@
     "navOverview": "Overview",
     "navSkills": "Skills",
     "navGenerate": "Generate",
-    "navCompare": "Compare",
     "github": "GitHub",
     "cta": "Generate skill pack",
     "footerDisclaimer": "Engineering guidance and templates, not legal advice.",
@@ -37,33 +36,6 @@
     "primaryInk": "Ink",
     "primaryOlive": "Olive",
     "primarySlate": "Slate"
-  },
-  "Compare": {
-    "title": "Bilingual parity canvas",
-    "description": "Side-by-side English/LTR and Arabic/RTL renderings for parity QA. Pick a screen to compare the same underlying data in both directions.",
-    "canvasEyebrow": "Canvas",
-    "canvasTitle": "Bilingual parity check",
-    "canvasLede": "The same screen in English (LTR) and Arabic (RTL), rendered from a single data source.",
-    "tabsGroupLabel": "Select a screen to compare",
-    "screenLandingLabel": "Landing",
-    "screenQuestionnaireLabel": "Questionnaire",
-    "screenReviewLabel": "Review",
-    "screenGenerateLabel": "Generate",
-    "screenDetailLabel": "Skill detail",
-    "frameLangSlugEn": "/en",
-    "frameLangSlugAr": "/ar",
-    "reviewRecommendedLabel": "Recommended",
-    "generateZipFilename": "wathba-skills.zip",
-    "generateDownloadLabel": "Download zip",
-    "detailBackLabel": "Back to library",
-    "enFrame": {
-      "title": "English · LTR",
-      "body": "Landing, questionnaire, review, generate, and detail screens render here in English with left-to-right layout."
-    },
-    "arFrame": {
-      "title": "العربية · RTL",
-      "body": "تظهر هنا شاشات الواجهة والاستبيان والمراجعة والتوليد والتفاصيل بالعربية وباتجاه من اليمين إلى اليسار."
-    }
   },
   "Landing": {
     "eyebrow": "Open source · MIT",
@@ -154,10 +126,10 @@
       },
       "targetPreviewHeading": "Preview for this target",
       "targetNotes": {
-        "claude": "Full fidelity — each skill gets its own folder with references and scripts intact.",
-        "cursor": "Single-file rules. Helper scripts become read-only guidance comments.",
-        "codex": "Aggregated into one AGENTS.md at the repo root.",
-        "generic": "A generic AGENTS.md for any agent that reads it."
+        "claude": "Native skill packages under .claude/skills/<slug>/ with references, scripts, and assets intact.",
+        "cursor": "Native skill packages under .cursor/skills/<slug>/ — same SKILL.md + directory layout, not .cursor/rules files.",
+        "codex": "Native skill packages under .agents/skills/<slug>/ — each skill is its own directory with an optional agents/openai.yaml.",
+        "generic": "A generic AGENTS.md at the repo root, for any agent that reads AGENTS.md instead of a skills directory."
       },
       "previewEmpty": "Select a target agent to preview its output.",
       "previewFilePlaceholder": "—",
@@ -188,19 +160,19 @@
         "agents": {
           "claude": {
             "name": "Claude Code",
-            "tagline": "Writes skills into .claude/skills/ and auto-discovers them."
+            "tagline": "Writes skills into .claude/skills/<slug>/ and auto-discovers them."
           },
           "cursor": {
             "name": "Cursor",
-            "tagline": "Drops .mdc rules into .cursor/rules/ — reload window to activate."
+            "tagline": "Writes skills into .cursor/skills/<slug>/ — reload the window to activate."
           },
           "codex": {
             "name": "OpenAI Codex",
-            "tagline": "Appends skills to AGENTS.md and writes reference files."
+            "tagline": "Writes skills into .agents/skills/<slug>/ — discovered at session start."
           },
           "generic": {
             "name": "Generic AGENTS.md",
-            "tagline": "Works with any agent that reads AGENTS.md at session start."
+            "tagline": "Writes a single AGENTS.md at the repo root for any agent that reads it."
           }
         }
       }
@@ -289,19 +261,19 @@
         "options": {
           "claude": {
             "label": "Claude Code",
-            "desc": ".claude/skills/*"
+            "desc": ".claude/skills/<slug>/SKILL.md"
           },
           "cursor": {
             "label": "Cursor",
-            "desc": ".cursor/rules/*.mdc"
+            "desc": ".cursor/skills/<slug>/SKILL.md"
           },
           "codex": {
             "label": "Codex / ChatGPT agents",
-            "desc": "AGENTS.md in the repo root"
+            "desc": ".agents/skills/<slug>/SKILL.md"
           },
           "generic": {
             "label": "Generic AGENTS.md",
-            "desc": "Any other agent that reads AGENTS.md"
+            "desc": "AGENTS.md for any agent that reads it"
           }
         }
       },
@@ -364,7 +336,21 @@
     "cardVersionPrefix": "v",
     "cardVerifiedPrefix": "Verified",
     "cardDisclaimerLabel": "Disclaimer",
-    "cardDisclaimerTitle": "Engineering guidance, not legal advice"
+    "cardDisclaimerTitle": "Engineering guidance, not legal advice",
+    "lifecycleLegend": "Lifecycle",
+    "lifecycleDefault": "In use (default)",
+    "lifecycleActive": "Active only",
+    "lifecycleDeprecated": "Deprecated",
+    "lifecycleArchived": "Archived",
+    "lifecycleAll": "All lifecycles",
+    "addNewSkillCta": "Add new skill",
+    "addNewSkillHelp": "Author a new skill package under skills/<group>/<slug>/ and hand it to your coding agent.",
+    "lifecycleBadgeActive": "Active",
+    "lifecycleBadgeDeprecated": "Deprecated",
+    "lifecycleBadgeArchived": "Archived",
+    "lifecycleDeprecatedShort": "Deprecated — prefer the replacement.",
+    "lifecycleArchivedShort": "Archived — hidden from default discovery.",
+    "addNewSkillEyebrow": "Contribute"
   },
   "SkillDetail": {
     "description": "Canonical skill metadata, asset inventory, and raw markdown preview.",
@@ -400,7 +386,185 @@
     "noVariables": "No variables declared",
     "sourceAccessed": "Accessed",
     "maintainedBy": "Maintained by",
-    "versionLabel": "Version"
+    "versionLabel": "Version",
+    "lifecycleLabel": "Lifecycle",
+    "lifecycleActive": "Active",
+    "lifecycleDeprecated": "Deprecated",
+    "lifecycleArchived": "Archived",
+    "lifecycleBannerDeprecatedTitle": "This skill is deprecated",
+    "lifecycleBannerDeprecatedBody": "It is still available, but new adopters should prefer the replacement below.",
+    "lifecycleBannerArchivedTitle": "This skill is archived",
+    "lifecycleBannerArchivedBody": "It is hidden from default discovery and only surfaces when lifecycle filters are opened explicitly.",
+    "lifecycleReplacementLabel": "Replacement",
+    "lifecycleSunsetLabel": "Sunset date",
+    "contributorActionsLabel": "Contributor actions",
+    "updateSkillCta": "Update skill",
+    "retireSkillCta": "Retire skill",
+    "deleteSkillCta": "Delete skill",
+    "reactivateSkillCta": "Reactivate skill"
+  },
+  "Contribute": {
+    "pageTitle": "Contribute a skill",
+    "pageDescription": "Add, update, retire, or delete a skill. The wizard turns your brief into a repo-aware prompt for your coding agent.",
+    "stepActionLabel": "Action",
+    "stepMetadataLabel": "Metadata",
+    "stepContentLabel": "Content",
+    "stepGovernanceLabel": "Governance",
+    "stepHandoffLabel": "AI handoff",
+    "actionHeading": "What do you want to do?",
+    "actionLede": "Choose an authoring mode. We will tailor the prompt, the metadata form, and the governance expectations to match.",
+    "metadataHeading": "Skill metadata",
+    "metadataLede": "Canonical fields the agent will write to skill.yaml. Required fields must be filled before moving on.",
+    "contentHeading": "Skill content",
+    "contentLede": "What should the skill body say, what should change, or what deprecation guidance should readers follow?",
+    "governanceHeading": "Estimated governance impact",
+    "governanceLede": "Based on your edits, here is the version bump the verifier will demand. The prompt is pre-set to ask the agent for the correct version.",
+    "handoffHeading": "Hand the task to your coding agent",
+    "handoffLede": "Copy the prompt that matches your agent and paste it into the agent with the repo open.",
+    "actionAdd": "Add a new skill",
+    "actionAddTagline": "Create a brand-new skill.yaml and SKILL.md under skills/<group>/<slug>/.",
+    "actionUpdate": "Update an existing skill",
+    "actionUpdateTagline": "Edit metadata, the SKILL.md body, or support files while keeping identity stable.",
+    "actionRetire": "Retire or archive a skill",
+    "actionRetireTagline": "Mark as deprecated or archived, set a replacement, and write a deprecation note.",
+    "actionDelete": "Hard-delete a skill",
+    "actionDeleteTagline": "Advanced maintenance. Removes the skill package entirely.",
+    "fieldsGroup": "Group (skills/<group>/)",
+    "fieldsSlug": "Slug",
+    "fieldsId": "Skill id",
+    "fieldsPreviousId": "previous_id (migrations)",
+    "fieldsNameEn": "Name (English)",
+    "fieldsNameAr": "Name (Arabic)",
+    "fieldsSummaryEn": "Summary (English)",
+    "fieldsSummaryAr": "Summary (Arabic)",
+    "fieldsCategory": "Category",
+    "fieldsRegion": "Region",
+    "fieldsTargets": "Targets",
+    "fieldsStatus": "Status",
+    "fieldsMaintainers": "Maintainers",
+    "fieldsSources": "Sources",
+    "fieldsDisclaimer": "Compliance disclaimer required",
+    "fieldsVariables": "Variables",
+    "fieldsTriggers": "Triggers",
+    "fieldsSupportFiles": "Support files",
+    "fieldsIntent": "SKILL.md intent",
+    "fieldsEditSummary": "Describe the intended edits",
+    "fieldsLifecycle": "Target lifecycle",
+    "fieldsReplacementId": "Replacement skill id",
+    "fieldsSunsetDate": "Sunset date",
+    "fieldsLifecycleNoteEn": "Lifecycle note (English)",
+    "fieldsLifecycleNoteAr": "Lifecycle note (Arabic)",
+    "fieldsDeleteConfirmation": "Confirm hard delete",
+    "fieldsDeleteRationale": "Why delete instead of retire?",
+    "actionRequired": "Please choose an action first.",
+    "skillRequired": "Please select which skill this applies to.",
+    "categoryCompliance": "Compliance",
+    "categorySecurity": "Security",
+    "categoryArchitecture": "Architecture",
+    "statusReviewed": "Maintainer reviewed",
+    "statusCommunity": "Community maintained",
+    "statusDraft": "Draft",
+    "lifecycleActive": "Active",
+    "lifecycleDeprecated": "Deprecated",
+    "lifecycleArchived": "Archived",
+    "governanceCurrentVersion": "Current version",
+    "governanceEstimatedVersion": "Estimated next version",
+    "governanceEstimatedBump": "Estimated bump",
+    "governanceBumpPatch": "Patch",
+    "governanceBumpMinor": "Minor",
+    "governanceBumpMajor": "Major",
+    "deleteWarningTitle": "Hard delete is rarely correct",
+    "deleteWarningBody": "Prefer retire+archive. Only delete when the skill was accidentally added, was never released, or has no downstream consumers.",
+    "deleteAcknowledge": "I understand this is a major governance event and I accept the consequences.",
+    "addNewTargetOption": "Add a target",
+    "addTargetClaude": "Claude Code",
+    "addTargetCursor": "Cursor",
+    "addTargetCodex": "OpenAI Codex",
+    "addTargetGeneric": "AGENTS.md",
+    "addRow": "Add row",
+    "removeRow": "Remove",
+    "noneNote": "—",
+    "contributorReturn": "Return to library",
+    "skillSelectorLabel": "Which skill?",
+    "skillSelectorNone": "Select a skill",
+    "validationBlockedHint": "Please fill the required fields before moving to the next step.",
+    "templatePickerHeading": "Start from a template",
+    "templatePickerLede": "We'll pre-fill category, region, targets, and disclaimer — you keep editing from there.",
+    "templateSaudiComplianceName": "Saudi compliance",
+    "templateSaudiComplianceTagline": "Regulated behavior in Saudi Arabia — disclaimer on, region set, compliance category.",
+    "templateComplianceGenericName": "Compliance (generic)",
+    "templateComplianceGenericTagline": "Non-regional compliance guardrails with the engineering-guidance disclaimer.",
+    "templateSecurityName": "Security baseline",
+    "templateSecurityTagline": "Secrets, auth, and policy surfaces the agent must treat as guardrails.",
+    "templateArchitectureName": "Architecture",
+    "templateArchitectureTagline": "Code-level discipline: testing, CI, boundaries, migrations.",
+    "templateCustomName": "Start blank",
+    "templateCustomTagline": "No preset — fill every field yourself.",
+    "hintGroup": "Top-level folder under skills/. Usually matches category.",
+    "hintSlug": "Auto-derived from the English name. Edit only if you need a custom directory name.",
+    "hintId": "Auto-derived as <group>-<slug>. Edit if your catalog uses a different convention.",
+    "hintPreviousId": "For identity migrations: the id this skill used to ship under.",
+    "hintNameEn": "Short, specific, capitalized. Avoid abbreviations unreviewers know.",
+    "hintNameAr": "Arabic translation of the title.",
+    "hintSummaryEn": "One sentence: what behavior does this skill enforce?",
+    "hintSummaryAr": "Arabic translation of the summary above.",
+    "hintCategory": "Picks the governance lane. Compliance gets the disclaimer notice.",
+    "hintRegion": "Optional. Use 'saudi-arabia' for KSA skills, leave blank for global.",
+    "hintTargets": "Every native target that will install this skill.",
+    "hintStatus": "Editorial maturity. New skills start as Draft.",
+    "hintMaintainers": "GitHub handles responsible for reviews and compliance freshness.",
+    "hintSources": "At least one authoritative source with an ISO access date.",
+    "hintDisclaimer": "Required for compliance category.",
+    "hintIntent": "What the skill teaches. Use the outline button for a proven structure.",
+    "hintEditSummary": "Describe the intended edits in plain English. The agent reads this like a PR description.",
+    "validationSlug": "Use kebab-case: lowercase letters, digits, single hyphens.",
+    "validationDate": "Use YYYY-MM-DD.",
+    "validationUrl": "Use an http(s):// URL.",
+    "validationRequired": "Required.",
+    "insertOutline": "Use recommended outline",
+    "clearOutline": "Clear",
+    "essentialsHeading": "Essentials",
+    "essentialsLede": "Title, summary, category. The catalog reads these directly.",
+    "identityHeading": "Identifiers",
+    "identityLede": "The folder path and skill id. We derive these automatically — override only if you must.",
+    "advancedHeading": "Advanced metadata",
+    "advancedLede": "Region, targets, status, disclaimer. Defaults work for most skills.",
+    "attestationHeading": "Maintainers & sources",
+    "attestationLede": "Governance tracks who owns this skill and what it cites.",
+    "livePreviewHeading": "Live skill.yaml",
+    "livePreviewLede": "What the AI handoff prompt will ask the agent to write.",
+    "readinessHeading": "Readiness",
+    "readinessComplete": "Ready to hand off.",
+    "readinessIncomplete": "Fill the required fields to continue.",
+    "readinessField": "{count} missing"
+  },
+  "ContributeShell": {
+    "ariaLabel": "Contributor wizard",
+    "eyebrowOf": "Step {step} of {total}",
+    "stepPosition": "Step {step} of {total}",
+    "next": "Next step",
+    "previous": "Previous step",
+    "startOver": "Start over",
+    "finish": "Finish"
+  },
+  "ContributeViaAi": {
+    "eyebrow": "Contribute via AI",
+    "heading": "Hand the authoring task to your coding agent",
+    "lede": "Copy a ready-to-run prompt for Claude Code, Cursor, Codex, or any repo-aware agent. The agent edits skills/** and runs the verify pipeline.",
+    "charsLabel": "chars",
+    "bumpLabel": "Bump",
+    "copyCta": "Copy prompt",
+    "copyCopied": "Copied to clipboard",
+    "copyFallback": "Copy manually",
+    "previewHeading": "Prompt preview",
+    "agentClaudeName": "Claude Code",
+    "agentClaudeTagline": "Autonomously edits skills/** and runs pnpm verify:skills.",
+    "agentCursorName": "Cursor",
+    "agentCursorTagline": "Paste in Cursor composer; it will apply the edits and run verify in the terminal.",
+    "agentCodexName": "OpenAI Codex",
+    "agentCodexTagline": "Pass to Codex/GPT-5.4 with repo access.",
+    "agentGenericName": "Generic coding agent",
+    "agentGenericTagline": "Any agent that reads the repo and can run pnpm workspaces.",
+    "fallbackNote": "Never hand-edit apps/web/lib/skills/generated.ts — the agent regenerates it from source."
   }
 }
-

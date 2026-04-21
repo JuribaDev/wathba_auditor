@@ -5,7 +5,6 @@ const coreRoutes = [
   "/skills/",
   "/skills/saudi-zatca-phase2/",
   "/generate/",
-  "/compare/",
 ] as const;
 
 const directionByLocale = { en: "ltr", ar: "rtl" } as const;
@@ -21,11 +20,3 @@ for (const locale of ["en", "ar"] as const) {
     });
   }
 }
-
-test("compare canvas shows both LTR and RTL frames in Arabic", async ({ page }) => {
-  await page.goto("/ar/compare/");
-  const ltrFrame = page.locator('[dir="ltr"]').first();
-  const rtlFrame = page.locator('[dir="rtl"]').first();
-  await expect(ltrFrame).toBeVisible();
-  await expect(rtlFrame).toBeVisible();
-});

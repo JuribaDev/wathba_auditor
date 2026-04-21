@@ -85,7 +85,13 @@ export function recommendSkills(
 ): GeneratedSkill[] {
   const slugs = recommendSkillSlugs(answers);
   const bySlug = new Map<string, GeneratedSkill>();
-  for (const skill of catalog) bySlug.set(skill.slug, skill);
+  // Archived skills are opt-in only — they must not leak into default
+  // recommendation flows. Deprecated skills are still recommended so
+  // reviewers can see the replacement pointer in the UI.
+  for (const skill of catalog) {
+    if (skill.lifecycle === "archived") continue;
+    bySlug.set(skill.slug, skill);
+  }
   return slugs
     .map((slug) => bySlug.get(slug))
     .filter((skill): skill is GeneratedSkill => Boolean(skill));

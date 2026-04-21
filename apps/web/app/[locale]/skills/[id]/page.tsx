@@ -1,16 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import { Archive, ArrowLeft, ExternalLink, FileText, Pencil, RotateCcw, Trash2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { isLocale, locales, type AppLocale } from "@/lib/i18n";
 import { getTranslator } from "@/lib/messages";
 import { generatedSkills, generatedSkillsById } from "@/lib/skills/generated";
-import { mapStatus, resolveCategoryLabelKey, statusLabelKey } from "@/lib/skills/labels";
+import {
+  lifecycleLabelKey,
+  mapStatus,
+  resolveCategoryLabelKey,
+  statusLabelKey,
+} from "@/lib/skills/labels";
 
 type SkillDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -40,7 +46,13 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
   const categoryLabel = t(resolveCategoryLabelKey(skill));
   const status = mapStatus(skill.status);
   const statusLabel = t(statusLabelKey(status));
+  const lifecycleLabel = t(lifecycleLabelKey(skill.lifecycle));
   const maintainerHandles = skill.maintainers.map((m) => m.github).join(", ");
+  const isDeprecated = skill.lifecycle === "deprecated";
+  const isArchived = skill.lifecycle === "archived";
+  const replacement = skill.replacementId ? generatedSkillsById[skill.replacementId] : undefined;
+  const lifecycleNote =
+    skill.lifecycleNote?.[locale as AppLocale] ?? skill.lifecycleNote?.en ?? null;
 
   return (
     <AppShell locale={locale} section="skills">
@@ -53,7 +65,7 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
           {t("back")}
         </Link>
 
-        <header className="grid gap-5">
+        <header className="grid gap-5" data-lifecycle={skill.lifecycle}>
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant="secondary"
@@ -77,6 +89,21 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
               <span className="text-muted-foreground">{t("verifiedLabel")}</span>
               <span className="ms-1.5 font-mono">{skill.lastVerified}</span>
             </Badge>
+            {skill.lifecycle !== "active" ? (
+              <Badge
+                variant="outline"
+                className={
+                  isArchived
+                    ? "rounded-full border-muted-foreground/40 px-3 py-1 text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground rtl:tracking-normal rtl:normal-case"
+                    : "rounded-full border-warning/60 px-3 py-1 text-[0.7rem] uppercase tracking-[0.12em] text-warning rtl:tracking-normal rtl:normal-case"
+                }
+                data-slot="lifecycle-badge"
+                data-lifecycle={skill.lifecycle}
+                aria-label={`${t("lifecycleLabel")}: ${lifecycleLabel}`}
+              >
+                {lifecycleLabel}
+              </Badge>
+            ) : null}
           </div>
 
           <h1 className="font-heading text-4xl font-medium leading-[1.1] tracking-tight sm:text-[2.75rem]">
@@ -85,6 +112,88 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
 
           <p className="max-w-[56ch] text-base leading-7 text-muted-foreground">{summary}</p>
         </header>
+
+        {isDeprecated || isArchived ? (
+          <div data-slot="lifecycle-banner" data-lifecycle={skill.lifecycle}>
+            <Notice
+              variant={isArchived ? "info" : "warning"}
+              title={
+                isArchived
+                  ? t("lifecycleBannerArchivedTitle")
+                  : t("lifecycleBannerDeprecatedTitle")
+              }
+            >
+              <p>
+                {isArchived
+                  ? t("lifecycleBannerArchivedBody")
+                  : t("lifecycleBannerDeprecatedBody")}
+              </p>
+              {lifecycleNote ? (
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{lifecycleNote}</p>
+              ) : null}
+              <dl className="mt-3 grid gap-1.5 text-sm">
+                {replacement ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <dt className="text-muted-foreground">{t("lifecycleReplacementLabel")}:</dt>
+                    <dd>
+                      <Link
+                        data-slot="lifecycle-replacement-link"
+                        href={`/${locale}/skills/${replacement.id}`}
+                        className="text-primary underline-offset-4 hover:underline"
+                      >
+                        {replacement.name[locale as AppLocale]}
+                      </Link>
+                    </dd>
+                  </div>
+                ) : null}
+                {skill.sunsetDate ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <dt className="text-muted-foreground">{t("lifecycleSunsetLabel")}:</dt>
+                    <dd className="font-mono">{skill.sunsetDate}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </Notice>
+          </div>
+        ) : null}
+
+        <nav
+          aria-label={t("contributorActionsLabel")}
+          data-slot="contributor-actions"
+          className="flex flex-wrap items-center gap-2"
+        >
+          <Button asChild size="sm" variant="outline" data-action="update">
+            <Link href={`/${locale}/skills/contribute?action=update&id=${skill.id}`}>
+              <Pencil aria-hidden="true" className="size-4" />
+              {t("updateSkillCta")}
+            </Link>
+          </Button>
+          {isDeprecated || isArchived ? (
+            <Button asChild size="sm" variant="outline" data-action="reactivate">
+              <Link href={`/${locale}/skills/contribute?action=update&id=${skill.id}`}>
+                <RotateCcw aria-hidden="true" className="size-4" />
+                {t("reactivateSkillCta")}
+              </Link>
+            </Button>
+          ) : null}
+          {!isArchived ? (
+            <Button asChild size="sm" variant="outline" data-action="retire">
+              <Link href={`/${locale}/skills/contribute?action=retire&id=${skill.id}`}>
+                <Archive aria-hidden="true" className="size-4" />
+                {t("retireSkillCta")}
+              </Link>
+            </Button>
+          ) : null}
+          <Button asChild size="sm" variant="ghost" data-action="delete">
+            <Link
+              href={`/${locale}/skills/contribute?action=delete&id=${skill.id}`}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 aria-hidden="true" className="size-4" />
+              {t("deleteSkillCta")}
+            </Link>
+          </Button>
+        </nav>
 
         {skill.disclaimer ? (
           <Notice variant="warning" title={t("disclaimerTitle")}>

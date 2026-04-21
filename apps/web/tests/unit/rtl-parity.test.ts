@@ -10,15 +10,9 @@ import { getDirection, locales } from "@/lib/i18n";
 const ARABIC_CHAR_RANGE = /[\u0600-\u06FF]/;
 
 // Leaves that are intentionally non-Arabic in the AR catalog:
-// brand names, file paths, short technical tokens, placeholders,
-// and the English frame labels inside the bilingual compare canvas.
+// brand names, file paths, short technical tokens, and placeholders.
 const ARABIC_EXEMPT_KEYS = new Set<string>([
   "Shell.github",
-  "Compare.enFrame.title",
-  "Compare.enFrame.body",
-  "Compare.frameLangSlugEn",
-  "Compare.frameLangSlugAr",
-  "Compare.generateZipFilename",
   "Landing.sampleFilename",
   "Questionnaire.review.versionPrefix",
   "Questionnaire.variables.selectPlaceholder",
@@ -38,18 +32,19 @@ const ARABIC_EXEMPT_KEYS = new Set<string>([
   "Questionnaire.tech.agents.options.claude.desc",
   "Questionnaire.tech.agents.options.cursor.label",
   "Questionnaire.tech.agents.options.cursor.desc",
+  "Questionnaire.tech.agents.options.codex.desc",
   "SkillDetail.previewFilename",
+  "Contribute.addTargetClaude",
+  "Contribute.addTargetCursor",
+  "Contribute.addTargetGeneric",
+  "Contribute.noneNote",
+  "ContributeViaAi.agentClaudeName",
+  "ContributeViaAi.agentCursorName",
 ]);
 
-// Leaves whose value is intentionally shared across locales — the compare
-// canvas frame labels are themselves bilingual showcases, so both catalogs
-// display the same strings ("English · LTR" and "العربية · RTL").
-const SHARED_VALUE_KEYS = new Set<string>([
-  "Compare.enFrame.title",
-  "Compare.enFrame.body",
-  "Compare.arFrame.title",
-  "Compare.arFrame.body",
-]);
+// Leaves whose value is intentionally shared across locales. Currently none,
+// but the set is kept as an extension point for future bilingual showcases.
+const SHARED_VALUE_KEYS = new Set<string>();
 
 type Catalog = Record<string, unknown>;
 
@@ -132,7 +127,6 @@ describe("bilingual and RTL parity (US-046)", () => {
       "SkillDetail",
       "Questionnaire",
       "Generate",
-      "Compare",
     ];
     for (const ns of requiredScreens) {
       expect(
@@ -177,13 +171,4 @@ describe("bilingual and RTL parity (US-046)", () => {
     expect(offenders, offenders.join("\n")).toEqual([]);
   });
 
-  it("compare canvas exposes both LTR and RTL frames in every locale", () => {
-    for (const catalog of [enMessages, arMessages] as Catalog[]) {
-      const compare = catalog.Compare as
-        | { enFrame?: { title?: string }; arFrame?: { title?: string } }
-        | undefined;
-      expect(compare?.enFrame?.title, "enFrame.title").toBeTypeOf("string");
-      expect(compare?.arFrame?.title, "arFrame.title").toBeTypeOf("string");
-    }
-  });
 });

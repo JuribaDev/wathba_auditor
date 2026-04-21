@@ -8,7 +8,7 @@ import {
   groupFilesByDirectory,
   orderTargets,
 } from "@/lib/generate/file-plan";
-import type { GeneratedSkill } from "@/lib/skills/generated";
+import type { GeneratedSkill, SkillFile } from "@/lib/skills/generated";
 
 function makeSkill(
   overrides: Partial<GeneratedSkill> & Pick<GeneratedSkill, "id" | "slug">,
@@ -18,6 +18,11 @@ function makeSkill(
     id,
     name: { en: id, ar: id },
     slug,
+    previousIds: [],
+    lifecycle: "active",
+    replacementId: null,
+    sunsetDate: null,
+    lifecycleNote: null,
     version: "0.1.0",
     category: "architecture",
     region: null,
@@ -31,10 +36,15 @@ function makeSkill(
     triggers: [],
     body: "",
     directory: slug,
+    files: [],
     references: [],
     scripts: [],
     ...rest,
   };
+}
+
+function textFile(filePath: string, content: string): SkillFile {
+  return { path: filePath, encoding: "utf-8", content };
 }
 
 describe("getActiveSkills", () => {
@@ -75,14 +85,14 @@ describe("buildFilesForTarget", () => {
   const skill = makeSkill({
     id: "s",
     slug: "s",
-    references: [
-      { path: "ref-a.md", content: "a" },
-      { path: "ref-b.xml", content: "b" },
+    files: [
+      textFile("references/ref-a.md", "a"),
+      textFile("references/ref-b.xml", "b"),
+      textFile("scripts/helper.sh", "#!/bin/sh"),
     ],
-    scripts: [{ path: "helper.sh", content: "#!/bin/sh" }],
   });
 
-  it("claude-code emits SKILL.md plus references and scripts with real filenames", () => {
+  it("claude-code emits SKILL.md plus support files under the skill directory", () => {
     expect(buildFilesForTarget("claude-code", [skill])).toEqual([
       ".claude/skills/s/SKILL.md",
       ".claude/skills/s/references/ref-a.md",
@@ -91,17 +101,35 @@ describe("buildFilesForTarget", () => {
     ]);
   });
 
-  it("cursor emits one .mdc file per skill", () => {
+  it("cursor emits a native skill package per skill — never .cursor/rules/*.mdc", () => {
     const other = makeSkill({ id: "o", slug: "other" });
-    expect(buildFilesForTarget("cursor", [skill, other])).toEqual([
-      ".cursor/rules/s.mdc",
-      ".cursor/rules/other.mdc",
+    const paths = buildFilesForTarget("cursor", [skill, other]);
+    expect(paths).toEqual([
+      ".cursor/skills/s/SKILL.md",
+      ".cursor/skills/s/references/ref-a.md",
+      ".cursor/skills/s/references/ref-b.xml",
+      ".cursor/skills/s/scripts/helper.sh",
+      ".cursor/skills/other/SKILL.md",
     ]);
+    expect(paths.every((p) => !p.startsWith(".cursor/rules/"))).toBe(true);
   });
 
-  it("codex and agents-md emit a single AGENTS.md", () => {
-    expect(buildFilesForTarget("codex", [skill])).toEqual(["AGENTS.md"]);
+  it("codex emits a native skill package per skill under .agents/skills/", () => {
+    const paths = buildFilesForTarget("codex", [skill]);
+    expect(paths).toEqual([
+      ".agents/skills/s/SKILL.md",
+      ".agents/skills/s/references/ref-a.md",
+      ".agents/skills/s/references/ref-b.xml",
+      ".agents/skills/s/scripts/helper.sh",
+    ]);
+    expect(paths.every((p) => p !== "AGENTS.md")).toBe(true);
+  });
+
+  it("agents-md is the only target that emits AGENTS.md", () => {
     expect(buildFilesForTarget("agents-md", [skill])).toEqual(["AGENTS.md"]);
+    expect(buildFilesForTarget("codex", [skill]).includes("AGENTS.md")).toBe(
+      false,
+    );
   });
 
   it("returns an empty list when no skills are active", () => {
@@ -115,18 +143,13 @@ describe("groupFilesByDirectory", () => {
     const groups = groupFilesByDirectory([
       ".claude/skills/s/SKILL.md",
       ".claude/skills/s/references/ref-1.md",
-      ".claude/skills/s/SKILL.md",
+      ".claude/skills/s/references/deep/ref-2.md",
       "AGENTS.md",
     ]);
     expect(groups).toEqual([
-      {
-        directory: ".claude/skills/s",
-        files: ["SKILL.md", "SKILL.md"],
-      },
-      {
-        directory: ".claude/skills/s/references",
-        files: ["ref-1.md"],
-      },
+      { directory: ".claude/skills/s", files: ["SKILL.md"] },
+      { directory: ".claude/skills/s/references", files: ["ref-1.md"] },
+      { directory: ".claude/skills/s/references/deep", files: ["ref-2.md"] },
       { directory: ".", files: ["AGENTS.md"] },
     ]);
   });
@@ -136,14 +159,14 @@ describe("buildFilePlan", () => {
   const skill = makeSkill({
     id: "s",
     slug: "s",
-    references: [{ path: "ref-a.md", content: "a" }],
-    scripts: [],
+    files: [textFile("references/ref-a.md", "a")],
   });
 
   it("aggregates totals across every selected target", () => {
     const plan = buildFilePlan(["claude-code", "cursor"], [skill]);
     expect(plan.skillCount).toBe(1);
-    expect(plan.totalFiles).toBe(3);
+    // Each target now produces SKILL.md + 1 reference file → 4 files total.
+    expect(plan.totalFiles).toBe(4);
     expect(plan.targets.map((t) => t.target)).toEqual([
       "claude-code",
       "cursor",
@@ -157,9 +180,7 @@ describe("buildFilePlan", () => {
       skillCount: 1,
     });
     expect(buildFilePlan(["claude-code"], [])).toEqual({
-      targets: [
-        { target: "claude-code", files: [], groups: [] },
-      ],
+      targets: [{ target: "claude-code", files: [], groups: [] }],
       totalFiles: 0,
       skillCount: 0,
     });

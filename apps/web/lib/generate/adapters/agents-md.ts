@@ -3,6 +3,9 @@ import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { RenderedFile } from "@/lib/generate/adapters/claude-code";
 import type { SkillResolution } from "@/lib/generate/resolve-markdown";
 
+// AGENTS.md is the generic-fallback target (https://agents.md). It is NOT the Codex
+// skill format — Codex skills are native directories under `.agents/skills/`. This
+// adapter is the only one in the repo allowed to emit AGENTS.md.
 const AGENTS_MD_PATH = "AGENTS.md";
 
 const STATUS_LABEL: Record<GeneratedSkill["status"], string> = {
@@ -61,7 +64,13 @@ export function renderAgentsMdFiles(
     return renderSkillSection(skill, body);
   });
   const content = `${[AGENTS_MD_HEADER, "---", ...sections].join("\n\n")}\n`;
-  return [{ path: AGENTS_MD_PATH, content }];
+  return [
+    {
+      path: AGENTS_MD_PATH,
+      encoding: "utf-8",
+      content,
+    },
+  ];
 }
 
 export function renderAgentsMdPaths(

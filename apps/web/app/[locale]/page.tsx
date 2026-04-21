@@ -60,7 +60,11 @@ export default async function LandingPage({ params }: LandingProps) {
   const t = await getTranslator(locale, "Landing");
   const tSkills = await getTranslator(locale, "Skills");
 
-  const previewSkills = generatedSkills.slice(0, 6);
+  // Homepage preview mirrors default library discovery — archived skills
+  // must stay opt-in and therefore never surface here.
+  const previewSkills = generatedSkills
+    .filter((skill) => skill.lifecycle !== "archived")
+    .slice(0, 6);
   const cardLabels = {
     category: {
       categorySaudi: tSkills("filterCategorySaudi"),
@@ -78,6 +82,10 @@ export default async function LandingPage({ params }: LandingProps) {
     versionPrefix: tSkills("cardVersionPrefix"),
     verifiedPrefix: tSkills("cardVerifiedPrefix"),
     viewSkill: tSkills("viewSkill"),
+    lifecycleDeprecated: tSkills("lifecycleBadgeDeprecated"),
+    lifecycleArchived: tSkills("lifecycleBadgeArchived"),
+    lifecycleDeprecatedShort: tSkills("lifecycleDeprecatedShort"),
+    lifecycleArchivedShort: tSkills("lifecycleArchivedShort"),
   };
 
   return (

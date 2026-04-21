@@ -18,10 +18,15 @@ export type SkillSnapshotBuildInput = {
   body: string;
   references: SkillFile[];
   scripts: SkillFile[];
+  files?: SkillFile[];
 };
 
+function sortByPath(files: readonly SkillFile[]): SkillFile[] {
+  return files.slice().sort((a, b) => a.path.localeCompare(b.path));
+}
+
 export function toSnapshot(input: SkillSnapshotBuildInput): SkillSnapshotInput {
-  const { canonical, body, references, scripts } = input;
+  const { canonical, body, references, scripts, files } = input;
   return {
     id: canonical.id,
     slug: canonical.slug,
@@ -44,9 +49,14 @@ export function toSnapshot(input: SkillSnapshotBuildInput): SkillSnapshotInput {
       options: variable.options,
     })),
     triggers: canonical.triggers,
+    lifecycle: canonical.lifecycle,
+    replacementId: canonical.replacement_id ?? null,
+    sunsetDate: canonical.sunset_date ?? null,
+    lifecycleNote: canonical.lifecycle_note ?? null,
     body,
-    references: references.slice().sort((a, b) => a.path.localeCompare(b.path)),
-    scripts: scripts.slice().sort((a, b) => a.path.localeCompare(b.path)),
+    references: sortByPath(references),
+    scripts: sortByPath(scripts),
+    files: files ? sortByPath(files) : [],
   };
 }
 
@@ -80,8 +90,17 @@ export function loadSkillSnapshotAtRef(
   const bodyPath = path.posix.join(skillDir, "SKILL.md");
   const body = readFileAtRef(loader.cwd, loader.ref, bodyPath) ?? "";
 
-  const references = loadDirAtRef(loader, path.posix.join(skillDir, "references"));
-  const scripts = loadDirAtRef(loader, path.posix.join(skillDir, "scripts"));
+  // Walk every file under the skill root at this ref (except the reserved
+  // `skill.yaml` + `SKILL.md`). This covers `references/`, `scripts/`,
+  // `assets/`, `templates/`, `agents/openai.yaml`, and any other author-
+  // bundled support file — so governance can detect changes to all of them.
+  const allFiles = loadTreeAtRef(loader, skillDir);
+  const references = allFiles
+    .filter((file) => file.path.startsWith("references/") && !file.path.slice("references/".length).includes("/"))
+    .map((file) => ({ path: file.path.slice("references/".length), content: file.content }));
+  const scripts = allFiles
+    .filter((file) => file.path.startsWith("scripts/") && !file.path.slice("scripts/".length).includes("/"))
+    .map((file) => ({ path: file.path.slice("scripts/".length), content: file.content }));
 
   const parts = skillDir.split("/").filter(Boolean);
   const group = parts[1] ?? "";
@@ -95,18 +114,29 @@ export function loadSkillSnapshotAtRef(
     body,
     references,
     scripts,
+    files: allFiles,
   });
 }
 
-function loadDirAtRef(loader: GitSnapshotLoader, dirPath: string): SkillFile[] {
-  const entries = listTreeAtRef(loader.cwd, loader.ref, `${dirPath}/`);
+// Read every text-looking file under the skill directory at the given git ref.
+// Binary blobs (detected by a NUL byte in the git-show output) are skipped —
+// they would always compare "changed" against base64-encoded working-tree
+// entries and produce false-positive governance failures.
+function loadTreeAtRef(
+  loader: GitSnapshotLoader,
+  skillDir: string,
+): SkillFile[] {
+  const prefix = `${skillDir}/`;
+  const entries = listTreeAtRef(loader.cwd, loader.ref, prefix);
   const files: SkillFile[] = [];
   for (const entry of entries) {
-    const relative = entry.startsWith(`${dirPath}/`) ? entry.slice(dirPath.length + 1) : entry;
+    const relative = entry.startsWith(prefix) ? entry.slice(prefix.length) : entry;
+    if (relative === "skill.yaml" || relative === "SKILL.md") continue;
+    if (relative === "" || relative.includes("..")) continue;
     const content = readFileAtRef(loader.cwd, loader.ref, entry);
-    if (content !== null) {
-      files.push({ path: relative, content });
-    }
+    if (content === null) continue;
+    if (content.includes("\0")) continue; // skip non-text blobs (see comment above)
+    files.push({ path: relative, content });
   }
   return files;
 }
@@ -140,7 +170,7 @@ export function indexSkillsAtRef(
   return index;
 }
 
-export function loadSkillSnapshotFromLoadedSkill(loaded: {
+export type LoadedSkillLike = {
   id: string;
   slug: string;
   previousIds?: readonly string[];
@@ -165,8 +195,24 @@ export function loadSkillSnapshotFromLoadedSkill(loaded: {
   body: string;
   references: readonly SkillFile[];
   scripts: readonly SkillFile[];
+  // Generic support-file list from the GeneratedSkill shape. Entries carry
+  // encoding info so we can exclude binary blobs from the governance diff
+  // (they don't round-trip through `git show` as utf-8, so diffing them
+  // would produce false positives).
+  files?: ReadonlyArray<{ path: string; encoding: "utf-8" | "base64"; content: string }>;
   directory: string;
-}): SkillSnapshotInput {
+  lifecycle?: string;
+  replacementId?: string | null;
+  sunsetDate?: string | null;
+  lifecycleNote?: { en: string; ar: string } | null;
+};
+
+export function loadSkillSnapshotFromLoadedSkill(
+  loaded: LoadedSkillLike,
+): SkillSnapshotInput {
+  const textFiles: SkillFile[] = (loaded.files ?? [])
+    .filter((file) => file.encoding === "utf-8")
+    .map((file) => ({ path: file.path, content: file.content }));
   return {
     id: loaded.id,
     slug: loaded.slug,
@@ -184,10 +230,13 @@ export function loadSkillSnapshotFromLoadedSkill(loaded: {
     targets: loaded.targets,
     variables: loaded.variables,
     triggers: loaded.triggers,
+    lifecycle: loaded.lifecycle ?? "active",
+    replacementId: loaded.replacementId ?? null,
+    sunsetDate: loaded.sunsetDate ?? null,
+    lifecycleNote: loaded.lifecycleNote ?? null,
     body: loaded.body,
-    references: loaded.references
-      .slice()
-      .sort((a, b) => a.path.localeCompare(b.path)),
-    scripts: loaded.scripts.slice().sort((a, b) => a.path.localeCompare(b.path)),
+    references: sortByPath(loaded.references),
+    scripts: sortByPath(loaded.scripts),
+    files: sortByPath(textFiles),
   };
 }

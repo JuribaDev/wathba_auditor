@@ -29,7 +29,7 @@ function GithubIcon(props: SVGProps<SVGSVGElement>) {
 
 type AppShellProps = {
   locale: AppLocale;
-  section: "home" | "generate" | "skills" | "compare";
+  section: "home" | "generate" | "skills";
   title?: string;
   description?: string;
   actions?: ReactNode;
@@ -50,7 +50,6 @@ export async function AppShell({
     { id: "home", href: `/${locale}`, label: t("navOverview") },
     { id: "skills", href: `/${locale}/skills`, label: t("navSkills") },
     { id: "generate", href: `/${locale}/generate`, label: t("navGenerate") },
-    { id: "compare", href: `/${locale}/compare`, label: t("navCompare") },
   ] as const;
 
   return (
