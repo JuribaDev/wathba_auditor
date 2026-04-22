@@ -41,8 +41,8 @@ const REGISTRATION: Record<TargetAgent, Record<AgentPromptLocale, string>> = {
     ar: "سيكتشف Claude Code المهارات تلقائياً من مجلد .claude/skills/<slug>/. لا يلزم أي إعداد إضافي بعد إنشاء الملفات.",
   },
   cursor: {
-    en: "Cursor auto-discovers skills in .cursor/skills/<slug>/. Reload the window if Cursor is already open.",
-    ar: "يكتشف Cursor المهارات تلقائياً من .cursor/skills/<slug>/. أعد تشغيل نافذة Cursor إذا كانت مفتوحة.",
+    en: "Cursor reads both .cursor/rules/<slug>.mdc (durable project context) and .cursor/skills/<slug>/SKILL.md (Agent Skills interop). Ship both — rules auto-attach via their frontmatter, skills are model-invocable. Reload the window if Cursor is already open.",
+    ar: "يقرأ Cursor كلاً من .cursor/rules/<slug>.mdc (سياق دائم للمشروع) و .cursor/skills/<slug>/SKILL.md (توافق Agent Skills). انسخ النوعين — القواعد تُربط تلقائياً عبر frontmatter، والمهارات قابلة للاستدعاء من النموذج. أعد تشغيل نافذة Cursor إذا كانت مفتوحة.",
   },
   codex: {
     en: "Codex auto-discovers skills in .agents/skills/<slug>/ at session start. Each skill is a self-contained directory with a SKILL.md entry point and optional scripts/, references/, assets/, and agents/openai.yaml.",

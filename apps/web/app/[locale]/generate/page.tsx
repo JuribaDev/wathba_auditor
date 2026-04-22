@@ -196,6 +196,22 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
       agentGenericName: t("generate.install.agents.generic.name"),
       agentGenericTagline: t("generate.install.agents.generic.tagline"),
     },
+    channels: {
+      heading: t("generate.channels.heading"),
+      lede: t("generate.channels.lede"),
+      recommendedBadge: t("generate.channels.recommendedBadge"),
+      showStepsLabel: t("generate.channels.showStepsLabel"),
+      hideStepsLabel: t("generate.channels.hideStepsLabel"),
+      copyLabel: t("generate.channels.copyLabel"),
+      copiedLabel: t("generate.channels.copiedLabel"),
+      copyFallback: t("generate.channels.copyFallback"),
+    },
+    advanced: {
+      heading: t("generate.advanced.heading"),
+      lede: t("generate.advanced.lede"),
+      show: t("generate.advanced.show"),
+      hide: t("generate.advanced.hide"),
+    },
   };
 
   const validationMessages: ValidationMessages = {

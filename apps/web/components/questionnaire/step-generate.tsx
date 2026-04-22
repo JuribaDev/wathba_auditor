@@ -3,9 +3,15 @@
 import * as React from "react";
 import { CheckCircle2, Download, Folder, FileText, Loader2 } from "lucide-react";
 
+import { ChevronDown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { InstallViaAi, type InstallViaAiLabels } from "@/components/install-via-ai";
+import {
+  InstallChannels,
+  type InstallChannelsLabels,
+} from "@/components/questionnaire/install-channels";
 import type { FilePlan, TargetFilePlan } from "@/lib/generate/file-plan";
 import type {
   MissingVariables,
@@ -52,6 +58,13 @@ export type GenerateStepLabels = {
   downloadDisabledMissing: string;
   downloadError: string;
   install: InstallViaAiLabels;
+  channels: InstallChannelsLabels;
+  advanced: {
+    heading: string;
+    lede: string;
+    show: string;
+    hide: string;
+  };
 };
 
 type StepGenerateProps = {
@@ -129,68 +142,133 @@ export function StepGenerate({
           labels={labels}
         />
       ) : null}
-      <section
-        aria-label={labels.zipLabel}
-        className={cn(
-          "rounded-2xl border border-border bg-surface px-5 py-5 shadow-sm",
-          "sm:px-6 sm:py-6",
-        )}
-      >
-        <p
+
+      <InstallChannels
+        locale={locale}
+        labels={labels.channels}
+        selectedTargets={availableTargets}
+      />
+
+      <AdvancedDisclosure labels={labels.advanced}>
+        <section
+          aria-label={labels.zipLabel}
           className={cn(
-            "text-xs font-medium uppercase tracking-[0.18em] text-primary",
-            "rtl:tracking-normal rtl:normal-case",
+            "rounded-2xl border border-border bg-surface px-5 py-5 shadow-sm",
+            "sm:px-6 sm:py-6",
           )}
         >
-          {labels.zipLabel}
-        </p>
-        <div className="mt-3 font-mono text-[13px] text-foreground">
-          <div className="flex items-center gap-2">
-            <Folder aria-hidden="true" className="size-3.5 text-primary" />
-            <span className="break-all">{labels.zipFilename}</span>
+          <p
+            className={cn(
+              "text-xs font-medium uppercase tracking-[0.18em] text-primary",
+              "rtl:tracking-normal rtl:normal-case",
+            )}
+          >
+            {labels.zipLabel}
+          </p>
+          <div className="mt-3 font-mono text-[13px] text-foreground">
+            <div className="flex items-center gap-2">
+              <Folder aria-hidden="true" className="size-3.5 text-primary" />
+              <span className="break-all">{labels.zipFilename}</span>
+            </div>
+            <FileTree plan={plan} labels={labels} />
           </div>
-          <FileTree plan={plan} labels={labels} />
-        </div>
-        <div className="mt-4 flex flex-col gap-1 border-t border-border pt-4 text-[13px] text-muted-foreground">
-          <div className="flex items-center justify-between gap-3">
-            <span>{labels.totalLabel}</span>
-            <strong className="text-foreground">
-              {plan.totalFiles} {labels.filesLabel}
-            </strong>
+          <div className="mt-4 flex flex-col gap-1 border-t border-border pt-4 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-between gap-3">
+              <span>{labels.totalLabel}</span>
+              <strong className="text-foreground">
+                {plan.totalFiles} {labels.filesLabel}
+              </strong>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span>{labels.skillsLabel}</span>
+              <strong className="text-foreground">{plan.skillCount}</strong>
+            </div>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <span>{labels.skillsLabel}</span>
-            <strong className="text-foreground">{plan.skillCount}</strong>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <TargetPreview
-        targets={plan.targets}
-        activeTarget={activeTarget}
-        onSelect={setUserTarget}
-        labels={labels}
-        previewContents={previewContents}
-      />
+        <TargetPreview
+          targets={plan.targets}
+          activeTarget={activeTarget}
+          onSelect={setUserTarget}
+          labels={labels}
+          previewContents={previewContents}
+        />
 
-      <DownloadPanel
-        plan={plan}
-        activeSkills={activeSkills}
-        resolutions={resolutions}
-        hasMissing={missing.length > 0}
-        labels={labels}
-      />
-
-      {missing.length === 0 ? (
-        <InstallViaAi
-          locale={locale}
+        <DownloadPanel
           plan={plan}
           activeSkills={activeSkills}
           resolutions={resolutions}
-          labels={labels.install}
+          hasMissing={missing.length > 0}
+          labels={labels}
         />
-      ) : null}
+
+        {missing.length === 0 ? (
+          <InstallViaAi
+            locale={locale}
+            plan={plan}
+            activeSkills={activeSkills}
+            resolutions={resolutions}
+            labels={labels.install}
+          />
+        ) : null}
+      </AdvancedDisclosure>
     </div>
+  );
+}
+
+type AdvancedDisclosureProps = {
+  labels: { heading: string; lede: string; show: string; hide: string };
+  children: React.ReactNode;
+};
+
+function AdvancedDisclosure({ labels, children }: AdvancedDisclosureProps) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <section
+      data-slot="advanced-disclosure"
+      data-state={open ? "open" : "closed"}
+      className={cn(
+        "rounded-2xl border border-dashed border-border bg-surface-variant/30",
+      )}
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          "flex w-full items-start gap-3 px-5 py-4 text-start sm:px-6 sm:py-5",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          "focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
+        )}
+      >
+        <div className="min-w-0 flex-1">
+          <p
+            className={cn(
+              "text-[11px] font-medium uppercase tracking-[0.18em] text-soft-foreground",
+              "rtl:tracking-normal rtl:normal-case",
+            )}
+          >
+            {labels.heading}
+          </p>
+          <p className="mt-1 text-[13.5px] leading-6 text-muted-foreground">
+            {labels.lede}
+          </p>
+        </div>
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            "mt-1 size-4 shrink-0 text-muted-foreground transition-transform",
+            open ? "rotate-180" : "rotate-0",
+          )}
+        />
+        <span className="sr-only">{open ? labels.hide : labels.show}</span>
+      </button>
+      {open ? (
+        <div className="flex flex-col gap-5 border-t border-dashed border-border px-5 pb-5 pt-5 sm:px-6 sm:pb-6">
+          {children}
+        </div>
+      ) : null}
+    </section>
   );
 }
 

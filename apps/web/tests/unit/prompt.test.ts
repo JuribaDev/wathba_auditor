@@ -104,14 +104,14 @@ describe("buildAgentPrompt", () => {
     expect(bundle.text.toLowerCase()).toContain("claude code auto-discovers");
   });
 
-  it("describes Cursor skills under .cursor/skills/ (not .cursor/rules/)", () => {
+  it("describes Cursor skills under both .cursor/rules/ (durable) and .cursor/skills/ (interop)", () => {
     const en = buildAgentPrompt("cursor", skills, [], "en");
+    expect(en.text).toContain(".cursor/rules/");
     expect(en.text).toContain(".cursor/skills/");
-    expect(en.text).not.toContain(".cursor/rules/");
     const ar = buildAgentPrompt("cursor", skills, [], "ar");
     expect(ar.text).toContain("تثبيت");
+    expect(ar.text).toContain(".cursor/rules/");
     expect(ar.text).toContain(".cursor/skills/");
-    expect(ar.text).not.toContain(".cursor/rules/");
   });
 
   it("describes Codex skills under .agents/skills/ (not AGENTS.md)", () => {

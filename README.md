@@ -1,85 +1,131 @@
 # Wathba Skills
 
-Wathba Skills is an open-source, frontend-only generator for downloadable AI-agent skill packs. It is designed for developers building for Saudi Arabia and the wider MENA region who need better compliance, security, and architecture guidance without introducing a backend.
+Wathba Skills is an open-source library of production-grade agent skills for developers building for Saudi Arabia and the wider MENA region. Canonical authoring lives under `skills/<category>/<slug>/`; the library is distributed as a Claude Code plugin (via a marketplace and a local-plugin flow), as native Cursor and Codex artefacts, and as a manual zip for offline/generic use.
 
-The product works end-to-end in the browser: answer a short bilingual questionnaire, review recommended skills, preview how each skill renders as a native Agent Skills package for Claude Code, Cursor, Codex, or a generic `AGENTS.md` consumer, and download a ready-to-drop-in zip. Nothing is sent to a remote service.
+- Canonical source of truth: `skills/<category>/<slug>/`
+- Claude Code plugin: `plugins/wathba-skills/` (**generated**, do not hand-edit)
+- Claude Code marketplace catalog: `.claude-plugin/marketplace.json` (**generated**)
+- Web preview + manual zip builder: `apps/web/`
+- License: [MIT](./LICENSE) · Disclaimer: [DISCLAIMER.md](./DISCLAIMER.md) (engineering guidance only — not legal advice)
+
+## Install
+
+### 1. Claude Code Marketplace (recommended)
+
+In any Claude Code session:
+
+```
+/plugin marketplace add wathba-dev/wathba_auditor
+/plugin install wathba-skills@wathba
+```
+
+You get:
+
+- **Eight model-invocable skills** — `zatca-phase2`, `pdpl-basics`, `nafath-yakeen-basics`, `mada-stcpay-basics`, `auth-isolation`, `secrets-baseline`, `testability-check`, `ci-hygiene`.
+- **Five slash commands** wired to real Wathba workflows — `/wathba-compliance-review`, `/wathba-security-baseline`, `/wathba-architecture-audit`, `/wathba-install-guide`, `/wathba-skill-list`.
+
+Update to the latest catalog at any time with `/plugin marketplace update wathba`.
+
+### 2. Claude Code Local Plugin
+
+For contributors, air-gapped environments, or branch previews:
+
+```bash
+git clone https://github.com/wathba-dev/wathba_auditor.git
+cd wathba_auditor
+pnpm install
+pnpm generate:plugin-dist
+```
+
+Then inside Claude Code:
+
+```
+/plugin marketplace add ./
+/plugin install wathba-skills@wathba
+```
+
+Re-run `pnpm generate:plugin-dist` after canonical edits; refresh Claude Code with `/plugin marketplace update wathba`.
+
+### 3. Cursor
+
+Cursor ships with two compatible surfaces — `.cursor/rules/*.mdc` (durable context) and `.cursor/skills/<slug>/SKILL.md` (Agent Skills interop). Use the web app to download a zip that contains both:
+
+1. Open the Wathba web preview (`pnpm dev`, or the hosted site).
+2. Run the questionnaire, pick the skills you want, open the **Cursor** card.
+3. Use **Advanced → Download zip** at the bottom and extract into your repo root.
+
+### 4. Codex
+
+Native — drop `.agents/skills/<slug>/` directories into your repo root from the same zip. Codex auto-discovers them on next session start.
+
+### 5. Manual zip / offline
+
+The zip ships exactly the targets you selected in the questionnaire — Claude Code, Cursor (both `.cursor/rules/` and `.cursor/skills/`), Codex (`.agents/skills/`), and/or a generic `AGENTS.md`. If you want every target in one archive, select them all before downloading.
+
+> The web app's **Install via AI** prompt-copy path is preserved as an advanced fallback for teams using a coding agent other than Claude Code / Cursor / Codex.
 
 ## Export contract
 
-Every exported skill is a real Agent Skills package ([spec](https://agentskills.io/specification)): a directory containing `SKILL.md` with open-standard frontmatter (`name`, `description`) plus any supporting files the author bundled. Output paths per target:
-
 | Target | Root path | Entry point |
 | --- | --- | --- |
-| Claude Code | `.claude/skills/<slug>/` | `.claude/skills/<slug>/SKILL.md` |
-| Cursor | `.cursor/skills/<slug>/` | `.cursor/skills/<slug>/SKILL.md` |
-| OpenAI Codex | `.agents/skills/<slug>/` | `.agents/skills/<slug>/SKILL.md` |
+| Claude Code plugin (installed via marketplace) | `plugins/wathba-skills/skills/<slug>/` | `SKILL.md` |
+| Claude Code (manual zip) | `.claude/skills/<slug>/` | `SKILL.md` |
+| Cursor rules (durable context) | `.cursor/rules/` | `<slug>.mdc` |
+| Cursor Agent Skills (interop) | `.cursor/skills/<slug>/` | `SKILL.md` |
+| Codex | `.agents/skills/<slug>/` | `SKILL.md` |
 | Generic fallback | repo root | `AGENTS.md` |
 
-- The three native targets emit a complete skill directory — `SKILL.md` plus every `references/`, `scripts/`, `assets/`, `agents/openai.yaml`, or other author-bundled file, preserved under the skill root.
-- `AGENTS.md` is only produced by the generic adapter. It is **not** how Codex or Cursor skills are installed; those use `.agents/skills/` and `.cursor/skills/` respectively.
-- Exported `SKILL.md` frontmatter is docs-native. Wathba governance (version, status, last-verified, disclaimer, sources) is rendered into the markdown body, not into undocumented frontmatter fields.
-- Binary support files (images, templated XML/PDF assets, etc.) round-trip losslessly through the zip. The "Install via AI" prompt flow replaces them with a placeholder and tells the user to use the downloaded zip for those files.
+Every exported `SKILL.md` carries docs-native frontmatter (`name`, `description`) per the Agent Skills spec. Wathba governance (version, status, `Last verified`, disclaimer, sources) is rendered into the markdown body or footer — never into undocumented frontmatter fields.
 
-- Home: [https://github.com/juriba/wathba-skills](https://github.com/juriba/wathba-skills)
-- License: [MIT](./LICENSE)
-- Disclaimer: [DISCLAIMER.md](./DISCLAIMER.md) — engineering guidance only, not legal advice.
+Binary support files round-trip losslessly through the zip and the plugin dist; the Install-via-AI prompt path replaces them with placeholders and instructs the user to use the zip for those files.
 
 ## Repository structure
 
 ```
-apps/web/                 Static Next.js frontend (App Router, React 19, TS)
-packages/skill-schema/    Shared zod schema for skills + inferred TS types
-skills/                   Canonical skill library (content lives here)
-scripts/                  Build-time skill loader and generator
-.github/                  CI workflows, issue templates, governance
+.claude-plugin/            Generated: marketplace.json (Claude Code catalog)
+plugins/wathba-skills/     Generated: Claude Code plugin (skills/, commands/, docs/, plugin.json)
+apps/web/                  Static Next.js app (preview, questionnaire, manual zip builder)
+packages/skill-schema/     Shared Zod schema + inferred TS types
+skills/                    CANONICAL skill library — authoritative source
+scripts/                   Generators: skills data, plugin dist, drift checks
+.github/                   CI workflows, issue templates, governance
 ```
-
-Current scope:
-
-- `pnpm` workspace with `apps/` and `packages/`
-- Static-exportable Next.js app in `apps/web`
-- English and Arabic locale routes with RTL handling for Arabic
-- Canonical skill schema
-- Seed Saudi, security, and architecture skills under `skills/`
-- Build-time skill generation into the frontend
-- Skill library (`/[locale]/skills`), detail (`/[locale]/skills/[id]`), generate flow, and contributor wizard (`/[locale]/skills/contribute`) for add/update/retire/delete
 
 ## Local development
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev                # web preview at http://localhost:3000
 ```
 
-Useful commands:
+Generators and verification:
 
-- `pnpm generate:skills` — validate `skills/**/skill.yaml` and emit typed data
-- `pnpm lint`
-- `pnpm doctor:react`
-- `pnpm typecheck`
-- `pnpm test`
-- `pnpm build`
-- `pnpm verify:skills` — fast governance gate: version-bump policy + compliance freshness + generated-output drift (runs on pre-commit)
-- `pnpm verify` — full pipeline: verify:skills + typecheck + lint + tests + build
-- `pnpm verify:full` — adds the Playwright E2E pass
+- `pnpm generate:skills` — validate `skills/**/skill.yaml` and emit `apps/web/lib/skills/generated.ts`.
+- `pnpm generate:plugin-dist` — regenerate `plugins/wathba-skills/` and `.claude-plugin/marketplace.json` from the canonical library. Deterministic; commit the output.
+- `pnpm verify:skills` — SemVer bump policy + compliance freshness + generated-data drift.
+- `pnpm verify:plugin-dist` — regenerate the plugin dist and fail if it differs from committed state.
+- `pnpm verify` — full pipeline: `verify:skills` + `verify:plugin-dist` + doctor:react + typecheck + lint + tests + build.
+- `pnpm verify:full` — adds the Playwright E2E pass.
+
+> **Never hand-edit files under `plugins/wathba-skills/` or `.claude-plugin/marketplace.json`** — both are regenerated from `skills/<category>/<slug>/`. See [`plugins/wathba-skills/docs/development.md`](./plugins/wathba-skills/docs/development.md).
 
 ## Skill governance workflow
-
-Every skill change is classified and gated automatically:
 
 ```
 edit skills/ ──► detect changed skills ──► classify severity ──► enforce SemVer bump
                                                                        │
-                                  regenerate catalog ◄─────────────────┘
-                                           │
-                                           ▼
-                                   commit or CI fails
+                                        regenerate catalog ◄───────────┘
+                                                │
+                              regenerate plugin dist (deterministic)
+                                                │
+                                                ▼
+                                        commit or CI fails
 ```
 
-- **Version bump policy** — Patch for `SKILL.md` + metadata edits. Minor for additive changes (new variable, new target, new reference). Major for identity or breaking changes (id/slug, removed or renamed variable, removed target). The full matrix lives in [CONTRIBUTING.md](./CONTRIBUTING.md).
-- **Detecting changed skills** — `pnpm verify:skills:versions` diffs against `origin/main` (or `$GITHUB_BASE_REF` in CI) and only inspects skills that changed on this branch.
-- **Generated-output drift** — `apps/web/lib/skills/generated.ts` is regenerated in CI; if it differs from the committed file, the build fails with a diff excerpt and a precise fix command. Never hand-edit that file.
-- **Compliance freshness** — Only *changed* compliance skills are checked. Thresholds: `last_verified` ≤ 180 days, every `sources[*].accessed` ≤ 180 days. Overridable via `WATHBA_LAST_VERIFIED_MAX_DAYS` / `WATHBA_SOURCE_ACCESSED_MAX_DAYS`. Run `pnpm verify:skills:freshness -- --all` to audit every compliance skill before a release.
+- **Version bump policy** — Patch for `SKILL.md`/metadata edits. Minor for additive changes (new variable, new target, new reference). Major for identity or breaking changes. Full matrix in [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **Detecting changed skills** — `pnpm verify:skills:versions` diffs against `origin/main` (or `$GITHUB_BASE_REF` in CI).
+- **Generated-output drift** — `apps/web/lib/skills/generated.ts` AND `plugins/wathba-skills/**` AND `.claude-plugin/marketplace.json` are regenerated in CI; any divergence fails the build with a diff excerpt and a precise fix command.
+- **Compliance freshness** — Only *changed* compliance skills are checked. Thresholds: `last_verified` ≤ 180 days, every `sources[*].accessed` ≤ 180 days.
 
 Git hooks:
 
@@ -88,26 +134,24 @@ Git hooks:
 
 ## Contributing a skill
 
-The skill library is the durable product value. It is intentionally decoupled from the web app so content contributors never need to touch React or routing.
+The skill library is the durable product value. It is intentionally decoupled from the web app and the plugin dist so contributors never need to touch React, routing, or the plugin manifest.
 
 Two authoring paths are supported:
 
-**In-browser contributor wizard** — `/[locale]/skills/contribute` ships with the site. The `Add new skill` CTA on the skills library and the `Update skill / Retire skill / Delete skill` CTAs on each detail page open a wizard that collects the required fields and estimates the SemVer bump your change will require. The last step emits a repo-aware prompt for Claude Code, Cursor, Codex, or any generic coding agent. The agent edits `skills/**`, runs `pnpm generate:skills`, and runs `pnpm verify:skills` on your behalf. See the `Contribute via AI` panel.
+**In-browser contributor wizard** — `/[locale]/skills/contribute` ships with the site. The `Add new skill` CTA on the skills library and the `Update skill / Retire skill / Delete skill` CTAs on each detail page open a wizard that collects the required fields and estimates the SemVer bump your change will require.
 
 **Hand-authored** — add or update the skill directly:
 
 1. Create a folder under `skills/<category-or-region>/<slug>/`. Valid top-level categories today: `saudi`, `security`, `architecture`.
 2. Add `skill.yaml` with canonical metadata (id, category, status, version, `last_verified`, localized labels, variables, references, scripts, sources).
 3. Add `SKILL.md` with the rendered body. Use variable placeholders declared in the schema when the skill needs per-project input.
-4. Optional: add a `references/` folder for background material and a `scripts/` folder for helper scripts targets like Claude Code can expose.
-5. Compliance-oriented skills (anything under `skills/saudi/` or any skill marked as touching regulated behavior) must:
-   - set the `disclaimer` flag in `skill.yaml`,
-   - cite at least one authoritative source, and
-   - keep `last_verified` current.
-6. Run `pnpm generate:skills` to validate and regenerate the frontend data.
-7. Run `pnpm verify` to make sure lint, typecheck, tests, and build all stay green.
+4. Optional: `references/` for background material, `scripts/` for helpers.
+5. Compliance-oriented skills must set the `disclaimer` flag, cite at least one authoritative source, and keep `last_verified` current.
+6. Run `pnpm generate:skills` to validate and regenerate the typed data.
+7. Run `pnpm generate:plugin-dist` to regenerate the Claude plugin tree and marketplace catalog.
+8. Run `pnpm verify` to make sure governance, lint, typecheck, tests, and build all stay green.
 
-Never hand-edit `apps/web/lib/skills/generated.ts` — it is emitted by the generator.
+Never hand-edit `apps/web/lib/skills/generated.ts`, files under `plugins/wathba-skills/`, or `.claude-plugin/marketplace.json` — they are emitted by the generators.
 
 ### Skill lifecycle
 
@@ -118,13 +162,13 @@ Every skill carries two orthogonal states:
 
 Lifecycle rules:
 
-- **Retire** — switch to `lifecycle: deprecated` (and optionally `replacement_id`, `sunset_date`, `lifecycle_note`) when a skill is still usable but a newer skill supersedes it. Deprecated skills stay visible in the library with a visible banner and are deprioritized.
-- **Archive** — switch to `lifecycle: archived` when the skill should no longer surface in default discovery. Archived skills are hidden from the default library view and excluded from recommendation flows; they remain available behind the explicit Archived filter.
-- **Reactivate** — flip a `deprecated` or `archived` skill back to `active` through the `Update skill` contributor action. Lifecycle transitions are classified as `minor` bumps.
-- **Delete** — the `Delete skill` contributor action is an advanced maintenance path that removes the skill package entirely. It is a `major` governance event. Prefer **retire + archive** unless the skill was never released or has no downstream consumers.
-- **Replacement chains** — a deprecated skill may point at its successor via `replacement_id`. The loader validates that every replacement target exists; self-references are rejected. For full identity migrations (`id` and `slug` both changing) keep using the existing `previous_id` list on the new skill — that still enforces the major-bump requirement.
+- **Retire** — switch to `lifecycle: deprecated` (and optionally `replacement_id`, `sunset_date`, `lifecycle_note`) when a skill is still usable but superseded. Deprecated skills stay visible with a banner and are deprioritized.
+- **Archive** — switch to `lifecycle: archived` when the skill should no longer surface in default discovery. Hidden from the default library view and recommendation flows; remain available behind the explicit Archived filter.
+- **Reactivate** — flip a `deprecated` or `archived` skill back to `active` via the `Update skill` contributor action. Classified as a `minor` bump.
+- **Delete** — advanced maintenance path that removes the skill package entirely. A `major` governance event. Prefer **retire + archive** unless the skill was never released.
+- **Replacement chains** — a deprecated skill may point at its successor via `replacement_id`. The loader validates that every replacement target exists; self-references are rejected.
 
-Bilingual contribution guidance (English + Arabic) lives in [CONTRIBUTING.md](./CONTRIBUTING.md). Maintainer routing for Saudi compliance, security, architecture, schema, web, and generator changes lives in [CODEOWNERS](./CODEOWNERS).
+Bilingual contribution guidance lives in [CONTRIBUTING.md](./CONTRIBUTING.md). Maintainer routing lives in [CODEOWNERS](./CODEOWNERS).
 
 ## Reporting issues
 
@@ -139,8 +183,18 @@ Wathba Skills is released under the MIT license. See [LICENSE](./LICENSE) for th
 
 ## الموجز العربي
 
-هذا المشروع مولد مفتوح المصدر لحزم مهارات يمكن تنزيلها واستخدامها مع وكلاء البرمجة بالذكاء الاصطناعي. الواجهة أمامية فقط، وتدعم الإنجليزية والعربية، وتركز على الامتثال والأمن وجودة البنية للمشاريع الموجهة للسوق السعودي ومناطق الشرق الأوسط وشمال أفريقيا.
+Wathba Skills مكتبة مفتوحة المصدر من مهارات وكلاء الذكاء الاصطناعي ذات جودة إنتاجية، موجّهة للمطورين في السوق السعودي ومنطقة الشرق الأوسط وشمال أفريقيا. المصدر الرسمي لأي مهارة هو `skills/<category>/<slug>/`؛ وتُوزَّع المكتبة:
 
-- المساهمة: راجع [CONTRIBUTING.md](./CONTRIBUTING.md) لقواعد المساهمة باللغتين الإنجليزية والعربية.
-- إخلاء المسؤولية: راجع [DISCLAIMER.md](./DISCLAIMER.md). يقدم المشروع إرشادات هندسية فقط ولا يعد استشارة قانونية.
-- الترخيص: [MIT](./LICENSE).
+- كإضافة Claude Code عبر السوق (المسار المُوصى به):
+
+  ```
+  /plugin marketplace add wathba-dev/wathba_auditor
+  /plugin install wathba-skills@wathba
+  ```
+
+- كإضافة محلية لـ Claude Code للمساهمين والبيئات المعزولة.
+- كملفات `.cursor/rules/*.mdc` و `.cursor/skills/` لمستخدمي Cursor.
+- كمجلدات `.agents/skills/<slug>/` أصلية لـ Codex.
+- كحزمة zip يدوية لأي وكيل آخر أو للاستخدام دون اتصال.
+
+المساهمة: راجع [CONTRIBUTING.md](./CONTRIBUTING.md). إخلاء المسؤولية: راجع [DISCLAIMER.md](./DISCLAIMER.md). الترخيص: [MIT](./LICENSE).

@@ -127,7 +127,7 @@
       "targetPreviewHeading": "معاينة لهذا الهدف",
       "targetNotes": {
         "claude": "حزم مهارات أصلية داخل .claude/skills/<slug>/ مع المراجع والسكربتات والأصول كاملةً.",
-        "cursor": "حزم مهارات أصلية داخل .cursor/skills/<slug>/ — نفس تخطيط SKILL.md والدليل، وليست ملفات .cursor/rules.",
+        "cursor": "يحزم ملفات .cursor/rules/<slug>.mdc (سياق دائم للمشروع) مع حزم مهارات أصلية داخل .cursor/skills/<slug>/. أعد تشغيل نافذة Cursor لتفعيل القواعد الجديدة.",
         "codex": "حزم مهارات أصلية داخل .agents/skills/<slug>/ — كل مهارة في مجلدها، مع agents/openai.yaml اختياري.",
         "generic": "ملف AGENTS.md واحد في جذر المستودع، لأي وكيل يقرأ AGENTS.md بدل مجلد مهارات."
       },
@@ -164,7 +164,7 @@
           },
           "cursor": {
             "name": "Cursor",
-            "tagline": "يكتب المهارات في .cursor/skills/<slug>/ — أعد تشغيل النافذة لتفعيلها."
+            "tagline": "يكتب .cursor/rules/<slug>.mdc إضافةً إلى .cursor/skills/<slug>/SKILL.md — أعد تشغيل النافذة لتفعيل المسارين."
           },
           "codex": {
             "name": "OpenAI Codex",
@@ -175,6 +175,22 @@
             "tagline": "يكتب ملف AGENTS.md واحداً في جذر المستودع لأي وكيل يقرؤه."
           }
         }
+      },
+      "channels": {
+        "heading": "ثبّت مهارات وثبة",
+        "lede": "اختر القناة المناسبة لبيئتك. سوق Claude Code هو المسار المُوصى به؛ ويُستخدم ملف zip ونص الذكاء الاصطناعي في قسم المتقدم كبدائل.",
+        "recommendedBadge": "المُوصى به",
+        "showStepsLabel": "إظهار الخطوات",
+        "hideStepsLabel": "إخفاء الخطوات",
+        "copyLabel": "نسخ",
+        "copiedLabel": "تم النسخ",
+        "copyFallback": "تعذّر النسخ — حدّد الأمر واضغط ⌘/Ctrl+C."
+      },
+      "advanced": {
+        "heading": "متقدم · يدوي ودون اتصال",
+        "lede": "استخدم هذه الخيارات فقط إذا تعذّر تشغيل مسار السوق: معاينة الشجرة، تنزيل الحزمة، أو نسخ نصّ ذكاء اصطناعي لوكيل آخر.",
+        "show": "إظهار الخيارات اليدوية",
+        "hide": "إخفاء الخيارات اليدوية"
       }
     },
     "eyebrowOf": "الخطوة {step} / {total}",

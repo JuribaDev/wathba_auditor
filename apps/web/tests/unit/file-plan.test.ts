@@ -101,17 +101,19 @@ describe("buildFilesForTarget", () => {
     ]);
   });
 
-  it("cursor emits a native skill package per skill — never .cursor/rules/*.mdc", () => {
+  it("cursor emits both .cursor/rules/*.mdc (durable) and .cursor/skills/ (Agent Skills interop)", () => {
     const other = makeSkill({ id: "o", slug: "other" });
     const paths = buildFilesForTarget("cursor", [skill, other]);
+    // Rules come first (one .mdc per skill), then the per-skill Agent Skills package.
     expect(paths).toEqual([
+      ".cursor/rules/s.mdc",
+      ".cursor/rules/other.mdc",
       ".cursor/skills/s/SKILL.md",
       ".cursor/skills/s/references/ref-a.md",
       ".cursor/skills/s/references/ref-b.xml",
       ".cursor/skills/s/scripts/helper.sh",
       ".cursor/skills/other/SKILL.md",
     ]);
-    expect(paths.every((p) => !p.startsWith(".cursor/rules/"))).toBe(true);
   });
 
   it("codex emits a native skill package per skill under .agents/skills/", () => {
@@ -165,8 +167,10 @@ describe("buildFilePlan", () => {
   it("aggregates totals across every selected target", () => {
     const plan = buildFilePlan(["claude-code", "cursor"], [skill]);
     expect(plan.skillCount).toBe(1);
-    // Each target now produces SKILL.md + 1 reference file → 4 files total.
-    expect(plan.totalFiles).toBe(4);
+    // claude-code → SKILL.md + 1 ref = 2 files.
+    // cursor     → .cursor/rules/s.mdc + .cursor/skills/s/SKILL.md + 1 ref = 3 files.
+    // Total: 5.
+    expect(plan.totalFiles).toBe(5);
     expect(plan.targets.map((t) => t.target)).toEqual([
       "claude-code",
       "cursor",

@@ -42,6 +42,9 @@ jobs:
       - name: Verify generated output is committed
         run: pnpm verify:skills:drift
 
+      - name: Verify Claude plugin dist is committed
+        run: pnpm verify:plugin-dist
+
       - name: Lint
         run: pnpm --filter @agent-skills/web lint
 

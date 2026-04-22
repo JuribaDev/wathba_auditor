@@ -7,6 +7,7 @@ import {
 import { renderAgentsMdFiles } from "@/lib/generate/adapters/agents-md";
 import { renderCodexFiles } from "@/lib/generate/adapters/codex";
 import { renderCursorFiles } from "@/lib/generate/adapters/cursor";
+import { renderCursorRulesFiles } from "@/lib/generate/adapters/cursor-rules";
 import type { FilePlan } from "@/lib/generate/file-plan";
 import type { SkillResolution } from "@/lib/generate/resolve-markdown";
 import type { GeneratedSkill } from "@/lib/skills/generated";
@@ -22,7 +23,13 @@ export function buildTargetFiles(
     case "claude-code":
       return renderClaudeCodeFiles(skills, resolutions);
     case "cursor":
-      return renderCursorFiles(skills, resolutions);
+      // Ship both contracts under the Cursor target — `.cursor/rules/*.mdc`
+      // (durable context) and `.cursor/skills/<slug>/SKILL.md` (Agent Skills
+      // interop). See cursor-rules.ts for the verification caveat.
+      return [
+        ...renderCursorRulesFiles(skills),
+        ...renderCursorFiles(skills, resolutions),
+      ];
     case "codex":
       return renderCodexFiles(skills, resolutions);
     case "agents-md":

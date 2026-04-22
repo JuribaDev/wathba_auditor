@@ -127,7 +127,7 @@
       "targetPreviewHeading": "Preview for this target",
       "targetNotes": {
         "claude": "Native skill packages under .claude/skills/<slug>/ with references, scripts, and assets intact.",
-        "cursor": "Native skill packages under .cursor/skills/<slug>/ — same SKILL.md + directory layout, not .cursor/rules files.",
+        "cursor": "Ships both .cursor/rules/<slug>.mdc (durable project context) and native skill packages under .cursor/skills/<slug>/. Reload the Cursor window to pick up new rules.",
         "codex": "Native skill packages under .agents/skills/<slug>/ — each skill is its own directory with an optional agents/openai.yaml.",
         "generic": "A generic AGENTS.md at the repo root, for any agent that reads AGENTS.md instead of a skills directory."
       },
@@ -164,7 +164,7 @@
           },
           "cursor": {
             "name": "Cursor",
-            "tagline": "Writes skills into .cursor/skills/<slug>/ — reload the window to activate."
+            "tagline": "Writes .cursor/rules/<slug>.mdc plus .cursor/skills/<slug>/SKILL.md — reload the window to activate both."
           },
           "codex": {
             "name": "OpenAI Codex",
@@ -175,6 +175,22 @@
             "tagline": "Writes a single AGENTS.md at the repo root for any agent that reads it."
           }
         }
+      },
+      "channels": {
+        "heading": "Install Wathba skills",
+        "lede": "Pick the channel that matches your environment. The Claude Code marketplace is the recommended path; zip and AI prompt live under Advanced as fallbacks.",
+        "recommendedBadge": "Recommended",
+        "showStepsLabel": "Show steps",
+        "hideStepsLabel": "Hide steps",
+        "copyLabel": "Copy",
+        "copiedLabel": "Copied",
+        "copyFallback": "Copy failed — select the command and press ⌘/Ctrl+C."
+      },
+      "advanced": {
+        "heading": "Advanced · Manual & offline",
+        "lede": "Use these only if you cannot run the marketplace flow: preview the generated tree, download a zip, or copy an AI prompt for another agent.",
+        "show": "Show manual options",
+        "hide": "Hide manual options"
       }
     },
     "eyebrowOf": "Step {step} / {total}",

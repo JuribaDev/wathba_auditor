@@ -78,8 +78,15 @@ describe("buildTargetFiles", () => {
     expect(claude.some((f) => f.path.startsWith(".claude/skills/"))).toBe(true);
 
     const cursor = buildTargetFiles("cursor", skills, resolutions);
-    expect(cursor.every((f) => f.path.startsWith(".cursor/skills/"))).toBe(true);
-    expect(cursor.every((f) => !f.path.startsWith(".cursor/rules/"))).toBe(true);
+    // Cursor target ships both durable rules (.cursor/rules/*.mdc) and the
+    // Agent Skills interop package (.cursor/skills/<slug>/SKILL.md).
+    expect(cursor.every(
+      (f) =>
+        f.path.startsWith(".cursor/rules/") ||
+        f.path.startsWith(".cursor/skills/"),
+    )).toBe(true);
+    expect(cursor.some((f) => f.path.startsWith(".cursor/rules/"))).toBe(true);
+    expect(cursor.some((f) => f.path.startsWith(".cursor/skills/"))).toBe(true);
 
     const codex = buildTargetFiles("codex", skills, resolutions);
     expect(codex.every((f) => f.path.startsWith(".agents/skills/"))).toBe(true);

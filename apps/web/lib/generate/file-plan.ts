@@ -3,6 +3,7 @@ import { renderAgentsMdPaths } from "@/lib/generate/adapters/agents-md";
 import { renderClaudeCodePaths } from "@/lib/generate/adapters/claude-code";
 import { renderCodexPaths } from "@/lib/generate/adapters/codex";
 import { renderCursorPaths } from "@/lib/generate/adapters/cursor";
+import { renderCursorRulesPaths } from "@/lib/generate/adapters/cursor-rules";
 import type { GeneratedSkill } from "@/lib/skills/generated";
 import type { TargetAgent } from "@/lib/skills/recommendations";
 
@@ -54,7 +55,10 @@ export function buildFilesForTarget(
     case "claude-code":
       return renderClaudeCodePaths(skills);
     case "cursor":
-      return renderCursorPaths(skills);
+      // Cursor ships with two complementary surfaces: the durable `.cursor/rules/*.mdc`
+      // context format and the Agent Skills `.cursor/skills/<slug>/SKILL.md` shape.
+      // We emit both so the installed repo works across Cursor versions.
+      return [...renderCursorRulesPaths(skills), ...renderCursorPaths(skills)];
     case "codex":
       return renderCodexPaths(skills);
     case "agents-md":
