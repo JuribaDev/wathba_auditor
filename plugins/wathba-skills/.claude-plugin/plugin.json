@@ -6,7 +6,7 @@
     "./commands/"
   ],
   "description": "Production-grade Saudi compliance, security, and architecture skills for agent-assisted engineering (ZATCA Phase 2, PDPL, Nafath/Yakeen, mada/STC Pay, auth isolation, secrets baseline, testability, CI hygiene).",
-  "homepage": "https://github.com/wathba-dev/wathba_auditor",
+  "homepage": "https://github.com/JuribaDev/wathba_auditor",
   "keywords": [
     "saudi",
     "compliance",
@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "name": "wathba-skills",
-  "repository": "https://github.com/wathba-dev/wathba_auditor",
+  "repository": "https://github.com/JuribaDev/wathba_auditor",
   "skills": [
     "./skills/"
   ],

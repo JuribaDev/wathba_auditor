@@ -7,7 +7,7 @@ right path based on their environment:
 
 1. **Claude Code (recommended)** — via this very plugin:
    ```
-   /plugin marketplace add wathba-dev/wathba_auditor
+   /plugin marketplace add JuribaDev/wathba_auditor
    /plugin install wathba-skills@wathba
    ```
    Local development: `/plugin marketplace add ./path/to/wathba_auditor`.

@@ -8,7 +8,7 @@ parent repo. Do not hand-edit — see `docs/development.md`.
 ## Install
 
 ```
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin install wathba-skills@wathba
 ```
 

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { getTranslator } from "@/lib/messages";
 import type { AppLocale } from "@/lib/i18n";
 
-const REPO_URL = "https://github.com/wathba-skills/wathba-skills";
+const REPO_URL = "https://github.com/JuribaDev/wathba_auditor";
 
 function GithubIcon(props: SVGProps<SVGSVGElement>) {
   return (

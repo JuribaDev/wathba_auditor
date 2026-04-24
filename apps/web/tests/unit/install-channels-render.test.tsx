@@ -154,7 +154,7 @@ describe("InstallChannels", () => {
       marketplace.querySelectorAll('[data-slot="install-channel-command"] code'),
     ).map((el) => el.textContent);
     expect(cmds).toContain(
-      "/plugin marketplace add wathba-dev/wathba_auditor",
+      "/plugin marketplace add JuribaDev/wathba_auditor",
     );
     expect(cmds).toContain("/plugin install wathba-skills@wathba");
   });

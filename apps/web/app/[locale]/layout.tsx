@@ -104,19 +104,18 @@ export default async function LocaleLayout({
       className={`${fontVariables} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
+      <body className="min-h-full bg-background text-foreground">
         {/*
-         * Pre-hydration theme/document-state bootstrap. `next/script` keeps
-         * the script in Next's managed loading path while `beforeInteractive`
-         * preserves first-paint document attributes before React hydrates.
+         * Pre-hydration theme/document-state bootstrap. Next hoists
+         * `beforeInteractive` scripts into the initial document when they are
+         * declared in the root layout; keeping it out of a manual <head>
+         * avoids React's client-rendered script warning in dev.
          */}
         <Script
           id="document-state-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: initScript }}
         />
-      </head>
-      <body className="min-h-full bg-background text-foreground">
         <DocumentStateProvider>{children}</DocumentStateProvider>
       </body>
     </html>

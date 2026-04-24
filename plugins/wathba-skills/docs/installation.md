@@ -3,7 +3,7 @@
 ## Claude Code marketplace (recommended)
 
 ```
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin install wathba-skills@wathba
 ```
 
@@ -17,7 +17,7 @@ eight Wathba skills as model-invocable context.
 Clone the repo and point the marketplace at it:
 
 ```
-git clone https://github.com/wathba-dev/wathba_auditor.git
+git clone https://github.com/JuribaDev/wathba_auditor.git
 cd wathba_auditor
 pnpm install
 pnpm generate:plugin-dist

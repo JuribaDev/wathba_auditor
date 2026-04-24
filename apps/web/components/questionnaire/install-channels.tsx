@@ -83,7 +83,7 @@ const STATIC_CHANNELS: Record<
       ],
     },
     commands: [
-      "/plugin marketplace add wathba-dev/wathba_auditor",
+      "/plugin marketplace add JuribaDev/wathba_auditor",
       "/plugin install wathba-skills@wathba",
     ],
     icon: Sparkles,
@@ -98,13 +98,13 @@ const STATIC_CHANNELS: Record<
     },
     steps: {
       en: [
-        "Clone wathba-dev/wathba_auditor.",
+        "Clone JuribaDev/wathba_auditor.",
         "Install dependencies with pnpm install.",
         "Regenerate the plugin dist with pnpm generate:plugin-dist.",
         "Point Claude Code at the local marketplace and install the plugin.",
       ],
       ar: [
-        "استنسخ wathba-dev/wathba_auditor.",
+        "استنسخ JuribaDev/wathba_auditor.",
         "ثبّت الاعتماديات عبر pnpm install.",
         "أعِد توليد الإضافة عبر pnpm generate:plugin-dist.",
         "وجّه Claude Code إلى السوق المحلي وثبّت الإضافة.",

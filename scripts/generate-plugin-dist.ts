@@ -40,7 +40,7 @@ const MARKETPLACE_FILE = path.join(
 const MARKETPLACE_NAME = "wathba";
 const PLUGIN_NAME = "wathba-skills";
 const PLUGIN_VERSION = "0.1.0";
-const REPO_URL = "https://github.com/wathba-dev/wathba_auditor";
+const REPO_URL = "https://github.com/JuribaDev/wathba_auditor";
 // Homepage intentionally points at the GitHub repo: the wathba.dev domain is
 // not yet resolvable, so using it breaks plugin metadata and install guides.
 const HOMEPAGE = REPO_URL;
@@ -375,7 +375,7 @@ parent repo. Do not hand-edit — see \`docs/development.md\`.
 ## Install
 
 \`\`\`
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin install wathba-skills@wathba
 \`\`\`
 

@@ -79,7 +79,7 @@ The zip is created locally in the browser.
 For Claude Code users, prefer the marketplace flow:
 
 ```text
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin install wathba-skills@wathba
 ```
 

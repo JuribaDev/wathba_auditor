@@ -15,7 +15,7 @@ Wathba Skills is an open-source library of production-grade agent skills for dev
 In any Claude Code session:
 
 ```
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin install wathba-skills@wathba
 ```
 
@@ -31,7 +31,7 @@ Update to the latest catalog at any time with `/plugin marketplace update wathba
 For contributors, air-gapped environments, or branch previews:
 
 ```bash
-git clone https://github.com/wathba-dev/wathba_auditor.git
+git clone https://github.com/JuribaDev/wathba_auditor.git
 cd wathba_auditor
 pnpm install
 pnpm generate:plugin-dist
@@ -188,7 +188,7 @@ Wathba Skills مكتبة مفتوحة المصدر من مهارات وكلاء 
 - كإضافة Claude Code عبر السوق (المسار المُوصى به):
 
   ```
-  /plugin marketplace add wathba-dev/wathba_auditor
+  /plugin marketplace add JuribaDev/wathba_auditor
   /plugin install wathba-skills@wathba
   ```
 

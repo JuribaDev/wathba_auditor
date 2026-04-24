@@ -30,7 +30,7 @@ Then restart or reload the agent. Some agents discover skills only at session st
 Run:
 
 ```text
-/plugin marketplace add wathba-dev/wathba_auditor
+/plugin marketplace add JuribaDev/wathba_auditor
 /plugin marketplace update wathba
 /plugin install wathba-skills@wathba
 ```
