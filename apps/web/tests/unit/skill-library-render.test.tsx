@@ -100,17 +100,26 @@ describe("SkillLibrary", () => {
 });
 
 describe("AddSkillCta", () => {
-  it("renders a labeled contributor link with the eyebrow, label, and arrow", () => {
+  it("renders the label, eyebrow, and the helper as visible supporting text", () => {
     render(
       <AddSkillCta
         locale="en"
         eyebrow="Contribute"
-        label="Add new skill"
-        helper="Start a new skill package."
+        label="Draft skill brief"
+        helper="Guided contributor flow. Describe the skill, its sources, and its intent, then Wathba generates a repo-aware prompt for Claude Code, Cursor, Codex, or another coding agent."
       />,
     );
-    const link = screen.getByRole("link", { name: /Contribute.*Add new skill/i });
+    const link = screen.getByRole("link", {
+      name: /Contribute.*Draft skill brief.*Guided contributor flow/i,
+    });
     expect(link.getAttribute("href")).toBe("/en/skills/contribute?action=add");
     expect(link.getAttribute("data-slot")).toBe("skills-add-cta");
+    // Helper must render as visible supporting text, not only as a title tooltip.
+    const helper = link.querySelector(
+      "[data-slot='skills-add-cta-helper']",
+    );
+    expect(helper).not.toBeNull();
+    expect(helper?.textContent).toMatch(/Guided contributor flow/i);
+    expect(helper?.textContent).toMatch(/Claude Code, Cursor, Codex/i);
   });
 });

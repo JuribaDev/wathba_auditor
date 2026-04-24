@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Archive, ArrowLeft, ExternalLink, FileText, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Download,
+  ExternalLink,
+  FileText,
+  Sparkles,
+} from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -157,43 +164,55 @@ export default async function SkillDetailPage({ params }: SkillDetailPageProps) 
           </div>
         ) : null}
 
-        <nav
-          aria-label={t("contributorActionsLabel")}
-          data-slot="contributor-actions"
-          className="flex flex-wrap items-center gap-2"
+        <aside
+          aria-labelledby="skill-install-heading"
+          data-slot="install-actions"
+          className="grid gap-4 rounded-2xl border border-border bg-surface-variant/40 p-5 shadow-[var(--shadow-sm)] sm:p-6"
         >
-          <Button asChild size="sm" variant="outline" data-action="update">
-            <Link href={`/${locale}/skills/contribute?action=update&id=${skill.id}`}>
-              <Pencil aria-hidden="true" className="size-4" />
-              {t("updateSkillCta")}
-            </Link>
-          </Button>
-          {isDeprecated || isArchived ? (
-            <Button asChild size="sm" variant="outline" data-action="reactivate">
-              <Link href={`/${locale}/skills/contribute?action=update&id=${skill.id}`}>
-                <RotateCcw aria-hidden="true" className="size-4" />
-                {t("reactivateSkillCta")}
-              </Link>
-            </Button>
-          ) : null}
-          {!isArchived ? (
-            <Button asChild size="sm" variant="outline" data-action="retire">
-              <Link href={`/${locale}/skills/contribute?action=retire&id=${skill.id}`}>
-                <Archive aria-hidden="true" className="size-4" />
-                {t("retireSkillCta")}
-              </Link>
-            </Button>
-          ) : null}
-          <Button asChild size="sm" variant="ghost" data-action="delete">
-            <Link
-              href={`/${locale}/skills/contribute?action=delete&id=${skill.id}`}
-              className="text-destructive hover:text-destructive"
+          <div className="grid gap-1">
+            <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground rtl:tracking-normal rtl:normal-case">
+              {t("installEyebrow")}
+            </p>
+            <h2
+              id="skill-install-heading"
+              className="font-heading text-lg leading-tight text-foreground"
             >
-              <Trash2 aria-hidden="true" className="size-4" />
-              {t("deleteSkillCta")}
-            </Link>
-          </Button>
-        </nav>
+              {t("installHeading")}
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-[1fr,auto] sm:items-center">
+            <p className="text-sm leading-6 text-foreground/90">
+              {t("installSkillHelp")}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              <Button asChild size="sm" data-action="install" className="gap-2">
+                <Link href={`/${locale}/generate?skill=${skill.id}`}>
+                  <Sparkles aria-hidden="true" className="size-4" />
+                  {t("installSkillCta")}
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-4 rtl:-scale-x-100"
+                  />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                data-action="install-options"
+                className="gap-2"
+              >
+                <Link href={`/${locale}/generate`}>
+                  <Download aria-hidden="true" className="size-4" />
+                  {t("installOptionsCta")}
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <p className="text-xs leading-5 text-muted-foreground">
+            {t("installOptionsHelp")}
+          </p>
+        </aside>
 
         {skill.disclaimer ? (
           <Notice variant="warning" title={t("disclaimerTitle")}>

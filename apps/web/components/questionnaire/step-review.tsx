@@ -37,6 +37,9 @@ export type ReviewStepLabels = {
   addAnotherLede: string;
   addAnotherEmpty: string;
   addAction: string;
+  selectedFromLibraryLabel: string;
+  selectedFromLibraryLede: string;
+  selectedFromLibraryClear: string;
 };
 
 type StepReviewProps = {

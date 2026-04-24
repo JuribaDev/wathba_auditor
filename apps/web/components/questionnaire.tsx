@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 import {
   QuestionnaireShell,
@@ -62,7 +64,7 @@ import {
   type VariableValue,
   type VariableValues,
 } from "@/lib/questionnaire/variables";
-import { generatedSkills } from "@/lib/skills/generated";
+import { generatedSkills, generatedSkillsById } from "@/lib/skills/generated";
 import {
   recommendSkills,
   type QuestionnaireAnswers,
@@ -89,6 +91,17 @@ export function Questionnaire({
   generateLabels,
   validationMessages,
 }: QuestionnaireProps) {
+  const searchParams = useSearchParams();
+  // `?skill=<id>` deep-links from the public skill detail page. The id is
+  // captured once at mount — later search-param churn from other sources
+  // should not re-preselect or clobber a user's manual removal.
+  const preselectedSkillId = React.useMemo(() => {
+    const raw = searchParams?.get("skill");
+    if (!raw) return null;
+    return generatedSkillsById[raw] ? raw : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [answers, setAnswers] = React.useState<QuestionnaireAnswers>({});
   const [attemptedSteps, setAttemptedSteps] = React.useState<
     ReadonlySet<QuestionnaireStepId>
@@ -98,11 +111,13 @@ export function Questionnaire({
     React.useState<VariableValues>({});
   const [step, setStep] = React.useState<QuestionnaireStepId>("about");
   const seededRecommendationsRef = React.useRef<boolean>(false);
+  const preselectAppliedRef = React.useRef<boolean>(false);
   const [hydrated, setHydrated] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const persistedState = loadQuestionnaireState();
     const persistedRoute = loadQuestionnaireRoute();
+    let hydratedSelections: Selections = persistedState?.selections ?? {};
     if (persistedState) {
       // Hydration from localStorage after mount is the React-recommended
       // pattern for static export + SSR: defaults render on the server and
@@ -110,17 +125,26 @@ export function Questionnaire({
       // mismatches. React will batch these setState calls.
       /* eslint-disable react-hooks/set-state-in-effect */
       setAnswers(persistedState.answers);
-      setSelections(persistedState.selections);
       setVariableValues(persistedState.variableValues);
       setAttemptedSteps(new Set(persistedState.attemptedSteps));
       seededRecommendationsRef.current = persistedState.seededRecommendations;
     }
+    // Apply the `?skill=<id>` deep-link after localStorage state is known so
+    // we add to persisted selections rather than overwriting them.
+    if (preselectedSkillId && !preselectAppliedRef.current) {
+      hydratedSelections = addManualSelection(
+        hydratedSelections,
+        preselectedSkillId,
+      );
+      preselectAppliedRef.current = true;
+    }
+    setSelections(hydratedSelections);
     if (persistedRoute) {
       setStep(persistedRoute);
     }
     setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
+  }, [preselectedSkillId]);
 
   React.useEffect(() => {
     if (!hydrated) return;
@@ -316,6 +340,24 @@ export function Questionnaire({
       }
       reviewSlot={
         <>
+          {preselectedSkillId &&
+          selections[preselectedSkillId] &&
+          generatedSkillsById[preselectedSkillId] ? (
+            <SelectedFromLibraryNotice
+              skillName={
+                generatedSkillsById[preselectedSkillId].name[locale] ??
+                generatedSkillsById[preselectedSkillId].name.en
+              }
+              labels={{
+                label: reviewLabels.selectedFromLibraryLabel,
+                lede: reviewLabels.selectedFromLibraryLede,
+                clear: reviewLabels.selectedFromLibraryClear,
+              }}
+              onClear={() =>
+                handleToggleSelection(preselectedSkillId, "manual")
+              }
+            />
+          ) : null}
           <StepReview
             locale={locale}
             recommendations={recommendations}
@@ -348,5 +390,50 @@ export function Questionnaire({
         />
       }
     />
+  );
+}
+
+type SelectedFromLibraryNoticeProps = {
+  skillName: string;
+  labels: { label: string; lede: string; clear: string };
+  onClear: () => void;
+};
+
+function SelectedFromLibraryNotice({
+  skillName,
+  labels,
+  onClear,
+}: SelectedFromLibraryNoticeProps) {
+  return (
+    <aside
+      data-slot="selected-from-library"
+      aria-label={labels.label}
+      className="flex flex-wrap items-start gap-3 rounded-2xl border border-primary/30 bg-primary/[0.06] p-4 shadow-[var(--shadow-sm)] sm:p-5"
+    >
+      <div className="min-w-0 flex-1 grid gap-1.5">
+        <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-primary rtl:tracking-normal rtl:normal-case">
+          {labels.label}
+        </p>
+        <p className="font-heading text-[15px] leading-5 text-foreground">
+          {skillName}
+        </p>
+        <p className="text-[13px] leading-5 text-muted-foreground">
+          {labels.lede}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onClear}
+        data-slot="selected-from-library-clear"
+        className={
+          "inline-flex items-center gap-1.5 self-start rounded-full border border-border bg-surface px-3 py-1.5 text-[12.5px] font-medium text-foreground " +
+          "transition-colors hover:border-destructive/40 hover:text-destructive " +
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        }
+      >
+        <X aria-hidden="true" className="size-3.5" />
+        {labels.clear}
+      </button>
+    </aside>
   );
 }

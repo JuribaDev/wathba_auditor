@@ -19,9 +19,28 @@ async function fillTechNodejsClaudeCursor(page: Page): Promise<void> {
   await page.locator("#secrets-manager").click();
 }
 
+/**
+ * The generate step hides manual/offline outputs (zip preview + Download zip)
+ * behind an advanced disclosure so the install-channels path stays primary.
+ * Tests that need the zip contract must expand the disclosure first.
+ *
+ * Locale-agnostic: drives the component via its stable structural hooks
+ * (`data-slot="advanced-disclosure"` + `data-state`), not by label text.
+ */
+async function openAdvancedManualOptions(page: Page): Promise<void> {
+  const disclosure = page.locator('[data-slot="advanced-disclosure"]');
+  await expect(disclosure).toBeVisible();
+  if ((await disclosure.getAttribute("data-state")) !== "open") {
+    await disclosure.getByRole("button").first().click();
+  }
+  await expect(disclosure).toHaveAttribute("data-state", "open");
+}
+
 async function readDownloadedZip(page: Page, clickLabel: string | RegExp) {
+  const downloadPanel = page.locator('[data-slot="download-panel"]');
+  await expect(downloadPanel).toBeVisible();
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: clickLabel }).click();
+  await downloadPanel.getByRole("button", { name: clickLabel }).click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
@@ -44,6 +63,11 @@ test("EN: questionnaire to multi-target zip download", async ({ page }) => {
   // Review: auto-recommendations are seeded. Advance to generate step.
   await page.getByRole("button", { name: "Generate skill pack" }).click();
 
+  // Generate step loaded — install channels are primary, manual/offline is hidden.
+  await expect(page.locator('[data-slot="step-generate"]')).toBeVisible();
+
+  // Expand the advanced/manual disclosure to reveal the zip download panel.
+  await openAdvancedManualOptions(page);
   await expect(page.locator('[data-slot="download-panel"]')).toBeVisible();
 
   const { zip, filename } = await readDownloadedZip(page, "Download zip");
@@ -90,7 +114,7 @@ test("EN: questionnaire to multi-target zip download", async ({ page }) => {
   expect(sampleBody).toMatch(/name:\s*testability-check/);
 });
 
-test("AR: questionnaire to download preserves RTL and produces Codex AGENTS.md", async ({
+test("AR: questionnaire to download preserves RTL and produces Codex skill tree", async ({
   page,
 }) => {
   await page.goto("/ar/generate/");
@@ -110,20 +134,44 @@ test("AR: questionnaire to download preserves RTL and produces Codex AGENTS.md",
 
   await page.getByRole("button", { name: "أنشئ حزمة المهارات" }).click();
 
-  // RTL must survive through the generate step.
+  // Generate step loaded and RTL survives into it.
+  await expect(page.locator('[data-slot="step-generate"]')).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+
+  // Arabic manual/offline disclosure uses the same structural hook.
+  await openAdvancedManualOptions(page);
   await expect(page.locator('[data-slot="download-panel"]')).toBeVisible();
 
   const { zip } = await readDownloadedZip(page, "تنزيل الحزمة");
   const paths = Object.keys(zip.files).sort();
 
-  // Multi-target: Claude Code per-skill tree + single Codex AGENTS.md file.
+  // Multi-target: Claude Code per-skill tree + Codex per-skill tree.
+  // Codex emits native skill directories under `.agents/skills/<slug>/`
+  // (the generic AGENTS.md fallback lives under the separate `agents-md`
+  // target, not under `codex`).
   expect(paths.filter((p) => p.startsWith(".claude/skills/")).length).toBeGreaterThan(0);
-  expect(paths).toContain("AGENTS.md");
+  const codexSkillMdPaths = paths.filter((p) =>
+    /^\.agents\/skills\/[^/]+\/SKILL\.md$/.test(p),
+  );
+  expect(codexSkillMdPaths.length).toBeGreaterThanOrEqual(1);
 
-  // The Codex AGENTS.md carries the per-skill headings for selected skills.
-  const agentsMdBody = await zip.file("AGENTS.md")!.async("string");
-  expect(agentsMdBody).toMatch(/# AGENTS\.md/);
-  expect(agentsMdBody).toMatch(/PDPL Basics for Engineers/);
-  expect(agentsMdBody).toMatch(/Nafath and Yakeen Identity Onboarding/);
+  // Expected auto-recommendations for KSA + pii + identity (no invoicing,
+  // no payments, secrets=manager, ci=yes) should surface in both targets.
+  const expectedSlugs = [
+    "pdpl-basics",
+    "nafath-yakeen-basics",
+    "auth-isolation",
+    "testability-check",
+  ];
+  for (const slug of expectedSlugs) {
+    expect(paths).toContain(`.claude/skills/${slug}/SKILL.md`);
+    expect(paths).toContain(`.agents/skills/${slug}/SKILL.md`);
+  }
+
+  // Sanity: a Codex SKILL.md carries the expected frontmatter shape.
+  const codexSample = await zip
+    .file(".agents/skills/nafath-yakeen-basics/SKILL.md")!
+    .async("string");
+  expect(codexSample.startsWith("---")).toBe(true);
+  expect(codexSample).toMatch(/name:\s*nafath-yakeen-basics/);
 });

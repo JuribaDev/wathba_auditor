@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
@@ -144,6 +145,9 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
     addAnotherLede: t("review.addAnotherLede"),
     addAnotherEmpty: t("review.addAnotherEmpty"),
     addAction: t("review.addAction"),
+    selectedFromLibraryLabel: t("review.selectedFromLibraryLabel"),
+    selectedFromLibraryLede: t("review.selectedFromLibraryLede"),
+    selectedFromLibraryClear: t("review.selectedFromLibraryClear"),
   };
 
   const generateLabels: GenerateStepLabels = {
@@ -229,16 +233,25 @@ export default async function GeneratePage({ params }: GeneratePageProps) {
   return (
     <AppShell locale={locale} section="generate">
       <div className="mx-auto w-full max-w-3xl">
-        <Questionnaire
-          locale={locale}
-          shellLabels={shellLabels}
-          aboutLabels={aboutLabels}
-          techLabels={techLabels}
-          reviewLabels={reviewLabels}
-          variablesLabels={variablesLabels}
-          generateLabels={generateLabels}
-          validationMessages={validationMessages}
-        />
+        {/*
+         * `useSearchParams` triggers a client-side bailout under
+         * `output: "export"` unless it sits inside a Suspense boundary.
+         * The questionnaire reads `?skill=<id>` to preselect a library
+         * skill after hydration, so it must render in this boundary for
+         * static prerendering to stay intact.
+         */}
+        <Suspense fallback={null}>
+          <Questionnaire
+            locale={locale}
+            shellLabels={shellLabels}
+            aboutLabels={aboutLabels}
+            techLabels={techLabels}
+            reviewLabels={reviewLabels}
+            variablesLabels={variablesLabels}
+            generateLabels={generateLabels}
+            validationMessages={validationMessages}
+          />
+        </Suspense>
       </div>
     </AppShell>
   );

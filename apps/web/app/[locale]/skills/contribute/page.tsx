@@ -196,6 +196,13 @@ export default async function ContributePage({ params }: ContributePageProps) {
     },
   };
 
+  const flowPurposeSteps = [
+    tContribute("flowPurposeStep1"),
+    tContribute("flowPurposeStep2"),
+    tContribute("flowPurposeStep3"),
+    tContribute("flowPurposeStep4"),
+  ];
+
   return (
     <AppShell
       locale={locale}
@@ -204,6 +211,47 @@ export default async function ContributePage({ params }: ContributePageProps) {
       description={tContribute("pageDescription")}
     >
       <div className="mx-auto w-full max-w-4xl py-10 lg:py-14">
+        <section
+          aria-labelledby="contribute-flow-purpose-heading"
+          data-slot="contribute-flow-purpose"
+          className="mb-8 grid gap-5 rounded-2xl border border-border bg-surface-variant/40 p-5 shadow-[var(--shadow-sm)] sm:p-6 lg:mb-10"
+        >
+          <header className="grid gap-2">
+            <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-muted-foreground rtl:tracking-normal rtl:normal-case">
+              {tContribute("flowPurposeEyebrow")}
+            </p>
+            <h2
+              id="contribute-flow-purpose-heading"
+              className="font-heading text-xl leading-tight text-foreground sm:text-[1.375rem]"
+            >
+              {tContribute("flowPurposeTitle")}
+            </h2>
+            <p className="text-[0.95rem] leading-6 text-foreground/90">
+              {tContribute("flowPurposeBody")}
+            </p>
+          </header>
+          <ol
+            className="grid gap-3 sm:grid-cols-2"
+            aria-label={tContribute("flowPurposeTitle")}
+          >
+            {flowPurposeSteps.map((step, index) => (
+              <li
+                key={index}
+                className="flex items-start gap-3 rounded-xl border border-border bg-surface p-3.5"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 font-mono text-[11px] font-semibold text-primary"
+                >
+                  {index + 1}
+                </span>
+                <p className="text-[0.875rem] leading-5 text-foreground/90">
+                  {step}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
         {/*
          * `useSearchParams` triggers a client-side bailout when used without
          * a Suspense boundary under `output: "export"`. The ContributorWizard
