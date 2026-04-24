@@ -1,0 +1,168 @@
+name: Deploy to AWS S3 + CloudFront
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: production-static-site
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      OUTPUT_DIR: apps/web/out
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+    steps:
+      - name: Validate deployment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${CLOUDFRONT_DISTRIBUTION_ID}" ]]; then
+            echo "CLOUDFRONT_DISTRIBUTION_ID GitHub secret is required."
+            exit 1
+          fi
+
+          if [[ -z "${AWS_ACCOUNT_ID}" || -z "${AWS_REGION}" || -z "${S3_BUCKET}" || -z "${AWS_ROLE_TO_ASSUME}" ]]; then
+            echo "AWS_ACCOUNT_ID, AWS_REGION, S3_BUCKET, and AWS_ROLE_TO_ASSUME GitHub configuration is required."
+            exit 1
+          fi
+
+          if [[ "${S3_BUCKET}" == *"example"* || "${AWS_ROLE_TO_ASSUME}" == *"example"* ]]; then
+            echo "Refusing to deploy with placeholder AWS configuration."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch base ref for policy checks
+        run: git fetch --no-tags --depth=1 origin "+${GITHUB_BASE_REF:-main}:refs/remotes/origin/${GITHUB_BASE_REF:-main}" || true
+
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level high
+
+      - name: Verify skill version-bump policy
+        run: pnpm verify:skills:versions
+
+      - name: Verify compliance freshness
+        run: pnpm verify:skills:freshness
+
+      - name: Generate skills
+        run: pnpm generate:skills
+
+      - name: Verify generated output is committed
+        run: pnpm verify:skills:drift
+
+      - name: Verify plugin distribution is committed
+        run: pnpm verify:plugin-dist
+
+      - name: Lint
+        run: pnpm --filter @agent-skills/web lint
+
+      - name: React rules doctor
+        run: pnpm --filter @agent-skills/web doctor:react
+
+      - name: Typecheck schema
+        run: pnpm --filter @agent-skills/skill-schema typecheck
+
+      - name: Typecheck web
+        run: pnpm --filter @agent-skills/web typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @agent-skills/web test
+
+      - name: Build static site
+        run: pnpm --filter @agent-skills/web build
+
+      - name: Install Playwright browser
+        run: pnpm --filter @agent-skills/web exec playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: pnpm --filter @agent-skills/web test:e2e
+
+      - name: Validate static export
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -d "${OUTPUT_DIR}"
+          test -f "${OUTPUT_DIR}/index.html"
+
+          if find "${OUTPUT_DIR}" -type f \( -name ".env*" -o -name "*.pem" -o -name "*.key" -o -name "id_rsa*" \) | grep -q .; then
+            echo "Sensitive-looking files were found in ${OUTPUT_DIR}."
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          actual_account="$(aws sts get-caller-identity --query Account --output text)"
+          if [[ "${actual_account}" != "${AWS_ACCOUNT_ID}" ]]; then
+            echo "The assumed AWS account does not match the configured deployment account."
+            exit 1
+          fi
+
+          aws s3api get-public-access-block --bucket "${S3_BUCKET}" >/dev/null
+          aws cloudfront get-distribution --id "${CLOUDFRONT_DISTRIBUTION_ID}" >/dev/null
+
+      - name: Deploy to S3
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws s3 sync "${OUTPUT_DIR}/" "s3://${S3_BUCKET}" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable"
+
+          while IFS= read -r -d '' file; do
+            key="${file#${OUTPUT_DIR}/}"
+            aws s3 cp "$file" "s3://${S3_BUCKET}/${key}" \
+              --cache-control "public, max-age=0, must-revalidate"
+          done < <(find "${OUTPUT_DIR}" \( -name "*.html" -o -name "*.json" \) -type f -print0)
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*"

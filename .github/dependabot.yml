@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+      timezone: Asia/Riyadh
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:30"
+      timezone: Asia/Riyadh
+    open-pull-requests-limit: 5
+    groups:
+      production-dependencies:
+        dependency-type: production
+      development-dependencies:
+        dependency-type: development
+
+  - package-ecosystem: npm
+    directory: /apps/web
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Riyadh
+    open-pull-requests-limit: 5
+    groups:
+      web-production-dependencies:
+        dependency-type: production
+      web-development-dependencies:
+        dependency-type: development
+
+  - package-ecosystem: npm
+    directory: /packages/skill-schema
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:30"
+      timezone: Asia/Riyadh
+    open-pull-requests-limit: 5

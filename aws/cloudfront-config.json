@@ -1,0 +1,53 @@
+{
+  "CallerReference": "__CALLER_REFERENCE__",
+  "Comment": "CloudFront distribution for __BUCKET_NAME__",
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "S3-__BUCKET_NAME__",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 2,
+      "Items": ["GET", "HEAD"],
+      "CachedMethods": {
+        "Quantity": 2,
+        "Items": ["GET", "HEAD"]
+      }
+    },
+    "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+    "ResponseHeadersPolicyId": "67f7725c-6f97-4210-82d7-5512b31e9d03",
+    "Compress": true
+  },
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "S3-__BUCKET_NAME__",
+        "DomainName": "__BUCKET_NAME__.s3.__AWS_REGION__.amazonaws.com",
+        "S3OriginConfig": {
+          "OriginAccessIdentity": ""
+        },
+        "OriginAccessControlId": "__OAC_ID__"
+      }
+    ]
+  },
+  "Enabled": true,
+  "DefaultRootObject": "index.html",
+  "CustomErrorResponses": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "ErrorCode": 403,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 10
+      },
+      {
+        "ErrorCode": 404,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 10
+      }
+    ]
+  },
+  "PriceClass": "PriceClass_All",
+  "HttpVersion": "http2and3"
+}
