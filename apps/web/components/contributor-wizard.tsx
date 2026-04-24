@@ -199,6 +199,35 @@ const ACTION_ICON: Record<ContributeAction, React.ComponentType<{ className?: st
 
 const ALL_TARGETS: TargetAgent[] = ["claude-code", "cursor", "codex", "agents-md"];
 
+function getPersistenceKey(locale: AppLocale, action: ContributeAction) {
+  return `wathba:contributor-draft:${locale}:${action}`;
+}
+
+function withAutoDerivedIdentity(
+  draft: ContributorDraft,
+  touchedFields: Record<string, boolean>,
+): ContributorDraft {
+  if (draft.action !== "add") return draft;
+
+  let next = draft;
+  if (!touchedFields.slug) {
+    const derivedSlug = slugifyName(draft.nameEn);
+    if (derivedSlug && derivedSlug !== draft.slug) {
+      next = { ...next, slug: derivedSlug };
+    }
+  }
+
+  const baseSlug = touchedFields.slug ? next.slug : slugifyName(next.nameEn);
+  if (!touchedFields.id && baseSlug) {
+    const derivedId = deriveSkillId(next.group, baseSlug);
+    if (derivedId && derivedId !== next.id) {
+      next = { ...next, id: derivedId };
+    }
+  }
+
+  return next;
+}
+
 export function ContributorWizard({
   locale,
   skills,
@@ -252,34 +281,42 @@ export function ContributorWizard({
     return { ...DEFAULT_CONTRIBUTOR_DRAFT, action, locale };
   }, [initialAction, initialSelectedId, locale, skills]);
 
-  const [draft, setDraft] = React.useState<ContributorDraft>(() => hydrateInitialDraft());
+  // Track which fields the contributor has explicitly touched so auto-derive
+  // does not overwrite values the user wants to keep. Auto-derivation only
+  // fills slug and id while they remain untouched.
+  const [touchedFields, setTouchedFields] = React.useState<Record<string, boolean>>(
+    () => ({}),
+  );
+  const markTouched = React.useCallback((key: string) => {
+    setTouchedFields((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+  }, []);
+
+  const [draft, setDraft] = React.useState<ContributorDraft>(() => {
+    const initialDraft = hydrateInitialDraft();
+    if (initialDraft.action !== "add") return initialDraft;
+    if (typeof window === "undefined") return initialDraft;
+    try {
+      const stored = window.localStorage.getItem(getPersistenceKey(locale, "add"));
+      if (!stored) return initialDraft;
+      const parsed = JSON.parse(stored);
+      if (parsed && typeof parsed === "object") {
+        return withAutoDerivedIdentity(
+          { ...initialDraft, ...parsed, action: initialDraft.action, locale },
+          {},
+        );
+      }
+    } catch {
+      /* ignore malformed cache */
+    }
+    return initialDraft;
+  });
 
   // Persist the in-progress draft to localStorage per locale so a contributor
   // who refreshes mid-flow does not lose typed-out content. Keyed on action
   // only (not skill id) — reloading the same action rehydrates. Add mode
   // is the common refresh-losing case; others already preload from the
   // catalog. Skipped on SSR.
-  const persistenceKey = `wathba:contributor-draft:${locale}:${draft.action}`;
-  const hasRestoredRef = React.useRef(false);
-  React.useEffect(() => {
-    if (hasRestoredRef.current) return;
-    hasRestoredRef.current = true;
-    if (draft.action !== "add") return; // only add restores from storage
-    if (typeof window === "undefined") return;
-    try {
-      const stored = window.localStorage.getItem(persistenceKey);
-      if (!stored) return;
-      const parsed = JSON.parse(stored);
-      if (parsed && typeof parsed === "object") {
-        setDraft((current) => ({ ...current, ...parsed, action: current.action, locale }));
-      }
-    } catch {
-      /* ignore malformed cache */
-    }
-    // persistenceKey changes when action changes; restore should run once
-    // per mount for the initial action only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const persistenceKey = getPersistenceKey(locale, draft.action);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -290,16 +327,6 @@ export function ContributorWizard({
       /* quota / private mode — skip silently */
     }
   }, [draft, persistenceKey]);
-
-  // Track which fields the contributor has explicitly touched so auto-derive
-  // does not overwrite values the user wants to keep. Auto-derivation only
-  // fills slug and id while they remain untouched.
-  const [touchedFields, setTouchedFields] = React.useState<Record<string, boolean>>(
-    () => ({}),
-  );
-  const markTouched = React.useCallback((key: string) => {
-    setTouchedFields((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
-  }, []);
 
   const baseline = React.useMemo<GeneratedSkill | null>(() => {
     if (draft.action === "add") return null;
@@ -337,36 +364,15 @@ export function ContributorWizard({
 
   const updateDraft = React.useCallback(
     <K extends keyof ContributorDraft>(key: K, value: ContributorDraft[K]) => {
-      setDraft((current) => ({ ...current, [key]: value }));
+      setDraft((current) => {
+        const next = { ...current, [key]: value };
+        return key === "nameEn" || key === "group"
+          ? withAutoDerivedIdentity(next, touchedFields)
+          : next;
+      });
     },
-    [],
+    [touchedFields],
   );
-
-  // Auto-derive slug from the English name and id from <group>-<slug>, but
-  // only while the contributor has not explicitly edited those fields.
-  // Runs in add mode only — update/retire/delete must not silently rewrite
-  // an existing skill's id.
-  React.useEffect(() => {
-    if (draft.action !== "add") return;
-    setDraft((current) => {
-      if (current.action !== "add") return current;
-      let next = current;
-      if (!touchedFields.slug) {
-        const derivedSlug = slugifyName(current.nameEn);
-        if (derivedSlug && derivedSlug !== current.slug) {
-          next = { ...next, slug: derivedSlug };
-        }
-      }
-      const baseSlug = touchedFields.slug ? current.slug : slugifyName(current.nameEn);
-      if (!touchedFields.id && baseSlug) {
-        const derivedId = deriveSkillId(current.group, baseSlug);
-        if (derivedId && derivedId !== current.id) {
-          next = { ...next, id: derivedId };
-        }
-      }
-      return next;
-    });
-  }, [draft.action, draft.nameEn, draft.group, touchedFields.slug, touchedFields.id]);
 
   const applyContributorTemplate = React.useCallback(
     (template: ContributorTemplate | null) => {
@@ -374,18 +380,21 @@ export function ContributorWizard({
         if (!template) {
           return { ...DEFAULT_CONTRIBUTOR_DRAFT, action: current.action, locale };
         }
-        return applyTemplate(template, {
-          ...DEFAULT_CONTRIBUTOR_DRAFT,
-          action: current.action,
-          locale,
-          // keep any text the user has already typed so the template picker
-          // can be invoked mid-edit without losing the title.
-          nameEn: current.nameEn,
-          nameAr: current.nameAr,
-          summaryEn: current.summaryEn,
-          summaryAr: current.summaryAr,
-          intent: current.intent,
-        });
+        return withAutoDerivedIdentity(
+          applyTemplate(template, {
+            ...DEFAULT_CONTRIBUTOR_DRAFT,
+            action: current.action,
+            locale,
+            // keep any text the user has already typed so the template picker
+            // can be invoked mid-edit without losing the title.
+            nameEn: current.nameEn,
+            nameAr: current.nameAr,
+            summaryEn: current.summaryEn,
+            summaryAr: current.summaryAr,
+            intent: current.intent,
+          }),
+          {},
+        );
       });
       // Applying a template re-auto-derives slug/id from the new group.
       setTouchedFields({});
@@ -523,6 +532,7 @@ export function ContributorWizard({
           labels={labels}
           draft={draft}
           setDraft={setDraft}
+          touchedFields={touchedFields}
           updateDraft={updateDraft}
           skills={skills}
           selectedSkillId={selectedSkillId}
@@ -713,6 +723,7 @@ function MetadataStep({
   labels,
   draft,
   setDraft,
+  touchedFields,
   updateDraft,
   skills,
   selectedSkillId,
@@ -723,6 +734,7 @@ function MetadataStep({
   labels: ContributorWizardLabels;
   draft: ContributorDraft;
   setDraft: React.Dispatch<React.SetStateAction<ContributorDraft>>;
+  touchedFields: Record<string, boolean>;
   updateDraft: <K extends keyof ContributorDraft>(key: K, value: ContributorDraft[K]) => void;
   skills: GeneratedSkill[];
   selectedSkillId: string | null;
@@ -752,7 +764,13 @@ function MetadataStep({
   };
   const handleSlugChange = (value: string) => {
     markTouched?.("slug");
-    updateDraft("slug", value.toLowerCase());
+    const slug = value.toLowerCase();
+    setDraft((current) => {
+      const next = { ...current, slug };
+      if (current.action !== "add" || touchedFields.id || !slug) return next;
+      const derivedId = deriveSkillId(current.group, slug);
+      return derivedId && derivedId !== current.id ? { ...next, id: derivedId } : next;
+    });
   };
   const handleIdChange = (value: string) => {
     markTouched?.("id");

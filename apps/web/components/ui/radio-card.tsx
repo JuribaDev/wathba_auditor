@@ -56,6 +56,12 @@ export function RadioCardGroup({
             key={option.value}
             htmlFor={id}
             data-state={checked ? "checked" : "unchecked"}
+            onClick={(event) => {
+              if (option.disabled || checked) return;
+              const target = event.target as HTMLElement;
+              if (target.closest("[role='radio']")) return;
+              onValueChange(option.value);
+            }}
             className={cn(
               "group/radio-card flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface p-4 text-start transition-colors",
               "hover:border-border-strong",

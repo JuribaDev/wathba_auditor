@@ -7,6 +7,7 @@ import {
   Source_Serif_4,
 } from "next/font/google";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 
 import "../globals.css";
 
@@ -105,15 +106,14 @@ export default async function LocaleLayout({
     >
       <head>
         {/*
-         * Pre-hydration theme/document-state bootstrap. Encoded as a data
-         * URL so it runs as a normal external script (no inline HTML, no
-         * React 19 "script never executed" warning, no next/script ordering
-         * quirks). The payload is a pure function of server constants so
-         * the base64 encoding is deterministic and safe from user input.
+         * Pre-hydration theme/document-state bootstrap. `next/script` keeps
+         * the script in Next's managed loading path while `beforeInteractive`
+         * preserves first-paint document attributes before React hydrates.
          */}
-        <script
+        <Script
           id="document-state-init"
-          src={`data:text/javascript;base64,${Buffer.from(initScript).toString("base64")}`}
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: initScript }}
         />
       </head>
       <body className="min-h-full bg-background text-foreground">

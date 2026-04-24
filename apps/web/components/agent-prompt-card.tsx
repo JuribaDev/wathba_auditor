@@ -79,7 +79,7 @@ export function AgentPromptCard({
         aria-expanded={expanded}
         aria-controls={panelId}
         className={cn(
-          "flex w-full items-center gap-4 px-5 py-4 text-left",
+          "flex w-full min-w-0 items-center gap-4 px-4 py-4 text-left",
           "transition-colors hover:bg-surface-variant/60 sm:px-6",
           "focus-visible:outline-none focus-visible:ring-2",
           "focus-visible:ring-primary focus-visible:ring-offset-2",
@@ -96,8 +96,8 @@ export function AgentPromptCard({
           <Icon className="size-4" aria-hidden="true" />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="flex items-baseline gap-2">
-            <span className="font-heading text-base leading-tight text-foreground">
+          <span className="flex min-w-0 items-baseline gap-2">
+            <span className="truncate font-heading text-base leading-tight text-foreground">
               {agent.name}
             </span>
             <span
@@ -131,7 +131,7 @@ export function AgentPromptCard({
           id={panelId}
           role="region"
           aria-labelledby={buttonId}
-          className="space-y-4 border-t border-border bg-surface-sunken/40 px-5 py-5 sm:px-6"
+          className="min-w-0 space-y-4 border-t border-border bg-surface-sunken/40 px-4 py-4 sm:px-6"
         >
           <div className="flex flex-wrap items-center gap-2 sm:hidden">
             <span className="font-mono text-[11px] uppercase tracking-wider text-soft-foreground rtl:tracking-normal">
@@ -142,14 +142,14 @@ export function AgentPromptCard({
 
           <PromptCopyButton bundle={bundle} labels={labels} />
 
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-wider text-soft-foreground rtl:tracking-normal">
               <FileCode2 aria-hidden="true" className="size-3.5" />
               <span>{labels.previewHeading}</span>
             </div>
             <pre
               className={cn(
-                "mt-2 max-h-[320px] overflow-auto rounded-md border border-border",
+                "mt-2 max-h-[320px] w-full max-w-full min-w-0 overflow-auto whitespace-pre-wrap break-words rounded-md border border-border",
                 "bg-surface px-4 py-3 font-mono text-[12px] leading-6 text-foreground",
               )}
               dir="ltr"

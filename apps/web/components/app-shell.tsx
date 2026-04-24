@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { LocaleSwitch } from "@/components/locale-switch";
 import { ThemeControls } from "@/components/theme-controls";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,7 @@ function GithubIcon(props: SVGProps<SVGSVGElement>) {
 
 type AppShellProps = {
   locale: AppLocale;
-  section: "home" | "generate" | "skills";
+  section: "home" | "generate" | "skills" | "migrate";
   title?: string;
   description?: string;
   actions?: ReactNode;
@@ -50,6 +49,7 @@ export async function AppShell({
     { id: "home", href: `/${locale}`, label: t("navOverview") },
     { id: "skills", href: `/${locale}/skills`, label: t("navSkills") },
     { id: "generate", href: `/${locale}/generate`, label: t("navGenerate") },
+    { id: "migrate", href: `/${locale}/migrate`, label: t("navMigrate") },
   ] as const;
 
   return (
@@ -132,28 +132,30 @@ export async function AppShell({
               </Button>
             </div>
           </div>
-          {title || description || actions ? (
-            <>
-              <Separator />
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                {title || description ? (
-                  <div className="grid max-w-3xl gap-3">
-                    {title ? (
-                      <h1 className="text-3xl leading-tight sm:text-4xl">{title}</h1>
-                    ) : null}
-                    {description ? (
-                      <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                        {description}
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-                {actions ? <div className="lg:self-start">{actions}</div> : null}
-              </div>
-            </>
-          ) : null}
         </div>
       </header>
+
+      {title || description || actions ? (
+        <section className="border-b border-border/80">
+          <div className="app-grid gap-4 py-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              {title || description ? (
+                <div className="grid max-w-3xl gap-3">
+                  {title ? (
+                    <h1 className="text-3xl leading-tight sm:text-4xl">{title}</h1>
+                  ) : null}
+                  {description ? (
+                    <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+                      {description}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+              {actions ? <div className="lg:self-start">{actions}</div> : null}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <main
         id="main-content"

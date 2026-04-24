@@ -15,6 +15,7 @@
     "navOverview": "Overview",
     "navSkills": "Skills",
     "navGenerate": "Generate",
+    "navMigrate": "Migrate",
     "github": "GitHub",
     "cta": "Generate skill pack",
     "footerDisclaimer": "Engineering guidance and templates, not legal advice.",
@@ -69,6 +70,78 @@
   "Generate": {
     "title": "Questionnaire foundation",
     "description": "The route structure and content model now reflect the planned generator flow. The multi-step form and browser zip output are the next implementation layer."
+  },
+  "Migrate": {
+    "title": "Skill migrator",
+    "description": "Generate an agent-ready migration prompt or install a reusable migrator skill. Your coding agent scans the repo, proposes a plan, waits for approval, then writes the target files locally.",
+    "source": {
+      "heading": "Source",
+      "lede": "The first supported source is Claude Code. The agent will inspect standalone skills, slash commands, and plugin packages.",
+      "claude": {
+        "label": "Claude Code",
+        "desc": "Reads .claude/skills, .claude/commands, .claude-plugin metadata, and plugin folders."
+      }
+    },
+    "target": {
+      "heading": "Target",
+      "lede": "Pick where the migrated skills should land. Codex migrations explicitly use the Codex skill-creator workflow when available.",
+      "claude": {
+        "label": "Claude Code",
+        "desc": "Normalize skills back into .claude/skills and preserve Claude-specific plugin context where useful."
+      },
+      "cursor": {
+        "label": "Cursor",
+        "desc": "Create .cursor/skills packages and matching .cursor/rules files for durable project context."
+      },
+      "codex": {
+        "label": "OpenAI Codex",
+        "desc": "Create .agents/skills packages and require the agent to use skill-creator when available."
+      },
+      "generic": {
+        "label": "AGENTS.md",
+        "desc": "Merge migrated guidance into a repo-level AGENTS.md without overwriting unrelated instructions."
+      },
+      "custom": {
+        "label": "Custom agent",
+        "desc": "Ask the agent to confirm the target root, directory pattern, and entry filename before writing."
+      }
+    },
+    "approval": {
+      "title": "Approval required",
+      "body": "The generated prompt forces plan-only behavior first. The agent may scan and report, but it must not write files until the user approves the migration plan."
+    },
+    "prompt": {
+      "heading": "One-time agent prompt",
+      "lede": "Paste this into the AI coding agent already inside the repo. It will discover Claude Code skills, commands, and plugins, then ask for approval before edits.",
+      "meta": "{target} · {size}"
+    },
+    "copy": {
+      "cta": "Copy prompt",
+      "copied": "Copied",
+      "fallback": "Copy failed"
+    },
+    "previewHeading": "Prompt preview",
+    "installer": {
+      "heading": "Reusable migrator skill",
+      "lede": "Install this once into the agent you use most. Future migrations can start by invoking the skill instead of pasting the full prompt.",
+      "footer": "The installed migrator still uses the same approval gate. It plans first, then waits before writing files.",
+      "agents": {
+        "claude": {
+          "name": "Claude Code",
+          "tagline": "Installs .claude/skills/skill-migrator/SKILL.md."
+        },
+        "cursor": {
+          "name": "Cursor",
+          "tagline": "Installs a Cursor skill plus a matching rule file."
+        },
+        "codex": {
+          "name": "OpenAI Codex",
+          "tagline": "Installs .agents/skills/skill-migrator/SKILL.md."
+        }
+      }
+    },
+    "filesLabel": "files",
+    "sizeLabel": "prompt"
   },
   "Questionnaire": {
     "ariaLabel": "Skill pack questionnaire",

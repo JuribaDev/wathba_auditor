@@ -127,6 +127,7 @@ describe("bilingual and RTL parity (US-046)", () => {
       "SkillDetail",
       "Questionnaire",
       "Generate",
+      "Migrate",
     ];
     for (const ns of requiredScreens) {
       expect(

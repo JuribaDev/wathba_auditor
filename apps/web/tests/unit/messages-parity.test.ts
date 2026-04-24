@@ -47,6 +47,7 @@ describe("messages catalog parity", () => {
       "Shell",
       "Landing",
       "Generate",
+      "Migrate",
       "Questionnaire",
       "Skills",
       "SkillDetail",
