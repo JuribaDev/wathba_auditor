@@ -6,7 +6,7 @@ summary:
   en: Engineering-level guardrails for Saudi Arabia's Personal Data Protection Law — consent, retention, minimization, and data export patterns your agent can actually enforce in code.
   ar: ضوابط هندسية لنظام حماية البيانات الشخصية في السعودية — الموافقة والاحتفاظ والتقليل والتصدير كقواعد يستطيع الوكيل فرضها فعليًا في الكود.
 slug: pdpl-basics
-version: 0.2.0
+version: 0.3.0
 category: compliance
 region: saudi-arabia
 targets:
@@ -15,16 +15,28 @@ targets:
   - codex
   - agents-md
 status: community-maintained
-last_verified: "2026-02-04"
+last_verified: "2026-04-24"
 maintainers:
   - github: "@layla.s"
 sources:
   - title: SDAIA Personal Data Protection Law
-    url: https://sdaia.gov.sa/en/SDAIA/about/Pages/PersonalDataProtection.aspx
-    accessed: "2026-02-04"
+    url: https://dgp.sdaia.gov.sa/wps/portal/pdp/knowledgecenter/details/PDPL/
+    accessed: "2026-04-24"
+  - title: SDAIA Implementing Regulation of the Personal Data Protection Law
+    url: https://dgp.sdaia.gov.sa/wps/portal/pdp/knowledgecenter/details/PDPL2/
+    accessed: "2026-04-24"
+  - title: SDAIA Regulation on Personal Data Transfer outside the Kingdom
+    url: https://dgp.sdaia.gov.sa/wps/portal/pdp/knowledgecenter/details/RegulationonPersonalDataTransferOutsidetheKingdom/
+    accessed: "2026-04-24"
 disclaimer: true
 variables: []
 triggers:
   - when:
       handles_pii: true
+      target_market: saudi_arabia
+  - when:
+      handles_identity: true
+      target_market: saudi_arabia
+  - when:
+      transfers_personal_data: true
       target_market: saudi_arabia

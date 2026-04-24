@@ -4,6 +4,8 @@
 
 Use this skill whenever the work proposes verifying a Saudi citizen or resident identity, issuing a government-backed trust decision, or linking an account to a national ID.
 
+Also use it when the work touches Nafath login, National Single Sign-On, Absher-backed authentication, Yakeen/Yaqeen attribute verification, biometric identity confirmation, KYC onboarding, national ID/Iqama handling, or identity-provider fallback logic.
+
 ## Operational warning
 
 Do not generate client code against imagined Nafath or Yakeen endpoints. Neither service offers open self-service API keys. Integration requires an approval workflow, sponsor-bound credentials, and sandbox onboarding. Treat any unreferenced URL or token as a fabrication until a human confirms it.
@@ -14,6 +16,15 @@ Do not generate client code against imagined Nafath or Yakeen endpoints. Neither
 2. Nafath provides authentication signals; it does not provide arbitrary citizen data.
 3. Yakeen provides attribute verification through authorized service providers — treat it as a data lookup gated by contractual scope, not an open directory.
 4. National IDs and Iqama numbers are personal data. PDPL rules from `pdpl-basics` apply in addition to this skill.
+5. A verification decision must store the minimum durable result: provider, subject reference, decision, timestamp, assurance level if supplied, expiry/reverification policy, and evidence id. Do not persist raw returned attributes by default.
+6. Every identity flow needs a business owner for provider approval, credential ownership, failure handling, and user support.
+
+## Hard stops
+
+- Do not invent base URLs, OAuth clients, request payloads, random-number flows, or callback contracts.
+- Do not treat a timeout, pending status, or user-cancelled approval as verified.
+- Do not accept a client-submitted national ID as proof of identity. It is only an input to an approved provider flow.
+- Do not use a mock that returns `verified: true` unless it is isolated to test/dev and impossible to deploy to production.
 
 ## Engineering guidance
 
@@ -22,18 +33,27 @@ Do not generate client code against imagined Nafath or Yakeen endpoints. Neither
 - Confirm the business has, or is actively obtaining, a Nafath or Yakeen engagement. If not, stop and route the team to apply before sprinting on code.
 - Name the authorized service provider or government channel being used. Generic "call Nafath" stories are a red flag.
 - Specify which attributes are actually required. Most flows need a verified identity signal, not a full profile.
+- Decide the fallback policy up front: retry, pending review, branch visit, or rejection. The fallback must not silently reduce assurance.
 
 ### While integrating
 
 - Keep credentials out of the repository. Reuse the guidance in `secrets-baseline` for handling and rotation.
 - Isolate the identity provider client behind a thin adapter so test fixtures, error handling, and retries do not leak into feature code.
 - Never cache raw identity attributes longer than the flow that needs them. Store the verification outcome, not the source attributes, whenever possible.
+- Keep provider callbacks idempotent. Duplicate approvals, delayed callbacks, and mobile-app retries should update the same verification attempt.
 
 ### Error and fallback handling
 
 - Treat a failed identity verification as a hard stop for the privileged flow. Do not silently fall back to an unverified path.
 - Provide a clear user-facing message in both Arabic and English explaining that verification is pending or rejected.
 - Log identity decisions with enough context to audit, but without embedding the raw national ID in application logs.
+- Rate-limit verification attempts and avoid retry storms against the provider.
+
+## Related skills
+
+- Use `pdpl-basics` for national ID, Iqama, biometric, profile, and verification-result storage.
+- Use `secrets-baseline` for provider credentials, callback secrets, certificates, and signing keys.
+- Use `auth-isolation` when verified identity unlocks privileged account actions or admin review.
 
 ## References
 

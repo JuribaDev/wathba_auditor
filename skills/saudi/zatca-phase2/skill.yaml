@@ -6,7 +6,7 @@ summary:
   en: Engineering guardrails for ZATCA Phase 2 invoicing — XML structure, signing flow, and onboarding steps an AI agent should respect before it writes code.
   ar: ضوابط هندسية لفوترة زاتكا المرحلة الثانية — بنية XML ومسار التوقيع وخطوات التسجيل التي يجب على وكيل البرمجة مراعاتها قبل كتابة الكود.
 slug: zatca-phase2
-version: 0.1.1
+version: 0.2.0
 category: compliance
 region: saudi-arabia
 targets:
@@ -15,16 +15,19 @@ targets:
   - codex
   - agents-md
 status: draft
-last_verified: "2026-04-15"
+last_verified: "2026-04-24"
 maintainers:
   - github: "@juriba"
 sources:
   - title: ZATCA Fatoora Developer Portal
     url: https://fatoora.zatca.gov.sa/
-    accessed: "2026-04-15"
-  - title: ZATCA XML Implementation Standard
-    url: https://zatca.gov.sa/
-    accessed: "2026-04-15"
+    accessed: "2026-04-24"
+  - title: ZATCA E-Invoicing Detailed Guideline
+    url: https://zatca.gov.sa/en/E-Invoicing/Introduction/Guidelines/Documents/E-Invoicing_Detailed__Guideline.pdf
+    accessed: "2026-04-24"
+  - title: ZATCA Phase Two Wave 22 Announcement
+    url: https://zatca.gov.sa/en/MediaCenter/News/Pages/news_1361.aspx
+    accessed: "2026-04-24"
 disclaimer: true
 variables:
   - name: stack
@@ -56,4 +59,10 @@ variables:
 triggers:
   - when:
       handles_invoicing: true
+      target_market: saudi_arabia
+  - when:
+      handles_vat: true
+      target_market: saudi_arabia
+  - when:
+      handles_pos: true
       target_market: saudi_arabia

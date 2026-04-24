@@ -6,7 +6,7 @@ summary:
   en: Practical integration notes for Saudi-local payment rails — BIN handling, 3DS quirks, settlement expectations, and common pitfalls generic payment tutorials miss.
   ar: ملاحظات تكامل عملية لقنوات الدفع المحلية في السعودية — التعامل مع BIN وخصائص 3DS وتوقعات التسوية والفخاخ التي تفوتها الأدلة العامة.
 slug: mada-stcpay-basics
-version: 0.2.1
+version: 0.3.0
 category: compliance
 region: saudi-arabia
 targets:
@@ -15,13 +15,19 @@ targets:
   - codex
   - agents-md
 status: community-maintained
-last_verified: "2026-02-28"
+last_verified: "2026-04-24"
 maintainers:
   - github: "@noor.a"
 sources:
   - title: Saudi Central Bank payments oversight
     url: https://www.sama.gov.sa/en-US/Pages/default.aspx
-    accessed: "2026-02-28"
+    accessed: "2026-04-24"
+  - title: SAMA Implementing Regulations of Payments and Payment Services Law
+    url: https://rulebook.sama.gov.sa/en/implementing-regulations-payments-and-payment-services-law
+    accessed: "2026-04-24"
+  - title: SAMA Updated Oversight Framework of the Payment Systems and Their Operators
+    url: https://www.sama.gov.sa/en-US/News/Pages/news-1134.aspx
+    accessed: "2026-04-24"
 disclaimer: true
 variables:
   - name: stack
@@ -39,4 +45,10 @@ variables:
 triggers:
   - when:
       handles_payments: true
+      target_market: saudi_arabia
+  - when:
+      handles_wallets: true
+      target_market: saudi_arabia
+  - when:
+      handles_refunds: true
       target_market: saudi_arabia

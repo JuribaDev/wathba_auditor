@@ -6,7 +6,7 @@ summary:
   en: Keep generated code writable-to-test. Clean seams, isolated side effects, no hidden singletons — so the test suite remains a first-class artifact as the codebase grows.
   ar: أبقِ الكود المُنشأ قابلاً لكتابة اختبارات له. فواصل نظيفة وآثار جانبية معزولة ولا singletons مخفية — حتى تبقى مجموعة الاختبارات أصلاً من الدرجة الأولى مع نمو الكود.
 slug: testability-check
-version: 0.4.0
+version: 0.5.0
 category: architecture
 region: null
 targets:
@@ -15,13 +15,22 @@ targets:
   - codex
   - agents-md
 status: community-maintained
-last_verified: "2026-03-10"
+last_verified: "2026-04-24"
 maintainers:
   - github: "@core"
 sources:
   - title: Martin Fowler on test doubles and seams
     url: https://martinfowler.com/bliki/TestDouble.html
-    accessed: "2026-03-10"
+    accessed: "2026-04-24"
+  - title: Google Testing Blog - Testing on the Toilet
+    url: https://testing.googleblog.com/
+    accessed: "2026-04-24"
 disclaimer: false
 variables: []
-triggers: []
+triggers:
+  - when:
+      adds_nontrivial_behavior: true
+  - when:
+      introduces_external_service: true
+  - when:
+      touches_side_effects: true

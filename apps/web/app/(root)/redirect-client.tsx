@@ -8,9 +8,16 @@ import { useEffect } from "react";
 // Metadata API (the `other` field uses `name=` not `http-equiv=`). A client
 // component with `location.replace` fires immediately on load and preserves
 // history so the back button still works as expected.
-export function RedirectToDefaultLocale({ target }: { target: string }) {
+export function RedirectToDefaultLocale({
+  target,
+  preserveSearch = false,
+}: {
+  target: string;
+  preserveSearch?: boolean;
+}) {
   useEffect(() => {
-    window.location.replace(target);
-  }, [target]);
+    const search = preserveSearch ? window.location.search : "";
+    window.location.replace(`${target}${search}`);
+  }, [preserveSearch, target]);
   return null;
 }

@@ -35,3 +35,18 @@ test("migrator renders the agent-driven approval flow", async ({ page }) => {
   await expect(preview).toContainText("Custom target rule");
   await expect(preview).toContainText("target agent's expected root path");
 });
+
+test("locale-less public routes redirect to English pages", async ({ page }) => {
+  const cases = [
+    ["/skills/", /\/en\/skills\/$/],
+    ["/skills/saudi-zatca-phase2/", /\/en\/skills\/saudi-zatca-phase2\/$/],
+    ["/generate/?skill=architecture-ci-hygiene", /\/en\/generate\/\?skill=architecture-ci-hygiene$/],
+    ["/skills/contribute/?action=add", /\/en\/skills\/contribute\/\?action=add$/],
+    ["/migrate/", /\/en\/migrate\/$/],
+  ] as const;
+
+  for (const [source, target] of cases) {
+    await page.goto(source);
+    await expect(page).toHaveURL(target);
+  }
+});

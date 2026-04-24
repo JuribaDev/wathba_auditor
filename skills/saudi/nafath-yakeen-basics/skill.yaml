@@ -6,7 +6,7 @@ summary:
   en: Keep the agent from inventing fake Nafath or Yakeen endpoints. Explains the approval path, the integration model, and which behaviors you cannot ship without a credential.
   ar: يمنع الوكيل من اختراع نقاط نهاية وهمية لنفاذ أو يقين. يشرح مسار الموافقة ونمط التكامل والسلوكيات التي لا يمكن نشرها دون اعتماد.
 slug: nafath-yakeen-basics
-version: 0.1.1
+version: 0.2.0
 category: compliance
 region: saudi-arabia
 targets:
@@ -15,16 +15,31 @@ targets:
   - codex
   - agents-md
 status: draft
-last_verified: "2026-01-22"
+last_verified: "2026-04-24"
 maintainers:
   - github: "@mohammed.t"
 sources:
   - title: Nafath service catalog
     url: https://www.my.gov.sa/wps/portal/snp/eParticipation/nafath
-    accessed: "2026-01-22"
+    accessed: "2026-04-24"
+  - title: Saudi National Single Sign-On
+    url: https://www.iam.gov.sa/
+    accessed: "2026-04-24"
+  - title: Elm Digital Identifiers - Yakeen
+    url: https://www.elm.sa/en/our-business/digital-products/Pages/Digital-identifiers.aspx
+    accessed: "2026-04-24"
+  - title: SAMA Rulebook - Yaqeen for ID Verification
+    url: https://www.rulebook.sama.gov.sa/en/yaqeen-id-verification
+    accessed: "2026-04-24"
 disclaimer: true
 variables: []
 triggers:
   - when:
       handles_identity: true
+      target_market: saudi_arabia
+  - when:
+      handles_kyc: true
+      target_market: saudi_arabia
+  - when:
+      handles_national_id: true
       target_market: saudi_arabia
