@@ -68,6 +68,7 @@ Required protections:
 - Keep all AWS identifiers in GitHub environment secrets, not committed files.
 - Keep S3 Block Public Access fully enabled.
 - Use CloudFront Origin Access Control, not S3 static website hosting.
+- Attach a CloudFront Function that rewrites static-export directory routes like `/en/` to `/en/index.html`.
 - Keep the IAM deploy policy scoped to one bucket and one distribution.
 - Keep GitHub OIDC trust scoped to this repo and the `production` environment.
 
@@ -118,7 +119,42 @@ Save the returned Origin Access Control ID locally:
 export OAC_ID="<origin-access-control-id>"
 ```
 
-3. Render `aws/cloudfront-config.json` from placeholders into a local temporary file, then create the distribution.
+3. Create and publish the CloudFront Function for static export route rewrites.
+
+```bash
+cat > /tmp/wathba-static-index-rewrite.js <<'JS'
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+
+  if (uri.endsWith('/')) {
+    request.uri = uri + 'index.html';
+    return request;
+  }
+
+  var lastSegment = uri.substring(uri.lastIndexOf('/') + 1);
+  if (!lastSegment.includes('.')) {
+    request.uri = uri + '/index.html';
+  }
+
+  return request;
+}
+JS
+
+aws cloudfront create-function \
+  --name "$GITHUB_REPO-static-index-rewrite" \
+  --function-config "Comment=Rewrite static export directory routes to index.html,Runtime=cloudfront-js-2.0" \
+  --function-code fileb:///tmp/wathba-static-index-rewrite.js
+
+export FUNCTION_ETAG="$(aws cloudfront describe-function --name "$GITHUB_REPO-static-index-rewrite" --query ETag --output text)"
+aws cloudfront publish-function \
+  --name "$GITHUB_REPO-static-index-rewrite" \
+  --if-match "$FUNCTION_ETAG"
+
+export STATIC_INDEX_REWRITE_FUNCTION_ARN="$(aws cloudfront describe-function --name "$GITHUB_REPO-static-index-rewrite" --stage LIVE --query 'FunctionSummary.FunctionMetadata.FunctionARN' --output text)"
+```
+
+4. Render `aws/cloudfront-config.json` from placeholders into a local temporary file, then create the distribution.
 
 ```bash
 sed \
@@ -126,13 +162,14 @@ sed \
   -e "s|__BUCKET_NAME__|$BUCKET_NAME|g" \
   -e "s|__AWS_REGION__|$AWS_REGION|g" \
   -e "s|__OAC_ID__|$OAC_ID|g" \
+  -e "s|__STATIC_INDEX_REWRITE_FUNCTION_ARN__|$STATIC_INDEX_REWRITE_FUNCTION_ARN|g" \
   aws/cloudfront-config.json > /tmp/wathba-cloudfront-config.json
 
 aws cloudfront create-distribution \
   --distribution-config file:///tmp/wathba-cloudfront-config.json
 ```
 
-4. Render and apply the S3 bucket policy after the distribution ID is known.
+5. Render and apply the S3 bucket policy after the distribution ID is known.
 
 ```bash
 export DISTRIBUTION_ID="<cloudfront-distribution-id>"
@@ -147,7 +184,7 @@ aws s3api put-bucket-policy \
   --policy file:///tmp/wathba-s3-bucket-policy.json
 ```
 
-5. Ensure the GitHub OIDC provider exists.
+6. Ensure the GitHub OIDC provider exists.
 
 ```bash
 aws iam list-open-id-connect-providers
@@ -162,7 +199,7 @@ aws iam create-open-id-connect-provider \
   --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 1c58a3a8518e8759bf075b76b750d4f2df264fcd
 ```
 
-6. Render and apply the deploy role trust and scoped inline policy.
+7. Render and apply the deploy role trust and scoped inline policy.
 
 ```bash
 sed \
@@ -189,7 +226,7 @@ aws iam put-role-policy \
 
 If the deploy role is shared with other sites, do not overwrite their existing trust or permissions. Add this repo subject and this scoped policy alongside the existing entries, or create a dedicated role for this project.
 
-7. Add GitHub secrets and variables to the protected `production` environment or repository. Prefer environment-level storage so production approval protects the values.
+8. Add GitHub secrets and variables to the protected `production` environment or repository. Prefer environment-level storage so production approval protects the values.
 
 ```bash
 gh variable set AWS_REGION --env production --body "$AWS_REGION"
@@ -199,7 +236,7 @@ gh secret set AWS_ROLE_TO_ASSUME --env production --body "arn:aws:iam::${AWS_ACC
 gh secret set CLOUDFRONT_DISTRIBUTION_ID --env production --body "$DISTRIBUTION_ID"
 ```
 
-8. Run the deploy workflow from `main`.
+9. Run the deploy workflow from `main`.
 
 ## Post-Deploy Validation
 
@@ -208,6 +245,7 @@ aws s3api get-public-access-block --bucket "$BUCKET_NAME"
 aws s3api get-bucket-policy --bucket "$BUCKET_NAME"
 aws cloudfront get-distribution --id "$DISTRIBUTION_ID" --query "Distribution.Status"
 curl -I "https://<cloudfront-domain>/"
+curl -I "https://<custom-domain>/en/"
 ```
 
 Expected results:
@@ -215,5 +253,6 @@ Expected results:
 - S3 public access block is enabled.
 - Bucket policy allows reads only from the CloudFront distribution ARN.
 - CloudFront returns HTTPS with security headers.
+- Directory routes such as `/en/` and `/skills/` return their matching static `index.html`, not the root fallback.
 - `.html` and `.json` files are uploaded with no-cache headers.
 - Hashed static assets are uploaded with long immutable cache headers.
