@@ -1,0 +1,16 @@
+.git
+.github
+.husky
+.claude
+.claude-plugin
+node_modules
+apps/web/node_modules
+packages/*/node_modules
+.next
+apps/web/.next
+apps/web/out
+coverage
+test-results
+playwright-report
+.DS_Store
+*.log
