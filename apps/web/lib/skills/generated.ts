@@ -714,9 +714,9 @@ export const generatedSkills: GeneratedSkill[] = [
     },
     "slug": "secrets-baseline",
     "previousIds": [],
-    "version": "1.1.0",
+    "version": "1.2.0",
     "category": "security",
-    "region": null,
+    "region": "all",
     "targets": [
       "claude-code",
       "cursor",
